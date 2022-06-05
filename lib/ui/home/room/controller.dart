@@ -1,15 +1,20 @@
+import 'package:circular_menu/circular_menu.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/router.dart';
+import 'package:nekoui/ui/home/map/view.dart';
 
 import '/domain/service/neko.dart';
+import '/router.dart';
+import 'inventory/view.dart';
+import 'neko/view.dart';
 
 class RoomController extends GetxController {
-  RoomController(this._nekoService);
+  RoomController(this._neko);
 
-  NekoService _nekoService;
+  final NekoService _neko;
 
   final GlobalKey nekoKey = GlobalKey();
+  final GlobalKey<CircularMenuState> fabKey = GlobalKey();
 
   late final RxDouble x;
   late final RxDouble y;
@@ -21,4 +26,19 @@ class RoomController extends GetxController {
 
     super.onInit();
   }
+
+  Future showNeko(BuildContext context) {
+    return NekoView.show(
+      context: context,
+      view: NekoView(
+        _neko,
+        globalKey: nekoKey,
+      ),
+    );
+  }
+
+  Future showInventory(BuildContext context) =>
+      InventoryView.show(context: context);
+
+  Future showMap(BuildContext context) => MapView.show(context: context);
 }

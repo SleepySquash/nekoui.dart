@@ -79,13 +79,7 @@ class _HomeViewState extends State<HomeView> {
         /// children to be updated as well.
         return Obx(
           () => c.auth.value.isSuccess
-              ? Scaffold(
-                  body: navigation,
-                  floatingActionButton: FloatingActionButton(
-                    onPressed: c.logout,
-                    child: const Icon(Icons.logout),
-                  ),
-                )
+              ? navigation
               : const Scaffold(
                   body: Center(child: CircularProgressIndicator()),
                 ),

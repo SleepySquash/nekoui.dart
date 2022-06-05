@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 
 import '/router.dart';
 import '/util/platform_utils.dart';
+import 'grocery/checkout/view.dart';
 import 'grocery/view.dart';
-import 'neko/view.dart';
 import 'room/view.dart';
 import 'settings/view.dart';
 
@@ -35,18 +35,27 @@ class HomeRouterDelegate extends RouterDelegate<RouteConfiguration>
           key: const ValueKey('RoomPage'),
           child: RoomView(Get.find()),
         ));
-      } else if (route.startsWith(Routes.settings)) {
+      } /*else if (route.startsWith(Routes.settings)) {
         pages.add(const MaterialPage(
           key: ValueKey('SettingsPage'),
           name: Routes.settings,
           child: SettingsView(),
         ));
-      } else if (route == Routes.grocery) {
+      }*/
+      else if (route.startsWith(Routes.grocery)) {
         pages.add(const MaterialPage(
           key: ValueKey('GroceryPage'),
           name: Routes.grocery,
           child: GroceryView(),
         ));
+
+        if (route == Routes.groceryCheckout) {
+          pages.add(const MaterialPage(
+            key: ValueKey('GroceryCheckoutPage'),
+            name: Routes.groceryCheckout,
+            child: GroceryCheckoutView(),
+          ));
+        }
       }
     }
 

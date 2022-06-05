@@ -1,9 +1,10 @@
+import 'dart:math';
+
+import 'package:circular_menu/circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/ui/home/neko/view.dart';
 
 import '/domain/service/neko.dart';
-import '/router.dart';
 import '/ui/widget/neko.dart';
 import 'controller.dart';
 
@@ -34,14 +35,9 @@ class RoomView extends StatelessWidget {
                 ),
                 Center(
                   child: GestureDetector(
-                    onTap: () => NekoView.show(
-                      context: context,
-                      view: NekoView(
-                        _neko,
-                        globalKey: c.nekoKey,
-                      ),
-                    ),
+                    onTap: () => c.showNeko(context),
                     child: SizedBox(
+                      width: 70,
                       height: 70,
                       child: NekoWidget(
                         _neko,
@@ -53,6 +49,65 @@ class RoomView extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+          floatingActionButton: CircularMenu(
+            key: c.fabKey,
+            alignment: Alignment.bottomRight,
+            toggleButtonBoxShadow: const [],
+            radius: 180,
+            startingAngleInRadian: pi,
+            endingAngleInRadian: 3 * pi / 2,
+            curve: Curves.ease,
+            reverseCurve: Curves.ease,
+            animationDuration: const Duration(milliseconds: 200),
+            items: [
+              CircularMenuItem(
+                icon: Icons.person,
+                color: Colors.teal,
+                enableBadge: true,
+                badgeColor: Colors.amber,
+                badgeLabel: '3',
+                badgeRadius: 10,
+                badgeTextColor: Colors.black,
+                badgeRightOffet: 5,
+                badgeTopOffet: 5,
+                boxShadow: const [],
+                onTap: () {
+                  c.showNeko(context);
+                  c.fabKey.currentState?.reverseAnimation();
+                },
+              ),
+              CircularMenuItem(
+                icon: Icons.warehouse,
+                boxShadow: const [],
+                onTap: () {
+                  c.showInventory(context);
+                  c.fabKey.currentState?.reverseAnimation();
+                },
+              ),
+              CircularMenuItem(
+                icon: Icons.book,
+                boxShadow: const [],
+                onTap: () {
+                  c.fabKey.currentState?.reverseAnimation();
+                },
+              ),
+              CircularMenuItem(
+                icon: Icons.map,
+                boxShadow: const [],
+                onTap: () {
+                  c.showMap(context);
+                  c.fabKey.currentState?.reverseAnimation();
+                },
+              ),
+              CircularMenuItem(
+                icon: Icons.settings,
+                boxShadow: const [],
+                onTap: () {
+                  c.fabKey.currentState?.reverseAnimation();
+                },
+              ),
+            ],
           ),
         );
       },

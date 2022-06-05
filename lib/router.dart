@@ -2,11 +2,14 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/domain/service/neko.dart';
-import 'package:nekoui/provider/hive/neko.dart';
-import 'package:nekoui/store/neko.dart';
 
 import 'domain/service/auth.dart';
+import 'domain/service/item.dart';
+import 'domain/service/neko.dart';
+import 'provider/hive/item.dart';
+import 'provider/hive/neko.dart';
+import 'store/item.dart';
+import 'store/neko.dart';
 import 'ui/auth/view.dart';
 import 'ui/home/view.dart';
 import 'ui/widget/context_menu/overlay.dart';
@@ -21,13 +24,8 @@ late RouterState router;
 class Routes {
   static const auth = '/';
   static const grocery = '/grocery';
+  static const groceryCheckout = '/grocery/checkout';
   static const home = '/';
-  static const inventory = '/inventory';
-  static const jobs = '/jobs';
-  static const map = '/map';
-  static const neko = '/neko';
-  static const settings = '/settings';
-  static const skills = '/skills';
 }
 
 /// Application's router state.
@@ -229,9 +227,15 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
             ScopedDependencies deps = ScopedDependencies();
 
             await deps.put(NekoHiveProvider()).init();
+            await deps.put(ItemHiveProvider()).init();
 
-            NekoRepository nekoRepository = NekoRepository();
+            NekoRepository nekoRepository =
+                deps.put(NekoRepository(Get.find()));
             deps.put(NekoService(nekoRepository));
+
+            ItemRepository itemRepository =
+                deps.put(ItemRepository(Get.find()));
+            deps.put(ItemService(itemRepository));
 
             return deps;
           },
@@ -286,26 +290,11 @@ extension RouteLinks on RouterState {
   /// Changes router location to the [Routes.home] page.
   void home() => go(Routes.home);
 
-  /// Changes router location to the [Routes.settings] page.
-  void settings() => go(Routes.settings);
-
-  /// Changes router location to the [Routes.neko] page.
-  void neko() => go(Routes.neko);
-
-  /// Changes router location to the [Routes.map] page.
-  void map() => go(Routes.map);
-
-  /// Changes router location to the [Routes.skills] page.
-  void skills() => go(Routes.skills);
-
-  /// Changes router location to the [Routes.inventory] page.
-  void inventory() => go(Routes.inventory);
-
-  /// Changes router location to the [Routes.jobs] page.
-  void jobs() => go(Routes.jobs);
-
   /// Changes router location to the [Routes.grocery] page.
   void grocery() => go(Routes.grocery);
+
+  /// Changes router location to the [Routes.groceryCheckout] page.
+  void groceryCheckout() => go(Routes.groceryCheckout);
 }
 
 /// Extension adding helper methods to an [AppLifecycleState].

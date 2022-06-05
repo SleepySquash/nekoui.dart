@@ -1,6 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '/domain/model/neko.dart';
+import 'adapters.dart';
 import 'base.dart';
 
 /// [Hive] storage for the [Neko].
@@ -14,14 +15,17 @@ class NekoHiveProvider extends HiveBaseProvider<Neko> {
   @override
   void registerAdapters() {
     Hive.maybeRegisterAdapter(NekoAdapter());
+    Hive.maybeRegisterAdapter(NecessitiesAdapter());
+    Hive.maybeRegisterAdapter(RxStringAdapter());
+    Hive.maybeRegisterAdapter(RxIntAdapter());
   }
 
-  /// Puts the provided [Neko] to [Hive].
+  /// Puts the provided [Neko] to the [Hive].
   Future<void> put(Neko neko) => putSafe(0, neko);
 
-  /// Returns the stored [Neko] from [Hive].
+  /// Returns the stored [Neko] from the [Hive].
   Neko? get() => getSafe(0);
 
-  /// Removes the store [Neko] from [Hive].
+  /// Removes the store [Neko] from the [Hive].
   Future<void> remove() => deleteSafe(0);
 }
