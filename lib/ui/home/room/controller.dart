@@ -1,10 +1,11 @@
 import 'package:circular_menu/circular_menu.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/ui/home/map/view.dart';
 
+import '/domain/model/neko.dart';
 import '/domain/service/neko.dart';
 import '/router.dart';
+import '/ui/home/map/view.dart';
 import 'inventory/view.dart';
 import 'neko/view.dart';
 
@@ -18,6 +19,8 @@ class RoomController extends GetxController {
 
   late final RxDouble x;
   late final RxDouble y;
+
+  Rx<Neko?> get neko => _neko.neko;
 
   @override
   void onInit() {

@@ -67,27 +67,42 @@ class NecessitiesAdapter extends TypeAdapter<Necessities> {
     };
     return Necessities(
       hunger: fields[0] as RxInt?,
-      thirst: fields[1] as RxInt?,
-      cleanness: fields[2] as RxInt?,
-      sleep: fields[3] as RxInt?,
-      social: fields[4] as RxInt?,
+      maxHunger: fields[1] as int,
+      thirst: fields[2] as RxInt?,
+      maxThirst: fields[3] as int,
+      cleanness: fields[4] as RxInt?,
+      maxCleanness: fields[5] as int,
+      energy: fields[6] as RxInt?,
+      maxEnergy: fields[7] as int,
+      social: fields[8] as RxInt?,
+      maxSocial: fields[9] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, Necessities obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.hunger)
       ..writeByte(1)
-      ..write(obj.thirst)
+      ..write(obj.maxHunger)
       ..writeByte(2)
-      ..write(obj.cleanness)
+      ..write(obj.thirst)
       ..writeByte(3)
-      ..write(obj.sleep)
+      ..write(obj.maxThirst)
       ..writeByte(4)
-      ..write(obj.social);
+      ..write(obj.cleanness)
+      ..writeByte(5)
+      ..write(obj.maxCleanness)
+      ..writeByte(6)
+      ..write(obj.energy)
+      ..writeByte(7)
+      ..write(obj.maxEnergy)
+      ..writeByte(8)
+      ..write(obj.social)
+      ..writeByte(9)
+      ..write(obj.maxSocial);
   }
 
   @override

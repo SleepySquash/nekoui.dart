@@ -47,6 +47,26 @@ class MapView extends StatelessWidget {
                 icon: Icons.local_grocery_store,
                 onTap: router.grocery,
               ),
+              Location(
+                'shopkeeper',
+                icon: Icons.shop,
+                onTap: () {},
+              ),
+              Location(
+                'job',
+                icon: Icons.shop,
+                onTap: () {},
+              ),
+              Location(
+                'park',
+                icon: Icons.park,
+                onTap: () {},
+              ),
+              Location(
+                'neko_science',
+                icon: Icons.science_rounded,
+                onTap: () {},
+              ),
             ]
                 .map(
                   (e) => ListTile(

@@ -37,6 +37,20 @@ class NekoRepository extends DisposableInterface
     super.onClose();
   }
 
+  @override
+  void eat(int value) {
+    neko.value?.necessities.hunger.value += value;
+    neko.value?.necessities.ensureConstraints();
+    _nekoHive.put(neko.value ?? Neko());
+  }
+
+  @override
+  void drink(int value) {
+    neko.value?.necessities.thirst.value += value;
+    neko.value?.necessities.ensureConstraints();
+    _nekoHive.put(neko.value ?? Neko());
+  }
+
   void _initLocalSubscription() {
     _localSubscription = _nekoHive.boxEvents.listen((e) {
       if (e.deleted) {

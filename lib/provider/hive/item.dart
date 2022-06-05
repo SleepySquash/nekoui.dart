@@ -17,9 +17,12 @@ class ItemHiveProvider extends HiveBaseProvider<Item> {
 
   @override
   void registerAdapters() {
+    Hive.maybeRegisterAdapter(CakeItemAdapter());
     Hive.maybeRegisterAdapter(CupcakeItemAdapter());
-    Hive.maybeRegisterAdapter(WaterBottleItemAdapter());
+    Hive.maybeRegisterAdapter(DonutItemAdapter());
+    Hive.maybeRegisterAdapter(IcecreamItemAdapter());
     Hive.maybeRegisterAdapter(RxIntAdapter());
+    Hive.maybeRegisterAdapter(WaterBottleItemAdapter());
   }
 
   /// Puts the provided [Item] to the [Hive].

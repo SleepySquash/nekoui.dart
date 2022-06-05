@@ -13,5 +13,8 @@ class ItemService extends DisposableService {
 
   void add(Item item) => _itemRepository.add(item);
 
-  void remove(Item item) => _itemRepository.remove(item);
+  /// Removes the provided [item] in the specified [count] from the [items].
+  ///
+  /// Fully removes the [item], if [count] is `null`.
+  void remove(Item item, [int? count]) => _itemRepository.remove(item, count);
 }

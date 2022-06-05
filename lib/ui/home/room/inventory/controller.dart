@@ -21,7 +21,11 @@ class InventoryController extends GetxController {
   RxObsMap<String, Item> get items => _itemService.items;
 
   void use(Item item) {
-    // _nekoService
+    if (item is Consumable) {
+      if (_nekoService.consume(item)) {
+        _itemService.remove(item, 1);
+      }
+    }
   }
 
   void lockDragging() => _draggingIsLocked = true;

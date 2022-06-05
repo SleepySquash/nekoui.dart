@@ -19,4 +19,7 @@ class ModelTypeId {
   static const rxString = 13;
   static const rxnString = 14;
   static const waterBottleItem = 15;
+  static const donutItem = 16;
+  static const cakeItem = 17;
+  static const icecreamItem = 18;
 }

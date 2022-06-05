@@ -19,6 +19,9 @@ class GroceryController extends GetxController {
   void onInit() {
     items = [
       CupcakeItem(1.obs),
+      DonutItem(1.obs),
+      IcecreamItem(1.obs),
+      CakeItem(1.obs),
       WaterBottleItem(1.obs),
     ];
 

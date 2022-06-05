@@ -19,14 +19,16 @@ abstract class Item extends HiveObject {
   final RxInt count;
 }
 
+mixin Consumable on Item {}
+
 /// [Item] that is edible by a [Neko].
-mixin EdibleMixin on Item {
+mixin Eatable implements Consumable {
   /// Hunger being satisfied by consuming this [Item].
   int get hunger => 0;
 }
 
 /// [Item] that is drinkable by a [Neko].
-mixin DrinkableMixin on Item {
+mixin Drinkable implements Consumable {
   /// Thirst being satisfied by consuming this [Item].
   int get thirst => 0;
 }
@@ -35,7 +37,7 @@ mixin WearableMixin on Item {}
 mixin UseableMixin on Item {}
 
 @HiveType(typeId: ModelTypeId.cupcakeItem)
-class CupcakeItem extends Item with EdibleMixin {
+class CupcakeItem extends Item with Eatable {
   CupcakeItem(super.count);
 
   @override
@@ -45,13 +47,49 @@ class CupcakeItem extends Item with EdibleMixin {
   int get hunger => 10;
 }
 
+@HiveType(typeId: ModelTypeId.donutItem)
+class DonutItem extends Item with Eatable {
+  DonutItem(super.count);
+
+  @override
+  String get id => 'donut';
+
+  @override
+  int get hunger => 10;
+}
+
+@HiveType(typeId: ModelTypeId.cakeItem)
+class CakeItem extends Item with Eatable {
+  CakeItem(super.count);
+
+  @override
+  String get id => 'cake';
+
+  @override
+  int get hunger => 50;
+}
+
+@HiveType(typeId: ModelTypeId.icecreamItem)
+class IcecreamItem extends Item with Eatable, Drinkable {
+  IcecreamItem(super.count);
+
+  @override
+  String get id => 'icecream';
+
+  @override
+  int get hunger => 10;
+
+  @override
+  int get thirst => 1;
+}
+
 @HiveType(typeId: ModelTypeId.waterBottleItem)
-class WaterBottleItem extends Item with DrinkableMixin {
+class WaterBottleItem extends Item with Drinkable {
   WaterBottleItem(super.count);
 
   @override
   String get id => 'water_bottle';
 
   @override
-  int get thirst => 10;
+  int get thirst => 40;
 }

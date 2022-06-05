@@ -48,7 +48,17 @@ class ItemRepository extends DisposableInterface
   }
 
   @override
-  void remove(Item item) => _itemHive.remove(item.id);
+  void remove(Item item, [int? count]) {
+    Item? existing = _itemHive.get(item.id);
+    if (existing != null) {
+      existing.count.value -= count ?? existing.count.value;
+      if (existing.count.value <= 0) {
+        _itemHive.remove(item.id);
+      } else {
+        _itemHive.put(existing);
+      }
+    }
+  }
 
   Future<void> _initLocalSubscription() async {
     _localSubscription = StreamIterator(_itemHive.boxEvents);
