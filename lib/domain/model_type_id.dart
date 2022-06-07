@@ -22,4 +22,7 @@ class ModelTypeId {
   static const donutItem = 16;
   static const cakeItem = 17;
   static const icecreamItem = 18;
+  static const mbti = 19;
+  static const skill = 20;
+  static const trait = 21;
 }

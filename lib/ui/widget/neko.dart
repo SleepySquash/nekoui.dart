@@ -32,6 +32,7 @@ class _NekoWidgetState extends State<NekoWidget> {
     if (widget.isPerson) {
       return Stack(
         alignment: Alignment.center,
+        fit: StackFit.passthrough,
         children: [
           Image.asset(
             'assets/images/neko/${widget.isPerson ? 'person' : 'chibi'}.png',

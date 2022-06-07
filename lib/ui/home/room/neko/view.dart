@@ -3,9 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '/ui/novel/novel.dart';
-
+import '/domain/model/skill.dart';
+import '/domain/model/trait.dart';
 import '/domain/service/neko.dart';
+import '/ui/novel/novel.dart';
 import '/ui/widget/backdrop_button.dart';
 import '/ui/widget/conditional_backdrop.dart';
 import '/ui/widget/neko.dart';
@@ -119,7 +120,7 @@ class _NekoViewState extends State<NekoView>
             );
 
         return GetBuilder(
-          init: NekoController(),
+          init: NekoController(Get.find()),
           builder: (NekoController c) {
             return Stack(
               children: [
@@ -202,6 +203,18 @@ class _NekoViewState extends State<NekoView>
               icon: Icons.school,
               color: Colors.blueGrey,
               onTap: () {
+                if ((c.neko.value?.traits[Traits.loyalty.name]?.value ?? 0) >=
+                    100) {
+                  // No-op.
+                }
+
+                if ((c.neko.value?.skills[Skills.drawing.name]
+                            ?.skills?[DrawingSkills.anatomy.name]?.value ??
+                        0) >=
+                    100) {
+                  // No-op.
+                }
+
                 Novel.show(
                   context: context,
                   scenario: Scenario(

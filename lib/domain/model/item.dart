@@ -36,6 +36,7 @@ mixin Drinkable implements Consumable {
 mixin WearableMixin on Item {}
 mixin UseableMixin on Item {}
 
+// TODO: Hive types are only up to 223, so do not use them like that.
 @HiveType(typeId: ModelTypeId.cupcakeItem)
 class CupcakeItem extends Item with Eatable {
   CupcakeItem(super.count);

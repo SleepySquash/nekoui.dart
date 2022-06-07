@@ -53,17 +53,17 @@ class RoomView extends StatelessWidget {
                 ),
               ),
               Align(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 16, bottom: 16),
-                  child: _more(c, context),
-                ),
-              ),
-              Align(
                 alignment: Alignment.bottomLeft,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16, bottom: 16),
                   child: _needs(c),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 16, bottom: 16),
+                  child: _more(c, context),
                 ),
               ),
             ],
