@@ -1,9 +1,7 @@
-import 'package:flutter/widgets.dart' show BuildContext;
 import 'package:get/get.dart';
 
 import '/domain/model/item.dart';
 import '/domain/service/item.dart';
-import '/ui/home/map/view.dart';
 
 class GroceryController extends GetxController {
   GroceryController(this._itemService);
@@ -12,8 +10,6 @@ class GroceryController extends GetxController {
   late final List<Item> items;
 
   final ItemService _itemService;
-
-  Future showMap(BuildContext context) => MapView.show(context: context);
 
   @override
   void onInit() {

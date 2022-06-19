@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '/router.dart';
-import '/ui/widget/notification/view.dart';
 import 'flowchart/view.dart';
 import 'grocery/checkout/view.dart';
 import 'grocery/view.dart';
@@ -11,6 +10,7 @@ import 'inventory/view.dart';
 import 'map/view.dart';
 import 'more/settings/view.dart';
 import 'more/view.dart';
+import 'park/view.dart';
 import 'room/view.dart';
 import 'wardrobe/view.dart';
 
@@ -50,52 +50,56 @@ class HomeRouterDelegate extends RouterDelegate<RouteConfiguration>
             child: GroceryCheckoutView(),
           ));
         }
-      } else if (route.startsWith(Routes.home)) {
+      } else if (route.startsWith(Routes.park)) {
+        pages.add(const TransitionPage(
+          key: ValueKey('ParkPage'),
+          name: Routes.park,
+          child: ParkView(),
+        ));
+      } else if (route == Routes.home) {
         pages.add(TransitionPage(
           key: const ValueKey('RoomPage'),
           name: Routes.home,
           child: RoomView(Get.find()),
         ));
+      } else if (route.startsWith(Routes.more)) {
+        pages.add(const TransitionPage(
+          key: ValueKey('MorePage'),
+          name: Routes.more,
+          child: MoreView(),
+        ));
 
-        if (route.startsWith(Routes.more)) {
-          pages.add(const TransitionPage(
-            key: ValueKey('MorePage'),
-            name: Routes.more,
-            child: MoreView(),
-          ));
-
-          if (route == Routes.settings) {
-            pages.add(const MaterialPage(
-              key: ValueKey('SettingsPage'),
-              name: Routes.settings,
-              child: SettingsView(),
-            ));
-          }
-        } else if (route == Routes.inventory) {
-          pages.add(const TransitionPage(
-            key: ValueKey('InventoryPage'),
-            name: Routes.inventory,
-            child: InventoryView(),
-          ));
-        } else if (route == Routes.wardrobe) {
-          pages.add(const TransitionPage(
-            key: ValueKey('WardrobePage'),
-            name: Routes.wardrobe,
-            child: WardrobeView(),
-          ));
-        } else if (route == Routes.flowchart) {
-          pages.add(const TransitionPage(
-            key: ValueKey('FlowchartPage'),
-            name: Routes.flowchart,
-            child: FlowchartView(),
-          ));
-        } else if (route == Routes.map) {
-          pages.add(const TransitionPage(
-            key: ValueKey('MapPage'),
-            name: Routes.map,
-            child: MapView(),
+        if (route == Routes.settings) {
+          pages.add(const MaterialPage(
+            key: ValueKey('SettingsPage'),
+            name: Routes.settings,
+            child: SettingsView(),
           ));
         }
+      } else if (route == Routes.inventory) {
+        pages.add(const TransitionPage(
+          key: ValueKey('InventoryPage'),
+          name: Routes.inventory,
+          child: InventoryView(),
+        ));
+      } else if (route == Routes.wardrobe) {
+        pages.add(const TransitionPage(
+          key: ValueKey('WardrobePage'),
+          name: Routes.wardrobe,
+          child: WardrobeView(),
+        ));
+      } else if (route == Routes.flowchart) {
+        pages.add(const TransitionPage(
+          key: ValueKey('FlowchartPage'),
+          name: Routes.flowchart,
+          child: FlowchartView(),
+        ));
+      } else if (route == Routes.map) {
+        pages.add(const TransitionPage(
+          key: ValueKey('MapPage'),
+          name: Routes.map,
+          child: MapView(),
+        ));
       }
     }
 
@@ -114,16 +118,14 @@ class HomeRouterDelegate extends RouterDelegate<RouteConfiguration>
 
   @override
   Widget build(BuildContext context) {
-    return NotificationOverlayView(
-      child: Navigator(
-        key: navigatorKey,
-        pages: _pages,
-        onPopPage: (route, result) {
-          _state.pop(route);
-          notifyListeners();
-          return route.didPop(result);
-        },
-      ),
+    return Navigator(
+      key: navigatorKey,
+      pages: _pages,
+      onPopPage: (route, result) {
+        _state.pop(route);
+        notifyListeners();
+        return route.didPop(result);
+      },
     );
   }
 

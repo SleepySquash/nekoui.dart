@@ -8,26 +8,6 @@ import 'controller.dart';
 class MapView extends StatelessWidget {
   const MapView({Key? key}) : super(key: key);
 
-  /// Displays a dialog with the provided [novel] above the current contents.
-  static Future<T?> show<T extends Object?>({required BuildContext context}) {
-    return showGeneralDialog(
-      context: context,
-      pageBuilder: (
-        BuildContext buildContext,
-        Animation<double> animation,
-        Animation<double> secondaryAnimation,
-      ) {
-        final CapturedThemes themes = InheritedTheme.capture(
-          from: context,
-          to: Navigator.of(context, rootNavigator: true).context,
-        );
-        return themes.wrap(const MapView());
-      },
-      barrierDismissible: false,
-      transitionDuration: 300.milliseconds,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return EscapePopper(
@@ -61,7 +41,7 @@ class MapView extends StatelessWidget {
                 Location(
                   'park',
                   icon: Icons.park,
-                  onTap: () {},
+                  onTap: router.park,
                 ),
                 Location(
                   'neko_science',

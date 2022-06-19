@@ -1,8 +1,9 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/router.dart';
 
+import '/router.dart';
+import '/ui/home/map/view.dart';
 import 'controller.dart';
 
 class GroceryView extends StatelessWidget {
@@ -55,7 +56,7 @@ class GroceryView extends StatelessWidget {
                   .toList(),
             ),
             floatingActionButton: FloatingActionButton(
-              onPressed: () => c.showMap(context),
+              onPressed: router.map,
               child: const Icon(Icons.map),
             ),
           );

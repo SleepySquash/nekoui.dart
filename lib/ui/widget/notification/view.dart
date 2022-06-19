@@ -20,26 +20,28 @@ class NotificationOverlayView extends StatelessWidget {
         builder: (context, e, animation) => _notification(e, animation),
       ),
       builder: (NotificationOverlayController c) {
-        return Stack(
-          children: [
-            child,
-            IgnorePointer(
-              child: Obx(() {
-                return Padding(
-                  padding:
-                      const EdgeInsets.only(top: 10, right: 10, bottom: 10),
-                  child: AnimatedList(
-                    key: c.listKey,
-                    shrinkWrap: true,
-                    initialItemCount: c.notifications.length,
-                    itemBuilder: (context, i, animation) {
-                      return _notification(c.notifications[i], animation);
-                    },
-                  ),
-                );
-              }),
-            ),
-          ],
+        return SafeArea(
+          child: Stack(
+            children: [
+              child,
+              IgnorePointer(
+                child: Obx(() {
+                  return Padding(
+                    padding:
+                        const EdgeInsets.only(top: 10, right: 10, bottom: 10),
+                    child: AnimatedList(
+                      key: c.listKey,
+                      shrinkWrap: true,
+                      initialItemCount: c.notifications.length,
+                      itemBuilder: (context, i, animation) {
+                        return _notification(c.notifications[i], animation);
+                      },
+                    ),
+                  );
+                }),
+              ),
+            ],
+          ),
         );
       },
     );

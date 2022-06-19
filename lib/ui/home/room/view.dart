@@ -4,8 +4,10 @@ import 'package:circular_menu/circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '/domain/model/neko.dart';
 import '/domain/service/neko.dart';
 import '/router.dart';
+import '/ui/home/neko/view.dart';
 import '/ui/widget/neko.dart';
 import 'controller.dart';
 
@@ -14,133 +16,9 @@ class RoomView extends StatelessWidget {
 
   final NekoService _neko;
 
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder(
-      init: RoomController(_neko),
-      builder: (RoomController c) {
-        return Scaffold(
-          backgroundColor: Colors.black,
-          body: Stack(
-            children: [
-              InteractiveViewer(
-                clipBehavior: Clip.none,
-                minScale: 1,
-                maxScale: 100,
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: Image.asset(
-                        'assets/images/room/room.png',
-                        isAntiAlias: false,
-                        filterQuality: FilterQuality.none,
-                      ),
-                    ),
-                    Center(
-                      child: GestureDetector(
-                        onTap: () => c.showNeko(context),
-                        child: SizedBox(
-                          width: 70,
-                          height: 70,
-                          child: NekoWidget(
-                            _neko,
-                            key: c.nekoKey,
-                            isPerson: false,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 16, bottom: 16),
-                  child: _needs(c),
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 16, bottom: 16),
-                  child: _more(c, context),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _more(RoomController c, BuildContext context) {
-    return CircularMenu(
-      key: c.fabKey,
-      alignment: Alignment.bottomRight,
-      toggleButtonBoxShadow: const [],
-      radius: 180,
-      startingAngleInRadian: pi,
-      endingAngleInRadian: 3 * pi / 2,
-      curve: Curves.ease,
-      reverseCurve: Curves.ease,
-      animationDuration: const Duration(milliseconds: 200),
-      items: [
-        CircularMenuItem(
-          icon: Icons.person,
-          color: Colors.teal,
-          enableBadge: true,
-          badgeColor: Colors.amber,
-          badgeLabel: '3',
-          badgeRadius: 10,
-          badgeTextColor: Colors.black,
-          badgeRightOffet: 5,
-          badgeTopOffet: 5,
-          boxShadow: const [],
-          onTap: () {
-            c.showNeko(context);
-            c.fabKey.currentState?.reverseAnimation();
-          },
-        ),
-        CircularMenuItem(
-          icon: Icons.warehouse,
-          boxShadow: const [],
-          onTap: () {
-            router.inventory();
-            c.fabKey.currentState?.reverseAnimation();
-          },
-        ),
-        CircularMenuItem(
-          icon: Icons.book,
-          boxShadow: const [],
-          onTap: () {
-            router.flowchart();
-            c.fabKey.currentState?.reverseAnimation();
-          },
-        ),
-        CircularMenuItem(
-          icon: Icons.map,
-          boxShadow: const [],
-          onTap: () {
-            router.map();
-            c.fabKey.currentState?.reverseAnimation();
-          },
-        ),
-        CircularMenuItem(
-          icon: Icons.more_horiz,
-          boxShadow: const [],
-          onTap: () {
-            router.more();
-            c.fabKey.currentState?.reverseAnimation();
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _needs(RoomController c) {
+  static Widget needs(Rx<Neko?> neko) {
     return Obx(() {
-      var needs = c.neko.value?.necessities;
+      var needs = neko.value?.necessities;
 
       Widget _need(IconData icon, int? value) {
         Color color = Colors.white;
@@ -187,5 +65,130 @@ class RoomView extends StatelessWidget {
         ],
       );
     });
+  }
+
+  static Widget more(BuildContext context, {GlobalKey? neko}) {
+    GlobalKey<CircularMenuState> fabKey = GlobalKey<CircularMenuState>();
+    return CircularMenu(
+      key: fabKey,
+      alignment: Alignment.bottomRight,
+      toggleButtonBoxShadow: const [],
+      radius: 180,
+      startingAngleInRadian: pi,
+      endingAngleInRadian: 3 * pi / 2,
+      curve: Curves.ease,
+      reverseCurve: Curves.ease,
+      animationDuration: const Duration(milliseconds: 200),
+      items: [
+        CircularMenuItem(
+          icon: Icons.person,
+          color: Colors.teal,
+          enableBadge: true,
+          badgeColor: Colors.amber,
+          badgeLabel: '3',
+          badgeRadius: 10,
+          badgeTextColor: Colors.black,
+          badgeRightOffet: 5,
+          badgeTopOffet: 5,
+          boxShadow: const [],
+          onTap: () {
+            NekoView.show(context, neko: neko);
+            fabKey.currentState?.reverseAnimation();
+          },
+        ),
+        CircularMenuItem(
+          icon: Icons.warehouse,
+          boxShadow: const [],
+          onTap: () {
+            router.inventory();
+            fabKey.currentState?.reverseAnimation();
+          },
+        ),
+        CircularMenuItem(
+          icon: Icons.book,
+          boxShadow: const [],
+          onTap: () {
+            router.flowchart();
+            fabKey.currentState?.reverseAnimation();
+          },
+        ),
+        CircularMenuItem(
+          icon: Icons.map,
+          boxShadow: const [],
+          onTap: () {
+            router.map();
+            fabKey.currentState?.reverseAnimation();
+          },
+        ),
+        CircularMenuItem(
+          icon: Icons.more_horiz,
+          boxShadow: const [],
+          onTap: () {
+            router.more();
+            fabKey.currentState?.reverseAnimation();
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder(
+      init: RoomController(_neko),
+      builder: (RoomController c) {
+        return Scaffold(
+          backgroundColor: Colors.black,
+          body: Stack(
+            children: [
+              InteractiveViewer(
+                clipBehavior: Clip.none,
+                minScale: 1,
+                maxScale: 100,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Image.asset(
+                        'assets/images/room/room.png',
+                        isAntiAlias: false,
+                        filterQuality: FilterQuality.none,
+                      ),
+                    ),
+                    Center(
+                      child: GestureDetector(
+                        onTap: () => NekoView.show(context, neko: c.nekoKey),
+                        child: SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: NekoWidget(
+                            _neko,
+                            key: c.nekoKey,
+                            isPerson: false,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16, bottom: 16),
+                  child: needs(c.neko),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 16, bottom: 16),
+                  child: more(context, neko: c.nekoKey),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

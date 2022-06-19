@@ -29,11 +29,11 @@ class Skill extends HiveObject {
       MapEntry(name, Skill(name, value: value, skills: skills));
 
   double get progress {
-    return (value - level * 100) / 100;
+    return (value.value - level * 100) / 100;
   }
 
   int get level {
-    return value ~/ 100;
+    return value.value ~/ 100;
   }
 }
 

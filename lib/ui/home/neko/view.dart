@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 
 import '/domain/model/skill.dart';
 import '/domain/model/trait.dart';
-import '/domain/service/neko.dart';
 import '/domain/service/skill.dart';
 import '/router.dart';
 import '/ui/novel/novel.dart';
@@ -17,25 +16,19 @@ import '/ui/widget/neko.dart';
 import 'controller.dart';
 
 class NekoView extends StatefulWidget {
-  const NekoView(
-    this._neko, {
-    Key? key,
-    this.globalKey,
-  }) : super(key: key);
+  const NekoView({Key? key, this.neko}) : super(key: key);
 
-  final GlobalKey? globalKey;
-
-  final NekoService _neko;
+  final GlobalKey? neko;
 
   /// Displays a dialog with the provided [gallery] above the current contents.
-  static Future<T?> show<T extends Object?>({
-    required BuildContext context,
-    required NekoView view,
+  static Future<T?> show<T extends Object?>(
+    BuildContext context, {
+    GlobalKey? neko,
   }) {
     return showGeneralDialog(
       context: context,
       pageBuilder: (
-        BuildContext buildContext,
+        BuildContext context,
         Animation<double> animation,
         Animation<double> secondaryAnimation,
       ) {
@@ -43,7 +36,7 @@ class NekoView extends StatefulWidget {
           from: context,
           to: Navigator.of(context, rootNavigator: true).context,
         );
-        return themes.wrap(view);
+        return themes.wrap(NekoView(neko: neko));
       },
       barrierDismissible: false,
       barrierColor: Colors.transparent,
@@ -129,6 +122,7 @@ class _NekoViewState extends State<NekoView>
             init: NekoController(Get.find()),
             builder: (NekoController c) {
               return Stack(
+                fit: StackFit.expand,
                 children: [
                   GestureDetector(
                     behavior: HitTestBehavior.translucent,
@@ -157,9 +151,7 @@ class _NekoViewState extends State<NekoView>
                         rect: tween().animate(curved),
                         child: FadeTransition(
                           opacity: fade,
-                          child: SafeArea(
-                            child: NekoWidget(widget._neko),
-                          ),
+                          child: SafeArea(child: NekoWidget(Get.find())),
                         ),
                       );
                     },
@@ -235,27 +227,27 @@ class _NekoViewState extends State<NekoView>
                 );
               },
             ),
-            BackdropBubble(
+            const BackdropBubble(
               text: 'Проголодалась?',
               icon: Icons.fastfood,
               color: Colors.orange,
             ),
-            BackdropBubble(
+            const BackdropBubble(
               text: 'Хочешь чем-нибудь заняться?',
               icon: Icons.people,
               color: Colors.pink,
             ),
-            BackdropBubble(
+            const BackdropBubble(
               text: 'Как тебе "Тортик"?',
               icon: Icons.fastfood,
               color: Colors.orange,
             ),
-            BackdropBubble(
+            const BackdropBubble(
               text: 'Про теорему Пифагора',
               icon: Icons.school,
               color: Colors.blueGrey,
             ),
-            BackdropBubble(
+            const BackdropBubble(
               text: 'Как ты любишь проводить время?',
               icon: Icons.chat,
               color: Colors.blue,
@@ -461,7 +453,7 @@ class _NekoViewState extends State<NekoView>
 
   /// Returns a [Rect] of an [Object] identified by the provided initial
   /// [GlobalKey].
-  Rect? _calculatePosition() => widget.globalKey?.globalPaintBounds;
+  Rect? _calculatePosition() => widget.neko?.globalPaintBounds;
 }
 
 extension GlobalKeyExtension on GlobalKey {

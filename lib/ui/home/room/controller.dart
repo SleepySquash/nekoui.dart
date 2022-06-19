@@ -30,22 +30,4 @@ class RoomController extends GetxController {
 
     super.onInit();
   }
-
-  Future showNeko(BuildContext context) {
-    return NekoView.show(
-      context: context,
-      view: NekoView(
-        _neko,
-        globalKey: nekoKey,
-      ),
-    );
-  }
-
-  Future showInventory(BuildContext context) =>
-      InventoryView.show(context: context);
-
-  Future showFlowchart(BuildContext context) =>
-      FlowchartView.show(context: context);
-
-  Future showMap(BuildContext context) => MapView.show(context: context);
 }

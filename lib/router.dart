@@ -19,6 +19,7 @@ import 'ui/auth/view.dart';
 import 'ui/home/view.dart';
 import 'ui/widget/context_menu/overlay.dart';
 import 'ui/widget/lifecycle_observer.dart';
+import 'ui/widget/notification/view.dart';
 import 'ui/worker/skill.dart';
 import 'util/scoped_dependencies.dart';
 import 'util/web/web_utils.dart';
@@ -36,6 +37,7 @@ class Routes {
   static const inventory = '/inventory';
   static const map = '/map';
   static const more = '/more';
+  static const park = '/park';
   static const settings = '/more/settings';
   static const wardrobe = '/wardrobe';
 }
@@ -289,16 +291,18 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
                 Offset(d.localPosition.dx, d.localPosition.dy),
             onExit: (d) => _state.mousePosition.value =
                 Offset(d.localPosition.dx, d.localPosition.dy),
-            child: Navigator(
-              key: navigatorKey,
-              pages: _pages,
-              onPopPage: (Route<dynamic> route, dynamic result) {
-                final bool success = route.didPop(result);
-                if (success) {
-                  _state.pop();
-                }
-                return success;
-              },
+            child: NotificationOverlayView(
+              child: Navigator(
+                key: navigatorKey,
+                pages: _pages,
+                onPopPage: (Route<dynamic> route, dynamic result) {
+                  final bool success = route.didPop(result);
+                  if (success) {
+                    _state.pop();
+                  }
+                  return success;
+                },
+              ),
             ),
           ),
         ),
@@ -331,22 +335,28 @@ extension RouteLinks on RouterState {
   void groceryCheckout() => go(Routes.groceryCheckout);
 
   /// Changes router location to the [Routes.flowchart] page.
-  void flowchart() => go(Routes.flowchart);
+  void flowchart({bool push = true}) =>
+      (push ? this.push : go)(Routes.flowchart);
 
   /// Changes router location to the [Routes.inventory] page.
-  void inventory() => go(Routes.inventory);
+  void inventory({bool push = true}) =>
+      (push ? this.push : go)(Routes.inventory);
 
   /// Changes router location to the [Routes.map] page.
-  void map() => go(Routes.map);
+  void map({bool push = true}) => (push ? this.push : go)(Routes.map);
 
   /// Changes router location to the [Routes.settings] page.
-  void settings() => go(Routes.settings);
+  void settings({bool push = false}) =>
+      (push ? this.push : go)(Routes.settings);
 
   /// Changes router location to the [Routes.more] page.
-  void more() => go(Routes.more);
+  void more({bool push = true}) => (push ? this.push : go)(Routes.more);
 
   /// Changes router location to the [Routes.wardrobe] page.
-  void wardrobe() => go(Routes.wardrobe);
+  void wardrobe({bool push = true}) => (push ? this.push : go)(Routes.wardrobe);
+
+  /// Changes router location to the [Routes.park] page.
+  void park() => go(Routes.park);
 }
 
 /// Extension adding helper methods to an [AppLifecycleState].
