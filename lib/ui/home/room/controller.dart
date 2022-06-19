@@ -5,9 +5,10 @@ import 'package:get/get.dart';
 import '/domain/model/neko.dart';
 import '/domain/service/neko.dart';
 import '/router.dart';
+import '/ui/home/flowchart/view.dart';
+import '/ui/home/inventory/view.dart';
 import '/ui/home/map/view.dart';
-import 'inventory/view.dart';
-import 'neko/view.dart';
+import '/ui/home/neko/view.dart';
 
 class RoomController extends GetxController {
   RoomController(this._neko);
@@ -42,6 +43,9 @@ class RoomController extends GetxController {
 
   Future showInventory(BuildContext context) =>
       InventoryView.show(context: context);
+
+  Future showFlowchart(BuildContext context) =>
+      FlowchartView.show(context: context);
 
   Future showMap(BuildContext context) => MapView.show(context: context);
 }

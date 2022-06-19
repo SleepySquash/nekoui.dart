@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '/domain/model/mbti.dart';
 import '/domain/model/necessities.dart';
 import '/domain/model/neko.dart';
+import '/domain/model/trait.dart';
 import 'adapters.dart';
 import 'base.dart';
 
@@ -16,11 +17,13 @@ class NekoHiveProvider extends HiveBaseProvider<Neko> {
 
   @override
   void registerAdapters() {
-    Hive.maybeRegisterAdapter(NekoAdapter());
-    Hive.maybeRegisterAdapter(NecessitiesAdapter());
-    Hive.maybeRegisterAdapter(RxStringAdapter());
-    Hive.maybeRegisterAdapter(RxIntAdapter());
     Hive.maybeRegisterAdapter(MBTIAdapter());
+    Hive.maybeRegisterAdapter(NecessitiesAdapter());
+    Hive.maybeRegisterAdapter(NekoAdapter());
+    Hive.maybeRegisterAdapter(RxAdapter());
+    Hive.maybeRegisterAdapter(RxIntAdapter());
+    Hive.maybeRegisterAdapter(RxStringAdapter());
+    Hive.maybeRegisterAdapter(TraitAdapter());
   }
 
   /// Puts the provided [Neko] to the [Hive].

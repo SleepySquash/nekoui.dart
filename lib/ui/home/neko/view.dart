@@ -6,11 +6,14 @@ import 'package:get/get.dart';
 import '/domain/model/skill.dart';
 import '/domain/model/trait.dart';
 import '/domain/service/neko.dart';
+import '/domain/service/skill.dart';
+import '/router.dart';
 import '/ui/novel/novel.dart';
 import '/ui/widget/backdrop_button.dart';
 import '/ui/widget/conditional_backdrop.dart';
+import '/ui/widget/delayed/delayed_slide.dart';
+import '/ui/widget/escape_popper.dart';
 import '/ui/widget/neko.dart';
-
 import 'controller.dart';
 
 class NekoView extends StatefulWidget {
@@ -45,6 +48,7 @@ class NekoView extends StatefulWidget {
       barrierDismissible: false,
       barrierColor: Colors.transparent,
       transitionDuration: Duration.zero,
+      useRootNavigator: false,
     );
   }
 
@@ -96,72 +100,77 @@ class _NekoViewState extends State<NekoView>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (_firstLayout) {
-          _pop = Navigator.of(context).pop;
-          _firstLayout = false;
-        }
+    return EscapePopper(
+      onEscape: _dismiss,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (_firstLayout) {
+            _pop = Navigator.of(context).pop;
+            _firstLayout = false;
+          }
 
-        var curved = CurvedAnimation(
-          parent: _fading,
-          curve: Curves.ease,
-          reverseCurve: Curves.ease,
-        );
+          var curved = CurvedAnimation(
+            parent: _fading,
+            curve: Curves.ease,
+            reverseCurve: Curves.ease,
+          );
 
-        var fade = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-          parent: _fading,
-          curve: const Interval(0, 0.3, curve: Curves.ease),
-        ));
+          var fade = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+            parent: _fading,
+            curve: const Interval(0, 0.3, curve: Curves.ease),
+          ));
 
-        RelativeRectTween tween() => RelativeRectTween(
-              begin: RelativeRect.fromSize(_bounds, constraints.biggest),
-              end: RelativeRect.fill,
-            );
+          RelativeRectTween tween() => RelativeRectTween(
+                begin: RelativeRect.fromSize(_bounds, constraints.biggest),
+                end: RelativeRect.fill,
+              );
 
-        return GetBuilder(
-          init: NekoController(Get.find()),
-          builder: (NekoController c) {
-            return Stack(
-              children: [
-                GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    if (c.screen.value == null) {
-                      _dismiss();
-                    } else {
-                      c.screen.value = null;
-                    }
-                  },
-                  child: AnimatedBuilder(
-                    animation: _fading,
-                    builder: (context, child) => ConditionalBackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: 0.1 + 15 * _fading.value,
-                        sigmaY: 0.1 + 15 * _fading.value,
+          return GetBuilder(
+            init: NekoController(Get.find()),
+            builder: (NekoController c) {
+              return Stack(
+                children: [
+                  GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
+                      if (c.screen.value == null) {
+                        _dismiss();
+                      } else {
+                        c.screen.value = null;
+                      }
+                    },
+                    child: AnimatedBuilder(
+                      animation: _fading,
+                      builder: (context, child) => ConditionalBackdropFilter(
+                        filter: ImageFilter.blur(
+                          sigmaX: 0.1 + 15 * _fading.value,
+                          sigmaY: 0.1 + 15 * _fading.value,
+                        ),
+                        child: Container(),
                       ),
-                      child: Container(),
                     ),
                   ),
-                ),
-                AnimatedBuilder(
-                  animation: _fading,
-                  builder: (context, child) {
-                    return PositionedTransition(
-                      rect: tween().animate(curved),
-                      child: FadeTransition(
-                        opacity: fade,
-                        child: NekoWidget(widget._neko),
-                      ),
-                    );
-                  },
-                ),
-                ..._buildInterface(c),
-              ],
-            );
-          },
-        );
-      },
+                  AnimatedBuilder(
+                    animation: _fading,
+                    builder: (context, child) {
+                      return PositionedTransition(
+                        rect: tween().animate(curved),
+                        child: FadeTransition(
+                          opacity: fade,
+                          child: SafeArea(
+                            child: NekoWidget(widget._neko),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  ..._buildInterface(c),
+                ],
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -204,13 +213,6 @@ class _NekoViewState extends State<NekoView>
               color: Colors.blueGrey,
               onTap: () {
                 if ((c.neko.value?.traits[Traits.loyalty.name]?.value ?? 0) >=
-                    100) {
-                  // No-op.
-                }
-
-                if ((c.neko.value?.skills[Skills.drawing.name]
-                            ?.skills?[DrawingSkills.anatomy.name]?.value ??
-                        0) >=
                     100) {
                   // No-op.
                 }
@@ -264,7 +266,8 @@ class _NekoViewState extends State<NekoView>
 
           List<Widget> rows = [];
 
-          for (var e in topics) {
+          for (int i = 0; i < topics.length; ++i) {
+            var e = topics[i];
             rows.add(
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -313,59 +316,99 @@ class _NekoViewState extends State<NekoView>
           );
 
         default:
+          Widget _animated(Widget child, [int i = 0]) {
+            return AnimatedDelayedSlide(
+              duration: Duration(milliseconds: 400 + 100 * i),
+              child: child,
+            );
+          }
+
           return Align(
             alignment: Alignment.centerRight,
             child: Padding(
               padding: const EdgeInsets.only(right: 16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Flexible(
-                    child: BackdropIconButton(
-                      icon: Icons.help,
-                      onTap: () {},
+                    child: _animated(
+                      BackdropIconButton(
+                        icon: Icons.help,
+                        text: 'Просьба',
+                        onTap: () {
+                          Get.find<SkillService>().add(
+                            [Skills.drawing.name, DrawingSkills.anatomy.name],
+                            10,
+                          );
+                        },
+                      ),
+                      0,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 15),
                   Flexible(
-                    child: BackdropIconButton(
-                      icon: Icons.chat_rounded,
-                      onTap: () => c.screen.value = NekoViewScreen.talk,
+                    child: _animated(
+                      BackdropIconButton(
+                        icon: Icons.chat_rounded,
+                        text: 'Поговорить',
+                        onTap: () => c.screen.value = NekoViewScreen.talk,
+                      ),
+                      1,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 15),
                   Flexible(
-                    child: BackdropIconButton(
-                      icon: Icons.attractions,
-                      onTap: () {},
+                    child: _animated(
+                      BackdropIconButton(
+                        icon: Icons.attractions,
+                        text: 'Занятие',
+                        onTap: () {},
+                      ),
+                      2,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 15),
                   Flexible(
-                    child: BackdropIconButton(
-                      icon: Icons.handshake_rounded,
-                      onTap: () {
-                        Novel.show(
-                          context: context,
-                          scenario: Scenario(
-                            [
-                              ScenarioAddLine(
-                                Background('park.jpg'),
-                                wait: false,
-                              ),
-                              ScenarioAddLine(Character('person.png')),
-                              ScenarioAddLine(Dialogue(
-                                by: 'Vanilla',
-                                text: 'Hello, I am Vanilla!',
-                              )),
-                              ScenarioAddLine(Dialogue(
-                                by: 'Vanilla',
-                                text: 'And you?',
-                              )),
-                            ],
-                          ),
-                        );
-                      },
+                    child: _animated(
+                      BackdropIconButton(
+                        icon: Icons.handshake_rounded,
+                        text: 'Действие',
+                        onTap: () {
+                          Novel.show(
+                            context: context,
+                            scenario: Scenario(
+                              [
+                                ScenarioAddLine(
+                                  Background('park.jpg'),
+                                  wait: false,
+                                ),
+                                ScenarioAddLine(Character('person.png')),
+                                ScenarioAddLine(Dialogue(
+                                  by: 'Vanilla',
+                                  text: 'Hello, I am Vanilla!',
+                                )),
+                                ScenarioAddLine(Dialogue(
+                                  by: 'Vanilla',
+                                  text: 'And you?',
+                                )),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      3,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Flexible(
+                    child: _animated(
+                      BackdropIconButton(
+                        icon: Icons.face,
+                        text: 'Гардероб',
+                        onTap: router.wardrobe,
+                      ),
+                      4,
                     ),
                   ),
                 ],
@@ -392,10 +435,10 @@ class _NekoViewState extends State<NekoView>
         child: Align(
           alignment: Alignment.bottomRight,
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 37, right: 37),
+            padding: const EdgeInsets.only(bottom: 16, right: 16),
             child: Obx(
               () => FloatingActionButton(
-                mini: true,
+                mini: false,
                 onPressed: c.screen.value == null
                     ? _dismiss
                     : () => c.screen.value = null,

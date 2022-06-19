@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-import '/router.dart';
 import '/domain/service/auth.dart';
+import '/main.dart';
+import '/router.dart';
 
 class AuthController extends GetxController {
   AuthController(this._authService);
@@ -19,4 +21,6 @@ class AuthController extends GetxController {
     await _authService.register();
     router.home();
   }
+
+  Future<void> clean() => Hive.clean('hive');
 }

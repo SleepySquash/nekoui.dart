@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nekoui/util/message_popup.dart';
 
 import 'controller.dart';
 
@@ -16,14 +17,32 @@ class AuthView extends StatelessWidget {
             : Scaffold(
                 body: Center(
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
+                      const SizedBox(height: 10),
+                      const Spacer(),
                       const Text('NekoUI'),
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: c.register,
-                        child: const Text('Play'),
+                        child: const Text(
+                          'Play',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
+                      const Spacer(),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (await MessagePopup.alert('Are you sure?') ==
+                              true) {
+                            c.clean();
+                          }
+                        },
+                        child: const Text(
+                          'Clear cache',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),

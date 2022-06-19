@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '/domain/service/neko.dart';
+import '/router.dart';
 import '/ui/widget/neko.dart';
 import 'controller.dart';
 
@@ -105,7 +106,7 @@ class RoomView extends StatelessWidget {
           icon: Icons.warehouse,
           boxShadow: const [],
           onTap: () {
-            c.showInventory(context);
+            router.inventory();
             c.fabKey.currentState?.reverseAnimation();
           },
         ),
@@ -113,6 +114,7 @@ class RoomView extends StatelessWidget {
           icon: Icons.book,
           boxShadow: const [],
           onTap: () {
+            router.flowchart();
             c.fabKey.currentState?.reverseAnimation();
           },
         ),
@@ -120,14 +122,15 @@ class RoomView extends StatelessWidget {
           icon: Icons.map,
           boxShadow: const [],
           onTap: () {
-            c.showMap(context);
+            router.map();
             c.fabKey.currentState?.reverseAnimation();
           },
         ),
         CircularMenuItem(
-          icon: Icons.settings,
+          icon: Icons.more_horiz,
           boxShadow: const [],
           onTap: () {
+            router.more();
             c.fabKey.currentState?.reverseAnimation();
           },
         ),
@@ -177,7 +180,8 @@ class RoomView extends StatelessWidget {
         children: [
           _need(Icons.fastfood, needs?.hunger.value),
           _need(Icons.local_drink_rounded, needs?.thirst.value),
-          _need(Icons.invert_colors_rounded, needs?.cleanness.value),
+          _need(Icons.wc, needs?.naturalNeed.value),
+          _need(Icons.shower, needs?.cleanness.value),
           _need(Icons.bedtime_rounded, needs?.energy.value),
           _need(Icons.chat_bubble_rounded, needs?.social.value),
         ],

@@ -1,26 +1,47 @@
+import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import '../model_type_id.dart';
-
-part 'skill.g.dart';
+import '/util/obs/obs.dart';
 
 /// Ability to do something.
-@HiveType(typeId: ModelTypeId.skill)
-class Skill {
+class Skill extends HiveObject {
   Skill(
-    this.value, {
-    this.skills,
-  });
+    this.name, {
+    int value = 0,
+    Map<String, Skill>? skills,
+  })  : value = RxInt(value),
+        skills = skills == null ? null : RxObsMap(skills);
 
   @HiveField(0)
-  int value;
+  String name;
 
   @HiveField(1)
-  Map<String, Skill>? skills;
+  RxInt value;
+
+  @HiveField(2)
+  RxObsMap<String, Skill>? skills;
+
+  static MapEntry<String, Skill> entry(
+    String name, {
+    int value = 0,
+    Map<String, Skill>? skills,
+  }) =>
+      MapEntry(name, Skill(name, value: value, skills: skills));
+
+  double get progress {
+    return (value - level * 100) / 100;
+  }
+
+  int get level {
+    return value ~/ 100;
+  }
 }
 
 /// Available [Skill]s list.
 enum Skills {
+  /// [BasicSkills].
+  basic,
+
   /// [DrawingSkills].
   drawing,
 
@@ -40,6 +61,15 @@ enum Skills {
   science,
 
   photography,
+}
+
+/// [Skills.basic] skills subset.
+enum BasicSkills {
+  eating,
+  naturalNeed,
+  showering,
+  sleeping,
+  talking,
 }
 
 /// [Skills.drawing] skills subset.

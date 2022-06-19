@@ -1,16 +1,25 @@
+import 'dart:async' show Timer;
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/widgets.dart' show IconData;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/services.dart';
 
+import '../disposable_service.dart';
+import '/util/obs/obs.dart';
 import '/util/platform_utils.dart';
 import '/util/web/web_utils.dart';
-import '../disposable_service.dart';
 
 /// Service responsible for notifications management.
 class NotificationService extends DisposableService {
+  final RxObsList<LocalNotification> notifications = RxObsList();
+
+  static const Duration notificationDuration = Duration(seconds: 10);
+
+  final List<Timer> _timers = [];
+
   /// Instance of a [FlutterLocalNotificationsPlugin] used to send notifications
   /// on non-web platforms.
   FlutterLocalNotificationsPlugin? _plugin;
@@ -110,6 +119,18 @@ class NotificationService extends DisposableService {
     }
   }
 
+  void notify(LocalNotification notification) {
+    notifications.add(notification);
+
+    Timer? timer;
+    timer = Timer(notificationDuration, () {
+      notifications.remove(notification);
+      _timers.remove(timer);
+    });
+
+    _timers.add(timer);
+  }
+
   /// Initializes the [_audioPlayer].
   Future<void> _initAudio() async {
     try {
@@ -119,4 +140,16 @@ class NotificationService extends DisposableService {
       _audioPlayer = null;
     }
   }
+}
+
+class LocalNotification {
+  const LocalNotification({
+    this.title,
+    this.text,
+    this.icon,
+  });
+
+  final String? title;
+  final String? text;
+  final IconData? icon;
 }

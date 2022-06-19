@@ -23,8 +23,7 @@ class NekoAdapter extends TypeAdapter<Neko> {
       weight: fields[3] as RxInt?,
       necessities: fields[4] as Necessities?,
       affinity: fields[5] as RxInt?,
-      mbti: fields[6] as Rx<MBTI>?,
-      skills: (fields[8] as Map?)?.cast<String, Skill>(),
+      mbti: fields[6] as MBTI?,
       traits: (fields[7] as Map?)?.cast<String, Trait>(),
     );
   }
@@ -32,7 +31,7 @@ class NekoAdapter extends TypeAdapter<Neko> {
   @override
   void write(BinaryWriter writer, Neko obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -48,9 +47,7 @@ class NekoAdapter extends TypeAdapter<Neko> {
       ..writeByte(6)
       ..write(obj.mbti)
       ..writeByte(7)
-      ..write(obj.traits)
-      ..writeByte(8)
-      ..write(obj.skills);
+      ..write(obj.traits);
   }
 
   @override

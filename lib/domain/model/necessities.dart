@@ -13,6 +13,8 @@ class Necessities extends HiveObject {
     this.maxHunger = 100,
     RxInt? thirst,
     this.maxThirst = 100,
+    RxInt? naturalNeed,
+    this.maxNaturalNeed = 100,
     RxInt? cleanness,
     this.maxCleanness = 100,
     RxInt? energy,
@@ -21,6 +23,7 @@ class Necessities extends HiveObject {
     this.maxSocial = 100,
   })  : hunger = hunger ?? RxInt(0),
         thirst = thirst ?? RxInt(0),
+        naturalNeed = naturalNeed ?? RxInt(0),
         cleanness = cleanness ?? RxInt(0),
         energy = energy ?? RxInt(0),
         social = social ?? RxInt(0);
@@ -39,25 +42,32 @@ class Necessities extends HiveObject {
   @HiveField(3)
   int maxThirst;
 
-  /// Cleanness component of these [Necessities].
+  /// Natural need component of these [Necessities].
   @HiveField(4)
-  final RxInt cleanness;
+  final RxInt naturalNeed;
 
   @HiveField(5)
+  int maxNaturalNeed;
+
+  /// Cleanness component of these [Necessities].
+  @HiveField(6)
+  final RxInt cleanness;
+
+  @HiveField(7)
   int maxCleanness;
 
   /// Energy component of these [Necessities].
-  @HiveField(6)
+  @HiveField(8)
   final RxInt energy;
 
-  @HiveField(7)
+  @HiveField(9)
   int maxEnergy;
 
   /// Social need component of these [Necessities].
-  @HiveField(8)
+  @HiveField(10)
   final RxInt social;
 
-  @HiveField(9)
+  @HiveField(11)
   int maxSocial;
 
   /// List of all the [Necessities].

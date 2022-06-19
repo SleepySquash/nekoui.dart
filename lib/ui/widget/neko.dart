@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rive/components.dart';
 import 'package:rive/rive.dart';
 
 import '/domain/service/neko.dart';
@@ -20,11 +21,21 @@ class NekoWidget extends StatefulWidget {
 
 class _NekoWidgetState extends State<NekoWidget> {
   late RiveAnimationController _controller;
+  Node? faceControl;
 
   @override
   void initState() {
     super.initState();
     _controller = SimpleAnimation('Idle1');
+    // Worker? mousePositionWorker;
+    // mousePositionWorker = ever(router.mousePosition, (Offset? offset) {
+    //   if (mounted && offset != null && faceControl != null) {
+    //     setState(() {
+    //       faceControl?.x = offset.dx;
+    //       faceControl?.y = offset.dy;
+    //     });
+    //   }
+    // });
   }
 
   @override
@@ -64,9 +75,11 @@ class _NekoWidgetState extends State<NekoWidget> {
       );
     } else {
       return RiveAnimation.asset(
-        'assets/rive/chibi.riv',
+        'assets/rive/chibi1.riv',
         controllers: [_controller],
-        onInit: (_) => setState(() {}),
+        onInit: (a) {
+          faceControl = a.component<Node>('FaceControl');
+        },
       );
     }
   }

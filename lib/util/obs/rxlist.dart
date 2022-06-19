@@ -88,6 +88,13 @@ class RxObsList<E> extends ListMixin<E>
   }
 
   @override
+  bool remove(Object? element) {
+    bool result = _value.remove(element);
+    refresh();
+    return result;
+  }
+
+  @override
   void removeWhere(bool Function(E element) test) {
     _value.removeWhere(test);
     refresh();

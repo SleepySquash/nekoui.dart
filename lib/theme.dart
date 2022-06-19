@@ -20,6 +20,7 @@ class Themes {
         : SystemUiOverlayStyle.light);
 
     return ThemeData.light().copyWith(
+        useMaterial3: true,
         colorScheme: colors,
         scaffoldBackgroundColor: colors.background,
         appBarTheme: ThemeData.light().appBarTheme.copyWith(

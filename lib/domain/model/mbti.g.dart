@@ -8,7 +8,7 @@ part of 'mbti.dart';
 
 class MBTIAdapter extends TypeAdapter<MBTI> {
   @override
-  final int typeId = 19;
+  final int typeId = 13;
 
   @override
   MBTI read(BinaryReader reader) {
@@ -17,10 +17,10 @@ class MBTIAdapter extends TypeAdapter<MBTI> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return MBTI(
-      ei: fields[0] as int,
-      sn: fields[1] as int,
-      tf: fields[2] as int,
-      jp: fields[3] as int,
+      ei: fields[0] as RxInt?,
+      sn: fields[1] as RxInt?,
+      tf: fields[2] as RxInt?,
+      jp: fields[3] as RxInt?,
     );
   }
 

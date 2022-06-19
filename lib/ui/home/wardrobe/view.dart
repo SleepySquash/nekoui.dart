@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '/ui/widget/escape_popper.dart';
 import 'controller.dart';
 
 class WardrobeView extends StatelessWidget {
@@ -11,7 +12,14 @@ class WardrobeView extends StatelessWidget {
     return GetBuilder(
       init: WardrobeController(),
       builder: (WardrobeController c) {
-        return Scaffold();
+        return EscapePopper(
+          child: Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: Navigator.of(context).pop,
+              child: const Icon(Icons.close),
+            ),
+          ),
+        );
       },
     );
   }

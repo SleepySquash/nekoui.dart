@@ -3,17 +3,23 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'domain/repository/neko.dart';
+import 'domain/repository/skill.dart';
 import 'domain/service/auth.dart';
 import 'domain/service/item.dart';
 import 'domain/service/neko.dart';
+import 'domain/service/skill.dart';
 import 'provider/hive/item.dart';
 import 'provider/hive/neko.dart';
+import 'provider/hive/skill.dart';
 import 'store/item.dart';
 import 'store/neko.dart';
+import 'store/skill.dart';
 import 'ui/auth/view.dart';
 import 'ui/home/view.dart';
 import 'ui/widget/context_menu/overlay.dart';
 import 'ui/widget/lifecycle_observer.dart';
+import 'ui/worker/skill.dart';
 import 'util/scoped_dependencies.dart';
 import 'util/web/web_utils.dart';
 
@@ -23,9 +29,15 @@ late RouterState router;
 /// Application routes names.
 class Routes {
   static const auth = '/';
+  static const flowchart = '/flowchart';
   static const grocery = '/grocery';
   static const groceryCheckout = '/grocery/checkout';
   static const home = '/';
+  static const inventory = '/inventory';
+  static const map = '/map';
+  static const more = '/more';
+  static const settings = '/more/settings';
+  static const wardrobe = '/wardrobe';
 }
 
 /// Application's router state.
@@ -55,6 +67,9 @@ class RouterState extends ChangeNotifier {
   /// Reactive [AppLifecycleState].
   final Rx<AppLifecycleState> lifecycle =
       Rx<AppLifecycleState>(AppLifecycleState.resumed);
+
+  /// Last [Offset] of the pointer determined in [MouseRegion].
+  final Rx<Offset?> mousePosition = Rx<Offset?>(null);
 
   /// Reactive title prefix of the current browser tab.
   final RxnString prefix = RxnString(null);
@@ -97,13 +112,16 @@ class RouterState extends ChangeNotifier {
   ///
   /// If [routes] contain only one record, then removes segments of that record
   /// by `/` if any, otherwise replaces it with [Routes.home].
-  void pop() {
+  void pop([Route? route]) {
     if (_routes.isNotEmpty) {
       if (_routes.length == 1) {
-        String last = _routes.last.split('/').last;
-        _routes.last = _routes.last.replaceFirst('/$last', '');
-        if (_routes.last == '') {
-          _routes.last = Routes.home;
+        String name = route?.settings.name ?? _routes.first;
+        if (_routes.first == name) {
+          String last = _routes.last.split('/').last;
+          _routes.last = _routes.last.replaceFirst('/$last', '');
+          if (_routes.last == '') {
+            _routes.last = Routes.home;
+          }
         }
       } else {
         _routes.removeLast();
@@ -228,14 +246,21 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
 
             await deps.put(NekoHiveProvider()).init();
             await deps.put(ItemHiveProvider()).init();
+            await deps.put(SkillHiveProvider()).init();
 
-            NekoRepository nekoRepository =
+            AbstractSkillRepository skillRepository =
+                deps.put(SkillRepository(Get.find()));
+            SkillService skillService = deps.put(SkillService(skillRepository));
+
+            AbstractNekoRepository nekoRepository =
                 deps.put(NekoRepository(Get.find()));
             deps.put(NekoService(nekoRepository));
 
             ItemRepository itemRepository =
                 deps.put(ItemRepository(Get.find()));
             deps.put(ItemService(itemRepository));
+
+            deps.put(SkillWorker(skillService, Get.find()));
 
             return deps;
           },
@@ -256,16 +281,25 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
   Widget build(BuildContext context) => LifecycleObserver(
         didChangeAppLifecycleState: (v) => _state.lifecycle.value = v,
         child: ContextMenuOverlay(
-          child: Navigator(
-            key: navigatorKey,
-            pages: _pages,
-            onPopPage: (Route<dynamic> route, dynamic result) {
-              final bool success = route.didPop(result);
-              if (success) {
-                _state.pop();
-              }
-              return success;
-            },
+          child: MouseRegion(
+            opaque: false,
+            onEnter: (d) => _state.mousePosition.value =
+                Offset(d.localPosition.dx, d.localPosition.dy),
+            onHover: (d) => _state.mousePosition.value =
+                Offset(d.localPosition.dx, d.localPosition.dy),
+            onExit: (d) => _state.mousePosition.value =
+                Offset(d.localPosition.dx, d.localPosition.dy),
+            child: Navigator(
+              key: navigatorKey,
+              pages: _pages,
+              onPopPage: (Route<dynamic> route, dynamic result) {
+                final bool success = route.didPop(result);
+                if (success) {
+                  _state.pop();
+                }
+                return success;
+              },
+            ),
           ),
         ),
       );
@@ -295,6 +329,24 @@ extension RouteLinks on RouterState {
 
   /// Changes router location to the [Routes.groceryCheckout] page.
   void groceryCheckout() => go(Routes.groceryCheckout);
+
+  /// Changes router location to the [Routes.flowchart] page.
+  void flowchart() => go(Routes.flowchart);
+
+  /// Changes router location to the [Routes.inventory] page.
+  void inventory() => go(Routes.inventory);
+
+  /// Changes router location to the [Routes.map] page.
+  void map() => go(Routes.map);
+
+  /// Changes router location to the [Routes.settings] page.
+  void settings() => go(Routes.settings);
+
+  /// Changes router location to the [Routes.more] page.
+  void more() => go(Routes.more);
+
+  /// Changes router location to the [Routes.wardrobe] page.
+  void wardrobe() => go(Routes.wardrobe);
 }
 
 /// Extension adding helper methods to an [AppLifecycleState].

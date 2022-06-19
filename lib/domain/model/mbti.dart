@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 
 import '../model_type_id.dart';
@@ -15,27 +16,30 @@ enum Temperament {
 @HiveType(typeId: ModelTypeId.mbti)
 class MBTI {
   MBTI({
-    this.ei = 0,
-    this.sn = 0,
-    this.tf = 0,
-    this.jp = 0,
-  });
+    RxInt? ei,
+    RxInt? sn,
+    RxInt? tf,
+    RxInt? jp,
+  })  : ei = ei ?? 0.obs,
+        sn = sn ?? 0.obs,
+        tf = tf ?? 0.obs,
+        jp = jp ?? 0.obs;
 
   /// Extroversion - Introversion.
   @HiveField(0)
-  int ei;
+  RxInt ei;
 
   /// Sensing - Intuition.
   @HiveField(1)
-  int sn;
+  RxInt sn;
 
   /// Thinking - Feeling.
   @HiveField(2)
-  int tf;
+  RxInt tf;
 
   /// Judging - Perception.
   @HiveField(3)
-  int jp;
+  RxInt jp;
 
   /// Returns [Temperament] approximation of this [MBTI].
   Temperament get temperament {

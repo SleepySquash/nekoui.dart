@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 
 import '../disposable_service.dart';
-import '/domain/repository/neko.dart';
 import '/domain/model/item.dart';
 import '/domain/model/neko.dart';
+import '/domain/repository/neko.dart';
 
 /// Service responsible for [Neko]'s state management.
 class NekoService extends DisposableService {

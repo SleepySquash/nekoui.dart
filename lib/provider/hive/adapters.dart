@@ -8,7 +8,7 @@ class RxAdapter<T> extends TypeAdapter<Rx<T>> {
   final typeId = ModelTypeId.rx;
 
   @override
-  Rx<T> read(BinaryReader reader) => Rx<T>(reader.read());
+  Rx<T> read(BinaryReader reader) => Rx<T>(reader.read() as T);
 
   @override
   void write(BinaryWriter writer, Rx<T> obj) => writer.write(obj.value);

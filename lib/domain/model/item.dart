@@ -1,12 +1,8 @@
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import '../model_type_id.dart';
-
-part 'item.g.dart';
-
 abstract class Item extends HiveObject {
-  Item(this.count);
+  Item(int count) : count = RxInt(count);
 
   /// Unique [String] identifying this [Item].
   String get id;
@@ -15,7 +11,6 @@ abstract class Item extends HiveObject {
   String get asset => 'assets/images/item/$id.png';
 
   /// Amount of this [Item].
-  @HiveField(0)
   final RxInt count;
 }
 
@@ -36,8 +31,6 @@ mixin Drinkable implements Consumable {
 mixin WearableMixin on Item {}
 mixin UseableMixin on Item {}
 
-// TODO: Hive types are only up to 223, so do not use them like that.
-@HiveType(typeId: ModelTypeId.cupcakeItem)
 class CupcakeItem extends Item with Eatable {
   CupcakeItem(super.count);
 
@@ -48,7 +41,6 @@ class CupcakeItem extends Item with Eatable {
   int get hunger => 10;
 }
 
-@HiveType(typeId: ModelTypeId.donutItem)
 class DonutItem extends Item with Eatable {
   DonutItem(super.count);
 
@@ -59,7 +51,6 @@ class DonutItem extends Item with Eatable {
   int get hunger => 10;
 }
 
-@HiveType(typeId: ModelTypeId.cakeItem)
 class CakeItem extends Item with Eatable {
   CakeItem(super.count);
 
@@ -70,7 +61,6 @@ class CakeItem extends Item with Eatable {
   int get hunger => 50;
 }
 
-@HiveType(typeId: ModelTypeId.icecreamItem)
 class IcecreamItem extends Item with Eatable, Drinkable {
   IcecreamItem(super.count);
 
@@ -84,7 +74,6 @@ class IcecreamItem extends Item with Eatable, Drinkable {
   int get thirst => 1;
 }
 
-@HiveType(typeId: ModelTypeId.waterBottleItem)
 class WaterBottleItem extends Item with Drinkable {
   WaterBottleItem(super.count);
 

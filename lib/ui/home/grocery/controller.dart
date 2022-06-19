@@ -18,11 +18,11 @@ class GroceryController extends GetxController {
   @override
   void onInit() {
     items = [
-      CupcakeItem(1.obs),
-      DonutItem(1.obs),
-      IcecreamItem(1.obs),
-      CakeItem(1.obs),
-      WaterBottleItem(1.obs),
+      CupcakeItem(1),
+      DonutItem(1),
+      IcecreamItem(1),
+      CakeItem(1),
+      WaterBottleItem(1),
     ];
 
     super.onInit();

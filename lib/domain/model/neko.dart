@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:nekoui/domain/model/skill.dart';
 
 import '../model_type_id.dart';
+import '/util/obs/obs.dart';
 import 'mbti.dart';
 import 'mood.dart';
 import 'necessities.dart';
@@ -20,8 +20,7 @@ class Neko extends HiveObject {
     RxInt? weight,
     Necessities? necessities,
     RxInt? affinity,
-    Rx<MBTI>? mbti,
-    Map<String, Skill>? skills,
+    MBTI? mbti,
     Map<String, Trait>? traits,
   })  : name = name ?? RxString('Vanilla'),
         age = age ?? 3.obs,
@@ -29,9 +28,8 @@ class Neko extends HiveObject {
         weight = weight ?? 10.obs,
         necessities = necessities ?? Necessities(),
         affinity = affinity ?? 0.obs,
-        mbti = mbti ?? MBTI().obs,
-        skills = RxMap(skills ?? {}),
-        traits = RxMap(traits ?? {}) {
+        mbti = mbti ?? MBTI(),
+        traits = RxObsMap(traits ?? {}) {
     if (this.necessities.areSatisfied) {
       mood = Rx(Mood.neutral);
     } else {
@@ -65,13 +63,10 @@ class Neko extends HiveObject {
 
   /// `Myers–Briggs Type Indicator` (MBTI) of this [Neko].
   @HiveField(6)
-  final Rx<MBTI> mbti;
+  final MBTI mbti;
 
   @HiveField(7)
-  final RxMap<String, Trait> traits;
-
-  @HiveField(8)
-  final RxMap<String, Skill> skills;
+  final RxObsMap<String, Trait> traits;
 
   /// Reactive [Mood] of this [Neko].
   late final Rx<Mood> mood;

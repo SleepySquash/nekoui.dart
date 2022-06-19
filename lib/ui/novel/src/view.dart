@@ -3,10 +3,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/theme.dart';
-import 'package:nekoui/ui/novel/src/widget/animated_appearence.dart';
-import 'package:nekoui/ui/widget/conditional_backdrop.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
+import '/ui/widget/conditional_backdrop.dart';
+import '/ui/widget/delayed/delayed_opacity.dart';
+import '/util/extension_utils.dart';
 import 'controller.dart';
 import 'model/object.dart';
 import 'model/scenario.dart';
@@ -69,9 +70,7 @@ class Novel extends StatelessWidget {
   Widget _buildObject(NovelController c, NovelObject e) {
     if (e is Background) {
       return Positioned.fill(
-        child: AnimatedAppearance(
-          beginOpacity: 0,
-          endOpacity: 1,
+        child: AnimatedDelayedOpacity(
           duration: e.duration,
           onEnd: e.unlock,
           child: Image(
@@ -82,9 +81,7 @@ class Novel extends StatelessWidget {
       );
     } else if (e is Character) {
       return Positioned.fill(
-        child: AnimatedAppearance(
-          beginOpacity: 0,
-          endOpacity: 1,
+        child: AnimatedDelayedOpacity(
           duration: e.duration,
           onEnd: e.unlock,
           child: Image(
@@ -97,85 +94,97 @@ class Novel extends StatelessWidget {
       return LayoutBuilder(
         key: const Key('Dialog'),
         builder: (context, constraints) {
+          const Color outline = Color(0xFF894B02);
+
           return Align(
             alignment: Alignment.bottomCenter,
-            child: AnimatedAppearance(
-              beginOpacity: 0,
-              endOpacity: 1,
+            child: AnimatedDelayedOpacity(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (e.by != null)
-                    Container(
-                      margin: const EdgeInsets.only(left: 48),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        boxShadow: const [
-                          CustomBoxShadow(
-                            color: Color(0x33000000),
-                            blurRadius: 8,
-                            blurStyle: BlurStyle.outer,
-                          ),
-                        ],
-                      ),
-                      child: ConditionalBackdropFilter(
-                        borderRadius: BorderRadius.circular(50),
-                        child: Container(
-                          padding: const EdgeInsets.all(9),
-                          constraints: const BoxConstraints(maxWidth: 300),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Text(
-                            e.by!,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
                   GestureDetector(
                     onTap: () {
                       e.unlock();
                       c.objects.remove(e);
                     },
-                    child: Container(
-                      margin: const EdgeInsets.fromLTRB(18, 9, 18, 18),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        boxShadow: const [
-                          CustomBoxShadow(
-                            color: Color(0x33000000),
-                            blurRadius: 8,
-                            blurStyle: BlurStyle.outer,
-                          ),
-                        ],
-                      ),
-                      child: ConditionalBackdropFilter(
-                        borderRadius: BorderRadius.circular(50),
-                        child: Container(
-                          padding: const EdgeInsets.all(18),
+                    child: Stack(
+                      children: [
+                        Container(
                           constraints: BoxConstraints(
-                            maxWidth: 600,
-                            maxHeight: max(60, constraints.maxHeight * 0.2),
+                            maxHeight: max(60, constraints.maxHeight * 0.3),
                           ),
-                          width: 480,
-                          height: 140,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(50),
+                          height: 285,
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Color(0x00D7FAFC),
+                                Color(0xFF81A6CD),
+                              ],
+                            ),
                           ),
-                          child: SingleChildScrollView(
-                            child: Text(
-                              e.text,
-                              style: const TextStyle(
-                                color: Colors.white,
+                        ),
+                        Positioned.fill(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: max(60, constraints.maxWidth * 0.5),
+                            ),
+                            child: ResponsiveWrapper(
+                              defaultScale: true,
+                              breakpoints: MediaQuery.of(context).orientation ==
+                                      Orientation.portrait
+                                  ? const [
+                                      ResponsiveBreakpoint.resize(400),
+                                      ResponsiveBreakpoint.autoScale(600),
+                                      ResponsiveBreakpoint.autoScale(800),
+                                      ResponsiveBreakpoint.autoScale(1000),
+                                      ResponsiveBreakpoint.autoScale(1200),
+                                      ResponsiveBreakpoint.autoScale(2460),
+                                    ]
+                                  : const [
+                                      ResponsiveBreakpoint.autoScaleDown(
+                                        400,
+                                        scaleFactor: 0.6,
+                                      ),
+                                      ResponsiveBreakpoint.autoScaleDown(
+                                        680,
+                                        scaleFactor: 0.5,
+                                      ),
+                                    ],
+                              child: Column(
+                                children: [
+                                  if (e.by != null)
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                      child: Text(
+                                        e.by!,
+                                        style: TextStyle(
+                                          color: const Color(0xFFFFC700),
+                                          fontSize: 24,
+                                          shadows: TextExtension.outline(
+                                              color: outline),
+                                        ),
+                                      ),
+                                    ),
+                                  Text(
+                                    e.text,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      shadows:
+                                          TextExtension.outline(color: outline),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ],

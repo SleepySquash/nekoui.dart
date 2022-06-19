@@ -8,7 +8,7 @@ part of 'trait.dart';
 
 class TraitAdapter extends TypeAdapter<Trait> {
   @override
-  final int typeId = 21;
+  final int typeId = 15;
 
   @override
   Trait read(BinaryReader reader) {
