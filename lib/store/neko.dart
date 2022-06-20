@@ -9,7 +9,12 @@ import '/provider/hive/neko.dart';
 
 class NekoRepository extends DisposableInterface
     implements AbstractNekoRepository {
-  NekoRepository(this._nekoHive);
+  NekoRepository(
+    this._nekoHive, {
+    this.initial,
+  });
+
+  final Neko? initial;
 
   @override
   final Rx<Neko?> neko = Rx<Neko?>(null);
@@ -25,7 +30,7 @@ class NekoRepository extends DisposableInterface
     _initLocalSubscription();
 
     if (neko.value == null) {
-      _nekoHive.put(Neko());
+      _nekoHive.put(initial ?? Neko());
     }
 
     super.onInit();

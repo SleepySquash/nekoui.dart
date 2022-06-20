@@ -24,29 +24,3 @@ extension ColorExtension on Color {
     return hslLight.toColor();
   }
 }
-
-extension TextExtension on Text {
-  static List<Shadow> outline({
-    double thickness = 1.5,
-    Color color = Colors.black,
-  }) {
-    return [
-      Shadow(
-        offset: Offset(-thickness, -thickness),
-        color: color,
-      ),
-      Shadow(
-        offset: Offset(thickness, -thickness),
-        color: color,
-      ),
-      Shadow(
-        offset: Offset(thickness, thickness),
-        color: color,
-      ),
-      Shadow(
-        offset: Offset(-thickness, thickness),
-        color: color,
-      ),
-    ];
-  }
-}

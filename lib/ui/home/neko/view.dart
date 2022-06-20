@@ -140,8 +140,8 @@ class _NekoViewState extends State<NekoView>
                       animation: _fading,
                       builder: (context, child) => ConditionalBackdropFilter(
                         filter: ImageFilter.blur(
-                          sigmaX: 0.1 + 15 * _fading.value,
-                          sigmaY: 0.1 + 15 * _fading.value,
+                          sigmaX: 0.01 + 15 * _fading.value,
+                          sigmaY: 0.01 + 15 * _fading.value,
                         ),
                         child: Container(),
                       ),
@@ -186,19 +186,14 @@ class _NekoViewState extends State<NekoView>
               onTap: () {
                 Novel.show(
                   context: context,
-                  scenario: Scenario(
-                    [
-                      ScenarioAddLine(BackdropRect(), wait: false),
-                      ScenarioAddLine(
-                        Character('person.png', duration: Duration.zero),
-                        wait: false,
-                      ),
-                      ScenarioAddLine(Dialogue(
-                        by: 'Vanilla',
-                        text: 'Ух ты!',
-                      )),
-                    ],
-                  ),
+                  scenario: [
+                    ScenarioAddLine(BackdropRect(), false),
+                    ScenarioAddLine(
+                      Character('person.png', duration: Duration.zero),
+                      false,
+                    ),
+                    ScenarioAddLine(Dialogue(by: c.name, text: 'Ух ты!')),
+                  ],
                 );
               },
             ),
@@ -214,19 +209,14 @@ class _NekoViewState extends State<NekoView>
 
                 Novel.show(
                   context: context,
-                  scenario: Scenario(
-                    [
-                      ScenarioAddLine(BackdropRect(), wait: false),
-                      ScenarioAddLine(
-                        Character('person.png', duration: Duration.zero),
-                        wait: false,
-                      ),
-                      ScenarioAddLine(Dialogue(
-                        by: 'Vanilla',
-                        text: 'Памаги...',
-                      )),
-                    ],
-                  ),
+                  scenario: [
+                    ScenarioAddLine(BackdropRect(), false),
+                    ScenarioAddLine(
+                      Character('person.png', duration: Duration.zero),
+                      false,
+                    ),
+                    ScenarioAddLine(Dialogue(by: c.name, text: 'Памаги...')),
+                  ],
                 );
               },
             ),
@@ -245,10 +235,27 @@ class _NekoViewState extends State<NekoView>
               icon: Icons.fastfood,
               color: Colors.orange,
             ),
-            const BackdropBubble(
+            BackdropBubble(
               text: 'Про теорему Пифагора',
               icon: Icons.school,
               color: Colors.blueGrey,
+              onTap: () {
+                Novel.show(
+                  context: context,
+                  scenario: [
+                    ScenarioAddLine(BackdropRect(), false),
+                    ScenarioAddLine(
+                      Character('person.png', duration: Duration.zero),
+                      false,
+                    ),
+                    ScenarioAddLine(Dialogue(
+                      by: c.name,
+                      text:
+                          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi cursus velit magna.',
+                    )),
+                  ],
+                );
+              },
             ),
             const BackdropBubble(
               text: 'Как ты любишь проводить время?',
@@ -372,23 +379,18 @@ class _NekoViewState extends State<NekoView>
                         onTap: () {
                           Novel.show(
                             context: context,
-                            scenario: Scenario(
-                              [
-                                ScenarioAddLine(
-                                  Background('park.jpg'),
-                                  wait: false,
-                                ),
-                                ScenarioAddLine(Character('person.png')),
-                                ScenarioAddLine(Dialogue(
-                                  by: 'Vanilla',
-                                  text: 'Hello, I am Vanilla!',
-                                )),
-                                ScenarioAddLine(Dialogue(
-                                  by: 'Vanilla',
-                                  text: 'And you?',
-                                )),
-                              ],
-                            ),
+                            scenario: [
+                              ScenarioAddLine(Background('park.jpg'), false),
+                              ScenarioAddLine(Character('person.png')),
+                              ScenarioAddLine(Dialogue(
+                                by: c.name,
+                                text: 'Hello, I am Vanilla!',
+                              )),
+                              ScenarioAddLine(Dialogue(
+                                by: c.name,
+                                text: 'And you?',
+                              )),
+                            ],
                           );
                         },
                       ),

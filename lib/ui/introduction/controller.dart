@@ -1,13 +1,18 @@
+import 'package:flutter/widgets.dart' show TextEditingController;
 import 'package:get/get.dart';
 
+import '/domain/model/neko.dart';
 import '/domain/service/auth.dart';
 import '/router.dart';
 import '/ui/novel/novel.dart';
 
 class IntroductionController extends GetxController {
-  IntroductionController(this._authService, {this.onBegin});
+  IntroductionController(this._authService);
 
-  final void Function()? onBegin;
+  final RxBool naming = RxBool(false);
+  final RxBool nameIsEmpty = RxBool(true);
+  final TextEditingController name = TextEditingController();
+
   final AuthService _authService;
 
   Rx<RxStatus> get authStatus => _authService.status;
@@ -18,34 +23,34 @@ class IntroductionController extends GetxController {
     super.onReady();
   }
 
-  Future<void> _register() async {
+  void accept() {
+    if (name.text.isNotEmpty) {
+      _register(name.text);
+    }
+  }
+
+  Future<void> _register(String name) async {
     await _authService.register();
-    router.home();
+    router.home(neko: Neko(name: name.obs));
   }
 
   Future<void> _novel() async {
     await Future.delayed(500.milliseconds);
     await Novel.show(
       context: router.context!,
-      scenario: Scenario(
-        [
-          ScenarioAddLine(
-            Background('park.jpg'),
-            wait: false,
-          ),
-          ScenarioAddLine(Character('person.png')),
-          ScenarioAddLine(Dialogue(
-            by: 'Vanilla',
-            text: 'Hello, I am Vanilla!',
-          )),
-          ScenarioAddLine(Dialogue(
-            by: 'Vanilla',
-            text: 'And you?',
-          )),
-        ],
-      ),
+      scenario: [
+        ScenarioAddLine(Background('park.jpg'), false),
+        ScenarioAddLine(Character('person.png')),
+        ScenarioAddLine(Dialogue(
+          by: 'Vanilla',
+          text: 'Hello, I am Vanilla!',
+        )),
+        ScenarioAddLine(Dialogue(
+          by: 'Vanilla',
+          text: 'And you?',
+        )),
+      ],
     );
-
-    _register();
+    naming.value = true;
   }
 }

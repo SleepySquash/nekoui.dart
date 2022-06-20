@@ -2,18 +2,29 @@ import 'package:mutex/mutex.dart';
 
 import 'scenario.dart';
 
+/// [ScenarioLine] waiting the provided [duration].
+class ScenarioWaitLine extends ScenarioLine with WaitableMixin {
+  const ScenarioWaitLine(this.duration);
+
+  final Duration duration;
+
+  @override
+  bool get wait => true;
+
+  @override
+  Future<void> execute() => Future.delayed(duration);
+}
+
 /// [ScenarioLine] adding the provided [object] to the scene.
 class ScenarioAddLine extends ScenarioLine with WaitableMixin {
-  const ScenarioAddLine(this.object, {this.wait = true});
+  const ScenarioAddLine(this.object, [this.wait = true]);
   final NovelObject object;
 
   @override
   final bool wait;
 
   @override
-  Future<void> execute() {
-    return object.init();
-  }
+  Future<void> execute() => object.init();
 }
 
 mixin GuardedMixin {
@@ -78,4 +89,14 @@ class Dialogue extends NovelObject with GuardedMixin {
   }
 }
 
-class BackdropRect extends NovelObject {}
+class BackdropRect extends NovelObject with GuardedMixin {
+  BackdropRect({this.duration = const Duration(milliseconds: 300)});
+
+  final Duration duration;
+
+  @override
+  Future<void> init() async {
+    await guard.acquire();
+    return guard.acquire();
+  }
+}

@@ -16,6 +16,7 @@ class NekoController extends GetxController {
   final NekoService _nekoService;
 
   Rx<Neko?> get neko => _nekoService.neko;
+  String? get name => neko.value?.name.value ?? 'Неко';
 
   final Rx<NekoViewScreen?> screen = Rx(null);
 }

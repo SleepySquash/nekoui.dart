@@ -33,10 +33,21 @@ class NovelController extends GetxController {
       line = scenario.at(currentLine.value);
       currentLine.value = currentLine.value + 1;
 
-      print('line is $line');
-
       if (line is ScenarioAddLine) {
-        objects.add(line.object);
+        if (line.object is Background || line.object is BackdropRect) {
+          objects.insert(0, line.object);
+        } else if (line.object is Character) {
+          objects.add(line.object);
+        } else if (line.object is Dialogue) {
+          NovelObject? dialogue =
+              objects.firstWhereOrNull((e) => e is Dialogue);
+          objects.removeWhere((e) => e is Dialogue);
+
+          line.object.key = dialogue?.key ?? line.object.key;
+          objects.add(line.object);
+        } else {
+          objects.add(line.object);
+        }
       }
 
       if (line is WaitableMixin) {

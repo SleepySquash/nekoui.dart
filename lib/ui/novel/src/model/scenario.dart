@@ -1,6 +1,10 @@
+import 'package:flutter/material.dart';
+
 /// Asset of a novel existing on a scene.
 abstract class NovelObject {
-  const NovelObject();
+  NovelObject();
+
+  GlobalKey key = GlobalKey();
 
   Future<void> init() => Future.value();
   Future<void> dispose() => Future.value();

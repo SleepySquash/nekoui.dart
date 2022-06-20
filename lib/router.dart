@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'domain/model/neko.dart';
 import 'domain/repository/neko.dart';
 import 'domain/repository/skill.dart';
 import 'domain/service/auth.dart';
@@ -79,6 +80,9 @@ class RouterState extends ChangeNotifier {
   /// Reactive title prefix of the current browser tab.
   final RxnString prefix = RxnString(null);
 
+  /// Dynamic arguments of this [RouterState].
+  dynamic arguments;
+
   /// Auth service used to determine the auth status.
   final AuthService _auth;
 
@@ -95,6 +99,7 @@ class RouterState extends ChangeNotifier {
   ///
   /// Clears the whole [routes] stack.
   void go(String to) {
+    arguments = null;
     _routes = [_guarded(to)];
     notifyListeners();
   }
@@ -260,8 +265,10 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
                 deps.put(SkillRepository(Get.find()));
             SkillService skillService = deps.put(SkillService(skillRepository));
 
-            AbstractNekoRepository nekoRepository =
-                deps.put(NekoRepository(Get.find()));
+            AbstractNekoRepository nekoRepository = deps.put(NekoRepository(
+              Get.find(),
+              initial: _state.arguments is Neko ? _state.arguments : null,
+            ));
             deps.put(NekoService(nekoRepository));
 
             ItemRepository itemRepository =
@@ -338,7 +345,10 @@ extension RouteLinks on RouterState {
   void auth() => go(Routes.auth);
 
   /// Changes router location to the [Routes.home] page.
-  void home() => go(Routes.home);
+  void home({Neko? neko}) {
+    go(Routes.home);
+    arguments = neko;
+  }
 
   /// Changes router location to the [Routes.grocery] page.
   void grocery() => go(Routes.grocery);
