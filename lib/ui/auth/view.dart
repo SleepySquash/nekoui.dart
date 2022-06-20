@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/util/message_popup.dart';
+
+import '/router.dart';
+import '/util/message_popup.dart';
 
 import 'controller.dart';
 
@@ -23,7 +25,7 @@ class AuthView extends StatelessWidget {
                       const Text('NekoUI'),
                       const SizedBox(height: 20),
                       ElevatedButton(
-                        onPressed: c.register,
+                        onPressed: router.introduction,
                         child: const Text(
                           'Play',
                           style: TextStyle(color: Colors.white),

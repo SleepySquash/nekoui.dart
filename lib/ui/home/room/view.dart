@@ -67,7 +67,11 @@ class RoomView extends StatelessWidget {
     });
   }
 
-  static Widget more(BuildContext context, {GlobalKey? neko}) {
+  static Widget more(
+    BuildContext context, {
+    GlobalKey? neko,
+    bool withWardrobe = true,
+  }) {
     GlobalKey<CircularMenuState> fabKey = GlobalKey<CircularMenuState>();
     return CircularMenu(
       key: fabKey,
@@ -92,7 +96,7 @@ class RoomView extends StatelessWidget {
           badgeTopOffet: 5,
           boxShadow: const [],
           onTap: () {
-            NekoView.show(context, neko: neko);
+            NekoView.show(context, neko: neko, withWardrobe: withWardrobe);
             fabKey.currentState?.reverseAnimation();
           },
         ),

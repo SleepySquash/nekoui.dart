@@ -16,14 +16,17 @@ import '/ui/widget/neko.dart';
 import 'controller.dart';
 
 class NekoView extends StatefulWidget {
-  const NekoView({Key? key, this.neko}) : super(key: key);
+  const NekoView({Key? key, this.neko, this.withWardrobe = true})
+      : super(key: key);
 
   final GlobalKey? neko;
+  final bool withWardrobe;
 
   /// Displays a dialog with the provided [gallery] above the current contents.
   static Future<T?> show<T extends Object?>(
     BuildContext context, {
     GlobalKey? neko,
+    bool withWardrobe = true,
   }) {
     return showGeneralDialog(
       context: context,
@@ -36,7 +39,7 @@ class NekoView extends StatefulWidget {
           from: context,
           to: Navigator.of(context, rootNavigator: true).context,
         );
-        return themes.wrap(NekoView(neko: neko));
+        return themes.wrap(NekoView(neko: neko, withWardrobe: withWardrobe));
       },
       barrierDismissible: false,
       barrierColor: Colors.transparent,
@@ -392,17 +395,19 @@ class _NekoViewState extends State<NekoView>
                       3,
                     ),
                   ),
-                  const SizedBox(height: 15),
-                  Flexible(
-                    child: _animated(
-                      BackdropIconButton(
-                        icon: Icons.face,
-                        text: 'Гардероб',
-                        onTap: router.wardrobe,
+                  if (widget.withWardrobe) ...[
+                    const SizedBox(height: 15),
+                    Flexible(
+                      child: _animated(
+                        BackdropIconButton(
+                          icon: Icons.face,
+                          text: 'Гардероб',
+                          onTap: router.wardrobe,
+                        ),
+                        4,
                       ),
-                      4,
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),

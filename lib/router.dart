@@ -16,7 +16,9 @@ import 'store/item.dart';
 import 'store/neko.dart';
 import 'store/skill.dart';
 import 'ui/auth/view.dart';
+import 'ui/home/router.dart';
 import 'ui/home/view.dart';
+import 'ui/introduction/view.dart';
 import 'ui/widget/context_menu/overlay.dart';
 import 'ui/widget/lifecycle_observer.dart';
 import 'ui/widget/notification/view.dart';
@@ -34,6 +36,7 @@ class Routes {
   static const grocery = '/grocery';
   static const groceryCheckout = '/grocery/checkout';
   static const home = '/';
+  static const introduction = '/introduction';
   static const inventory = '/inventory';
   static const map = '/map';
   static const more = '/more';
@@ -146,6 +149,9 @@ class RouterState extends ChangeNotifier {
       case Routes.home:
         return to;
 
+      case Routes.introduction:
+        return to;
+
       default:
         if (_auth.status.value.isSuccess) {
           return to;
@@ -239,7 +245,7 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
     List<Page<dynamic>> pages = [];
 
     if (_state._auth.status.value.isSuccess) {
-      pages.add(MaterialPage(
+      pages.add(TransitionPage(
         key: const ValueKey('HomePage'),
         name: Routes.home,
         child: HomeView(
@@ -268,8 +274,14 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
           },
         ),
       ));
+    } else if (_state.route == Routes.introduction) {
+      pages.add(const TransitionPage(
+        key: ValueKey('IntroductionPage'),
+        name: Routes.introduction,
+        child: IntroductionView(),
+      ));
     } else {
-      pages.add(const MaterialPage(
+      pages.add(const TransitionPage(
         key: ValueKey('AuthPage'),
         name: Routes.auth,
         child: AuthView(),
@@ -357,6 +369,9 @@ extension RouteLinks on RouterState {
 
   /// Changes router location to the [Routes.park] page.
   void park() => go(Routes.park);
+
+  /// Changes router location to the [Routes.introduction] page.
+  void introduction() => go(Routes.introduction);
 }
 
 /// Extension adding helper methods to an [AppLifecycleState].

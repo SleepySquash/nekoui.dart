@@ -33,7 +33,11 @@ class ParkView extends StatelessWidget {
                     ),
                     Center(
                       child: GestureDetector(
-                        onTap: () => NekoView.show(context, neko: c.nekoKey),
+                        onTap: () => NekoView.show(
+                          context,
+                          neko: c.nekoKey,
+                          withWardrobe: false,
+                        ),
                         child: SizedBox(
                           width: 70,
                           height: 70,
@@ -59,19 +63,13 @@ class ParkView extends StatelessWidget {
                 alignment: Alignment.bottomRight,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16, bottom: 16),
-                  child: RoomView.more(context, neko: c.nekoKey),
+                  child: RoomView.more(
+                    context,
+                    neko: c.nekoKey,
+                    withWardrobe: false,
+                  ),
                 ),
               ),
-              // Align(
-              //   alignment: Alignment.bottomRight,
-              //   child: Padding(
-              //     padding: const EdgeInsets.only(right: 16, bottom: 16),
-              //     child: FloatingActionButton(
-              //       onPressed: () => MapView.show(context),
-              //       child: const Icon(Icons.map),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         );

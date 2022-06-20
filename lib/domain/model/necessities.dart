@@ -21,12 +21,12 @@ class Necessities extends HiveObject {
     this.maxEnergy = 100,
     RxInt? social,
     this.maxSocial = 100,
-  })  : hunger = hunger ?? RxInt(0),
-        thirst = thirst ?? RxInt(0),
-        naturalNeed = naturalNeed ?? RxInt(0),
-        cleanness = cleanness ?? RxInt(0),
-        energy = energy ?? RxInt(0),
-        social = social ?? RxInt(0);
+  })  : hunger = hunger ?? RxInt(50),
+        thirst = thirst ?? RxInt(50),
+        naturalNeed = naturalNeed ?? RxInt(50),
+        cleanness = cleanness ?? RxInt(50),
+        energy = energy ?? RxInt(50),
+        social = social ?? RxInt(50);
 
   /// Hunger component of these [Necessities].
   @HiveField(0)
