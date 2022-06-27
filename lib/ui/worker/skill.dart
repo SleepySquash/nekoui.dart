@@ -4,18 +4,18 @@ import 'package:get/get.dart';
 
 import '/domain/model/skill.dart';
 import '/domain/service/notification.dart';
-import '/domain/service/skill.dart';
+import '/domain/service/neko.dart';
 import '/ui/home/flowchart/widget/skill_oval.dart';
 import '/util/obs/obs.dart';
 
 /// Worker responsible for showing a new [Chat] message notification.
 class SkillWorker extends DisposableInterface {
   SkillWorker(
-    this._skillService,
+    this._nekoService,
     this._notificationService,
   );
 
-  final SkillService _skillService;
+  final NekoService _nekoService;
   final NotificationService _notificationService;
 
   final Map<String, _SkillListener> _listeners = {};
@@ -23,9 +23,9 @@ class SkillWorker extends DisposableInterface {
 
   @override
   void onReady() {
-    _skillService.skills.forEach((k, v) =>
+    _nekoService.skills.forEach((k, v) =>
         _listeners[k] = _SkillListener(v, onLevel: _onLevel, onNew: _onNew));
-    _subscription = _skillService.skills.changes.listen((e) {
+    _subscription = _nekoService.skills.changes.listen((e) {
       switch (e.op) {
         case OperationKind.added:
           _listeners[e.key!] =

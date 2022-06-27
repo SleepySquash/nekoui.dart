@@ -57,25 +57,23 @@ class HomeRouterDelegate extends RouterDelegate<RouteConfiguration>
           child: ParkView(),
         ));
       } else if (route == Routes.home) {
-        pages.add(TransitionPage(
-          key: const ValueKey('RoomPage'),
+        pages.add(const TransitionPage(
+          key: ValueKey('RoomPage'),
           name: Routes.home,
-          child: RoomView(Get.find()),
+          child: RoomView(),
         ));
-      } else if (route.startsWith(Routes.more)) {
+      } else if (route == Routes.more) {
         pages.add(const TransitionPage(
           key: ValueKey('MorePage'),
           name: Routes.more,
           child: MoreView(),
         ));
-
-        if (route == Routes.settings) {
-          pages.add(const MaterialPage(
-            key: ValueKey('SettingsPage'),
-            name: Routes.settings,
-            child: SettingsView(),
-          ));
-        }
+      } else if (route == Routes.settings) {
+        pages.add(const MaterialPage(
+          key: ValueKey('SettingsPage'),
+          name: Routes.settings,
+          child: SettingsView(),
+        ));
       } else if (route == Routes.inventory) {
         pages.add(const TransitionPage(
           key: ValueKey('InventoryPage'),

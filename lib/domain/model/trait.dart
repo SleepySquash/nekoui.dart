@@ -5,11 +5,14 @@ import '../model_type_id.dart';
 part 'trait.g.dart';
 
 @HiveType(typeId: ModelTypeId.trait)
-class Trait {
-  Trait(this.value);
+class Trait extends HiveObject {
+  Trait(this.trait, this.value);
 
   @HiveField(0)
   int value;
+
+  @HiveField(1)
+  int trait;
 }
 
 enum Traits {

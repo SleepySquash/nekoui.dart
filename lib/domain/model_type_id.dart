@@ -19,4 +19,9 @@ class ModelTypeId {
   static const mbti = 13;
   static const skill = 14;
   static const trait = 15;
+  static const mood = 16;
+  static const thought = 17;
+  static const dream = 18;
+  static const hiveNeko = 19;
+  static const hiveFlag = 20;
 }

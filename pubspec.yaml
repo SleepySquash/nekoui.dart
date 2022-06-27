@@ -16,7 +16,8 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  flutter_local_notifications: ^10.0.0-dev.13
+  flutter_local_notifications: ^10.0.0-dev.16
+  geolocator: ^9.0.0
   get: ^4.6.5
   google_fonts: ^3.0.1
   hive_flutter: ^1.1.0
@@ -26,6 +27,8 @@ dependencies:
   page_transition: ^2.0.5
   path_provider: ^2.0.10
   rive: ^0.8.4
+  toml: ^0.12.0
+  timezone: ^0.8.0
   sentry_flutter: ^6.5.1
   universal_io: ^2.0.4
   uuid: ^3.0.6
@@ -42,6 +45,7 @@ flutter:
   uses-material-design: true
   
   assets:
+    - assets/conf.toml
     - assets/fonts/
     - assets/images/background/
     - assets/images/furniture/

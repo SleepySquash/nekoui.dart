@@ -29,11 +29,21 @@ class Skill extends HiveObject {
       MapEntry(name, Skill(name, value: value, skills: skills));
 
   double get progress {
-    return (value.value - level * 100) / 100;
+    double points = value.value.toDouble();
+    for (var s in skills?.values ?? const Iterable<Skill>.empty()) {
+      points += s.value.value / 2;
+    }
+
+    return (points - level * 100) / 100;
   }
 
   int get level {
-    return value.value ~/ 100;
+    double points = value.value.toDouble();
+    for (var s in skills?.values ?? const Iterable<Skill>.empty()) {
+      points += s.value.value / 2;
+    }
+
+    return points ~/ 100;
   }
 }
 

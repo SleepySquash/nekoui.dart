@@ -45,3 +45,14 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Generation related
+/lib/**/*.g.dart
+
+# Tests related
+/test/.temp_hive/
+/test/**/*.mocks.dart
+/test/e2e/**/*.g.dart
+/test/e2e/reports/
+/test_driver/build/
+/test_driver/report.json

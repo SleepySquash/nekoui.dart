@@ -31,7 +31,7 @@ class IntroductionController extends GetxController {
 
   Future<void> _register(String name) async {
     await _authService.register();
-    router.home(neko: Neko(name: name.obs));
+    router.home(neko: Neko(name: name));
   }
 
   Future<void> _novel() async {
@@ -39,16 +39,10 @@ class IntroductionController extends GetxController {
     await Novel.show(
       context: router.context!,
       scenario: [
-        ScenarioAddLine(Background('park.jpg'), false),
-        ScenarioAddLine(Character('person.png')),
-        ScenarioAddLine(Dialogue(
-          by: 'Vanilla',
-          text: 'Hello, I am Vanilla!',
-        )),
-        ScenarioAddLine(Dialogue(
-          by: 'Vanilla',
-          text: 'And you?',
-        )),
+        BackgroundLine('park.jpg'),
+        CharacterLine('person.png'),
+        DialogueLine('Hello, I am Vanilla!', by: 'Vanilla'),
+        DialogueLine('And you?', by: 'Vanilla'),
       ],
     );
     naming.value = true;

@@ -3,16 +3,14 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '/domain/model/skill.dart';
-import '/domain/model/trait.dart';
-import '/domain/service/skill.dart';
-import '/router.dart';
-import '/ui/novel/novel.dart';
-import '/ui/widget/backdrop_button.dart';
 import '/ui/widget/conditional_backdrop.dart';
-import '/ui/widget/delayed/delayed_slide.dart';
 import '/ui/widget/escape_popper.dart';
-import '/ui/widget/neko.dart';
+import '/ui/widget/neko/person.dart';
+import 'component/action.dart';
+import 'component/activity.dart';
+import 'component/neko.dart';
+import 'component/request.dart';
+import 'component/talk.dart';
 import 'controller.dart';
 
 class NekoView extends StatefulWidget {
@@ -39,7 +37,12 @@ class NekoView extends StatefulWidget {
           from: context,
           to: Navigator.of(context, rootNavigator: true).context,
         );
-        return themes.wrap(NekoView(neko: neko, withWardrobe: withWardrobe));
+        return themes.wrap(
+          NekoView(
+            neko: neko,
+            withWardrobe: withWardrobe,
+          ),
+        );
       },
       barrierDismissible: false,
       barrierColor: Colors.transparent,
@@ -122,7 +125,10 @@ class _NekoViewState extends State<NekoView>
               );
 
           return GetBuilder(
-            init: NekoController(Get.find()),
+            init: NekoController(
+              Get.find(),
+              withWardrobe: widget.withWardrobe,
+            ),
             builder: (NekoController c) {
               return Stack(
                 fit: StackFit.expand,
@@ -154,7 +160,7 @@ class _NekoViewState extends State<NekoView>
                         rect: tween().animate(curved),
                         child: FadeTransition(
                           opacity: fade,
-                          child: SafeArea(child: NekoWidget(Get.find())),
+                          child: SafeArea(child: NekoPerson(Get.find())),
                         ),
                       );
                     },
@@ -172,248 +178,20 @@ class _NekoViewState extends State<NekoView>
   List<Widget> _buildInterface(NekoController c) {
     Widget screen(NekoViewScreen? current) {
       switch (current) {
-        case NekoViewScreen.ask:
+        case NekoViewScreen.request:
+          return RequestScreen(c);
+
         case NekoViewScreen.action:
+          return ActionScreen(c);
+
         case NekoViewScreen.activity:
-          return Container();
+          return ActivityScreen(c);
 
         case NekoViewScreen.talk:
-          var topics = [
-            BackdropBubble(
-              text: 'Мне нравится твоя улыбка',
-              icon: Icons.favorite,
-              color: Colors.red,
-              onTap: () {
-                Novel.show(
-                  context: context,
-                  scenario: [
-                    ScenarioAddLine(BackdropRect(), false),
-                    ScenarioAddLine(
-                      Character('person.png', duration: Duration.zero),
-                      false,
-                    ),
-                    ScenarioAddLine(Dialogue(by: c.name, text: 'Ух ты!')),
-                  ],
-                );
-              },
-            ),
-            BackdropBubble(
-              text: 'Как дела с учёбой?',
-              icon: Icons.school,
-              color: Colors.blueGrey,
-              onTap: () {
-                if ((c.neko.value?.traits[Traits.loyalty.name]?.value ?? 0) >=
-                    100) {
-                  // No-op.
-                }
-
-                Novel.show(
-                  context: context,
-                  scenario: [
-                    ScenarioAddLine(BackdropRect(), false),
-                    ScenarioAddLine(
-                      Character('person.png', duration: Duration.zero),
-                      false,
-                    ),
-                    ScenarioAddLine(Dialogue(by: c.name, text: 'Памаги...')),
-                  ],
-                );
-              },
-            ),
-            const BackdropBubble(
-              text: 'Проголодалась?',
-              icon: Icons.fastfood,
-              color: Colors.orange,
-            ),
-            const BackdropBubble(
-              text: 'Хочешь чем-нибудь заняться?',
-              icon: Icons.people,
-              color: Colors.pink,
-            ),
-            const BackdropBubble(
-              text: 'Как тебе "Тортик"?',
-              icon: Icons.fastfood,
-              color: Colors.orange,
-            ),
-            BackdropBubble(
-              text: 'Про теорему Пифагора',
-              icon: Icons.school,
-              color: Colors.blueGrey,
-              onTap: () {
-                Novel.show(
-                  context: context,
-                  scenario: [
-                    ScenarioAddLine(BackdropRect(), false),
-                    ScenarioAddLine(
-                      Character('person.png', duration: Duration.zero),
-                      false,
-                    ),
-                    ScenarioAddLine(Dialogue(
-                      by: c.name,
-                      text:
-                          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi cursus velit magna.',
-                    )),
-                  ],
-                );
-              },
-            ),
-            const BackdropBubble(
-              text: 'Как ты любишь проводить время?',
-              icon: Icons.chat,
-              color: Colors.blue,
-            ),
-          ];
-
-          bool left = true;
-
-          List<Widget> rows = [];
-
-          for (int i = 0; i < topics.length; ++i) {
-            var e = topics[i];
-            rows.add(
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (left) const Spacer(flex: 10),
-                  Flexible(flex: 10, child: e),
-                  if (!left) const Spacer(flex: 10),
-                ],
-              ),
-            );
-
-            left = !left;
-          }
-
-          return Stack(
-            children: [
-              Center(
-                key: const Key('TalkSelection'),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: rows
-                        .map((e) => Flexible(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 16),
-                                child: e,
-                              ),
-                            ))
-                        .toList(),
-                  ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: BackdropIconButton(
-                    icon: Icons.chat,
-                    color: Colors.blue.withOpacity(0.4),
-                    onTap: () {},
-                  ),
-                ),
-              ),
-            ],
-          );
+          return TalkScreen(c);
 
         default:
-          Widget _animated(Widget child, [int i = 0]) {
-            return AnimatedDelayedSlide(
-              duration: Duration(milliseconds: 400 + 100 * i),
-              child: child,
-            );
-          }
-
-          return Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Flexible(
-                    child: _animated(
-                      BackdropIconButton(
-                        icon: Icons.help,
-                        text: 'Просьба',
-                        onTap: () {
-                          Get.find<SkillService>().add(
-                            [Skills.drawing.name, DrawingSkills.anatomy.name],
-                            10,
-                          );
-                        },
-                      ),
-                      0,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Flexible(
-                    child: _animated(
-                      BackdropIconButton(
-                        icon: Icons.chat_rounded,
-                        text: 'Поговорить',
-                        onTap: () => c.screen.value = NekoViewScreen.talk,
-                      ),
-                      1,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Flexible(
-                    child: _animated(
-                      BackdropIconButton(
-                        icon: Icons.attractions,
-                        text: 'Занятие',
-                        onTap: () {},
-                      ),
-                      2,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Flexible(
-                    child: _animated(
-                      BackdropIconButton(
-                        icon: Icons.handshake_rounded,
-                        text: 'Действие',
-                        onTap: () {
-                          Novel.show(
-                            context: context,
-                            scenario: [
-                              ScenarioAddLine(Background('park.jpg'), false),
-                              ScenarioAddLine(Character('person.png')),
-                              ScenarioAddLine(Dialogue(
-                                by: c.name,
-                                text: 'Hello, I am Vanilla!',
-                              )),
-                              ScenarioAddLine(Dialogue(
-                                by: c.name,
-                                text: 'And you?',
-                              )),
-                            ],
-                          );
-                        },
-                      ),
-                      3,
-                    ),
-                  ),
-                  if (widget.withWardrobe) ...[
-                    const SizedBox(height: 15),
-                    Flexible(
-                      child: _animated(
-                        BackdropIconButton(
-                          icon: Icons.face,
-                          text: 'Гардероб',
-                          onTap: router.wardrobe,
-                        ),
-                        4,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          );
+          return NekoScreen(c);
       }
     }
 

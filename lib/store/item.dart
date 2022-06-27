@@ -27,6 +27,14 @@ class ItemRepository extends DisposableInterface
 
     _initLocalSubscription();
 
+    // TODO: There should be an appropriate way to determine whether the [Box]
+    //       was just created or not.
+    if (_itemHive.isEmpty) {
+      _itemHive.put(CakeItem(10));
+      _itemHive.put(CupcakeItem(10));
+      _itemHive.put(WaterBottleItem(10));
+    }
+
     super.onInit();
   }
 

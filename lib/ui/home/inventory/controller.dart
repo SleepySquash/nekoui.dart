@@ -22,7 +22,7 @@ class InventoryController extends GetxController {
 
   void use(Item item) {
     if (item is Consumable) {
-      if (_nekoService.consume(item)) {
+      if (_nekoService.give(item)) {
         _itemService.remove(item, 1);
       }
     }

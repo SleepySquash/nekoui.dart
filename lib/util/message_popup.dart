@@ -24,6 +24,24 @@ class MessagePopup {
     );
   }
 
+  static Future<void> message(String title, {String? description}) async {
+    return showDialog(
+      context: router.context!,
+      builder: (context) => AlertDialog(
+        key: const Key('AlertDialog'),
+        title: Text(title),
+        content: description == null ? null : Text(description),
+        actions: [
+          TextButton(
+            key: const Key('AlertNoButton'),
+            child: Text('btn_ok'.tr),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+  }
+
   /// Shows an alert popup with [title], [description] and `yes`/`no` buttons
   /// that returns `true`, `false` or `null` based on the button that was
   /// pressed.

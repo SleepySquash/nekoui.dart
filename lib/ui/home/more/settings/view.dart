@@ -18,6 +18,11 @@ class SettingsView extends StatelessWidget {
           body: ListView(
             children: [
               ListTile(
+                leading: const Icon(Icons.pin_drop),
+                title: const Text('Геопозиция'),
+                onTap: () {},
+              ),
+              ListTile(
                 leading: const Icon(Icons.restore),
                 title: const Text('Logout'),
                 onTap: () async {

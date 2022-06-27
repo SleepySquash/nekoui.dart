@@ -84,7 +84,7 @@ class BackdropIconButton extends StatelessWidget {
                 hoverElevation: 0,
                 focusElevation: 0,
                 highlightElevation: 0,
-                backgroundColor: color ?? const Color(0x66FFFFFF),
+                backgroundColor: color ?? const Color(0x66000000),
                 child: Icon(
                   icon,
                   color: Colors.white,

@@ -16,12 +16,42 @@ class ScenarioWaitLine extends ScenarioLine with WaitableMixin {
 }
 
 /// [ScenarioLine] adding the provided [object] to the scene.
-class ScenarioAddLine extends ScenarioLine with WaitableMixin {
-  const ScenarioAddLine(this.object, [this.wait = true]);
+class ObjectLine extends ScenarioLine with WaitableMixin {
+  const ObjectLine(this.object, {this.wait = true});
   final NovelObject object;
 
   @override
   final bool wait;
+
+  @override
+  Future<void> execute() => object.init();
+}
+
+class BackgroundLine extends ObjectLine {
+  BackgroundLine(
+    String asset, {
+    bool wait = true,
+    Duration duration = const Duration(milliseconds: 500),
+  }) : super(Background(asset, duration: duration), wait: wait);
+
+  @override
+  Future<void> execute() => object.init();
+}
+
+class CharacterLine extends ObjectLine {
+  CharacterLine(
+    String asset, {
+    bool wait = true,
+    Duration duration = const Duration(milliseconds: 500),
+  }) : super(Character(asset, duration: duration), wait: wait);
+
+  @override
+  Future<void> execute() => object.init();
+}
+
+class DialogueLine extends ObjectLine {
+  DialogueLine(String text, {String? by, bool wait = true})
+      : super(Dialogue(text: text, by: by), wait: wait);
 
   @override
   Future<void> execute() => object.init();

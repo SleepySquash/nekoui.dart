@@ -2,6 +2,10 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:nekoui/ui/home/flowchart/component/interest.dart';
+import 'package:nekoui/ui/home/flowchart/component/progress.dart';
+import 'package:nekoui/ui/home/flowchart/component/skill.dart';
+import 'package:nekoui/ui/home/flowchart/widget/keep_alive.dart';
 
 import 'widget/skill_oval.dart';
 import '/ui/widget/delayed/delayed_scale.dart';
@@ -44,7 +48,7 @@ class FlowchartView extends StatelessWidget {
       },
       focusNode: FocusNode(),
       child: GetBuilder(
-        init: FlowchartController(Get.find(), Get.find()),
+        init: FlowchartController(Get.find()),
         builder: (FlowchartController c) {
           return DefaultTabController(
             length: 3,
@@ -63,9 +67,9 @@ class FlowchartView extends StatelessWidget {
               body: TabBarView(
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
-                  _skillsView(c, context),
-                  Text('TODO'),
-                  Text('TODO'),
+                  KeepAlivePage(child: SkillTab(c)),
+                  KeepAlivePage(child: InterestTab(c)),
+                  KeepAlivePage(child: ProgressTab(c)),
                 ],
               ),
               floatingActionButton: FloatingActionButton(
@@ -75,27 +79,6 @@ class FlowchartView extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _skillsView(FlowchartController c, BuildContext context) {
-    return InteractiveViewer(
-      minScale: 0.5,
-      maxScale: 3,
-      transformationController: c.initial.transformation,
-      child: Center(
-        child: Obx(() {
-          Iterable<MapEntry<String, Skill>> skills = c.skills.entries;
-          return HexGrid(
-            children: skills
-                .mapIndexed((i, e) => AnimatedDelayedScale(
-                      delay: Duration(milliseconds: 5 * i),
-                      child: SkillOval(e),
-                    ))
-                .toList(),
-          );
-        }),
       ),
     );
   }

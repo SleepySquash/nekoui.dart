@@ -3,24 +3,90 @@ import 'dart:math';
 import 'package:circular_menu/circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nekoui/domain/service/environment.dart';
 
 import '/domain/model/neko.dart';
-import '/domain/service/neko.dart';
 import '/router.dart';
 import '/ui/home/neko/view.dart';
-import '/ui/widget/neko.dart';
+import '../../widget/neko/chibi/view.dart';
 import 'controller.dart';
 
 class RoomView extends StatelessWidget {
-  const RoomView(this._neko, {Key? key}) : super(key: key);
+  const RoomView({Key? key}) : super(key: key);
 
-  final NekoService _neko;
+  static Widget weather(Rx<Weather?> weather, RxnDouble tempreature) {
+    return Obx(() {
+      Widget? icon;
+
+      bool isLoading = false;
+      Widget _icon(IconData icon) => Icon(
+            icon,
+            size: 32,
+            color: Colors.white,
+          );
+
+      switch (weather.value) {
+        case Weather.clear:
+          icon = _icon(Icons.sunny);
+          break;
+
+        case Weather.clouds:
+          icon = _icon(Icons.cloud);
+          break;
+
+        case Weather.drizzle:
+          icon = _icon(Icons.water_drop);
+          break;
+
+        case Weather.fog:
+          icon = _icon(Icons.foggy);
+          break;
+
+        case Weather.rain:
+          icon = _icon(Icons.water_drop);
+          break;
+
+        case Weather.snow:
+          icon = _icon(Icons.snowing);
+          break;
+
+        case Weather.thunderstorm:
+          icon = _icon(Icons.thunderstorm);
+          break;
+
+        case Weather.unknown:
+          icon = _icon(Icons.device_unknown);
+          break;
+
+        default:
+          isLoading = true;
+          break;
+      }
+
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 10),
+          if (isLoading)
+            const CircularProgressIndicator()
+          else ...[
+            icon!,
+            const SizedBox(height: 10),
+            Text(
+              '${tempreature.value} ℃',
+              style: const TextStyle(color: Colors.white),
+            ),
+          ]
+        ],
+      );
+    });
+  }
 
   static Widget needs(Rx<Neko?> neko) {
     return Obx(() {
       var needs = neko.value?.necessities;
 
-      Widget _need(IconData icon, int? value) {
+      Widget _need(IconData icon, double? value) {
         Color color = Colors.white;
 
         if (value != null) {
@@ -139,7 +205,7 @@ class RoomView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-      init: RoomController(_neko),
+      init: RoomController(Get.find(), Get.find()),
       builder: (RoomController c) {
         return Scaffold(
           backgroundColor: Colors.black,
@@ -160,19 +226,25 @@ class RoomView extends StatelessWidget {
                     ),
                     Center(
                       child: GestureDetector(
-                        onTap: () => NekoView.show(context, neko: c.nekoKey),
+                        onTap: () {
+                          NekoView.show(context, neko: c.nekoKey);
+                          // TODO: Close FAB aswell.
+                        },
                         child: SizedBox(
                           width: 70,
                           height: 70,
-                          child: NekoWidget(
-                            _neko,
-                            key: c.nekoKey,
-                            isPerson: false,
-                          ),
+                          child: NekoChibi(key: c.nekoKey),
                         ),
                       ),
                     ),
                   ],
+                ),
+              ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16, bottom: 16),
+                  child: weather(c.weather, c.temperature),
                 ),
               ),
               Align(

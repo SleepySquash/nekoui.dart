@@ -9,69 +9,69 @@ part 'necessities.g.dart';
 @HiveType(typeId: ModelTypeId.necessities)
 class Necessities extends HiveObject {
   Necessities({
-    RxInt? hunger,
+    RxDouble? hunger,
     this.maxHunger = 100,
-    RxInt? thirst,
+    RxDouble? thirst,
     this.maxThirst = 100,
-    RxInt? naturalNeed,
+    RxDouble? naturalNeed,
     this.maxNaturalNeed = 100,
-    RxInt? cleanness,
+    RxDouble? cleanness,
     this.maxCleanness = 100,
-    RxInt? energy,
+    RxDouble? energy,
     this.maxEnergy = 100,
-    RxInt? social,
+    RxDouble? social,
     this.maxSocial = 100,
-  })  : hunger = hunger ?? RxInt(50),
-        thirst = thirst ?? RxInt(50),
-        naturalNeed = naturalNeed ?? RxInt(50),
-        cleanness = cleanness ?? RxInt(50),
-        energy = energy ?? RxInt(50),
-        social = social ?? RxInt(50);
+  })  : hunger = hunger ?? RxDouble(50),
+        thirst = thirst ?? RxDouble(50),
+        naturalNeed = naturalNeed ?? RxDouble(50),
+        cleanness = cleanness ?? RxDouble(50),
+        energy = energy ?? RxDouble(50),
+        social = social ?? RxDouble(50);
 
   /// Hunger component of these [Necessities].
   @HiveField(0)
-  final RxInt hunger;
+  final RxDouble hunger;
 
   @HiveField(1)
-  int maxHunger;
+  double maxHunger;
 
   /// Thirst component of these [Necessities].
   @HiveField(2)
-  final RxInt thirst;
+  final RxDouble thirst;
 
   @HiveField(3)
-  int maxThirst;
+  double maxThirst;
 
   /// Natural need component of these [Necessities].
   @HiveField(4)
-  final RxInt naturalNeed;
+  final RxDouble naturalNeed;
 
   @HiveField(5)
-  int maxNaturalNeed;
+  double maxNaturalNeed;
 
   /// Cleanness component of these [Necessities].
   @HiveField(6)
-  final RxInt cleanness;
+  final RxDouble cleanness;
 
   @HiveField(7)
-  int maxCleanness;
+  double maxCleanness;
 
   /// Energy component of these [Necessities].
   @HiveField(8)
-  final RxInt energy;
+  final RxDouble energy;
 
   @HiveField(9)
-  int maxEnergy;
+  double maxEnergy;
 
   /// Social need component of these [Necessities].
   @HiveField(10)
-  final RxInt social;
+  final RxDouble social;
 
   @HiveField(11)
-  int maxSocial;
+  double maxSocial;
 
   /// List of all the [Necessities].
-  List<RxInt> get params => [hunger, thirst, cleanness, energy, social];
+  List<RxDouble> get params => [hunger, thirst, cleanness, energy, social];
 
   /// Indicates whether these [Necessities] are considered satisfied.
   bool get areSatisfied => params.every((e) => e >= 20);
@@ -82,6 +82,8 @@ class Necessities extends HiveObject {
     if (hunger.value < 0) hunger.value = 0;
     if (thirst.value > maxThirst) thirst.value = maxThirst;
     if (thirst.value < 0) thirst.value = 0;
+    if (naturalNeed.value > maxNaturalNeed) naturalNeed.value = maxNaturalNeed;
+    if (naturalNeed.value < 0) naturalNeed.value = 0;
     if (cleanness.value > maxCleanness) cleanness.value = maxCleanness;
     if (cleanness.value < 0) cleanness.value = 0;
     if (energy.value > maxEnergy) energy.value = maxEnergy;

@@ -33,7 +33,7 @@ class NovelController extends GetxController {
       line = scenario.at(currentLine.value);
       currentLine.value = currentLine.value + 1;
 
-      if (line is ScenarioAddLine) {
+      if (line is ObjectLine) {
         if (line.object is Background || line.object is BackdropRect) {
           objects.insert(0, line.object);
         } else if (line.object is Character) {

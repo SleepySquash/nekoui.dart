@@ -2,8 +2,8 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../component/skill.dart';
 import '/domain/model/skill.dart';
-import '../subview.dart';
 
 class SkillOval extends StatelessWidget {
   const SkillOval(this.entry, {Key? key}) : super(key: key);

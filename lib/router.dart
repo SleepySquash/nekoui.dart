@@ -2,20 +2,27 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nekoui/domain/repository/flag.dart';
+import 'package:nekoui/domain/service/environment.dart';
+import 'package:nekoui/provider/hive/flag.dart';
+import 'package:nekoui/store/flag.dart';
 
 import 'domain/model/neko.dart';
+import 'domain/repository/item.dart';
 import 'domain/repository/neko.dart';
 import 'domain/repository/skill.dart';
+import 'domain/repository/trait.dart';
 import 'domain/service/auth.dart';
 import 'domain/service/item.dart';
 import 'domain/service/neko.dart';
-import 'domain/service/skill.dart';
 import 'provider/hive/item.dart';
 import 'provider/hive/neko.dart';
 import 'provider/hive/skill.dart';
+import 'provider/hive/trait.dart';
 import 'store/item.dart';
 import 'store/neko.dart';
 import 'store/skill.dart';
+import 'store/trait.dart';
 import 'ui/auth/view.dart';
 import 'ui/home/router.dart';
 import 'ui/home/view.dart';
@@ -23,6 +30,7 @@ import 'ui/introduction/view.dart';
 import 'ui/widget/context_menu/overlay.dart';
 import 'ui/widget/lifecycle_observer.dart';
 import 'ui/widget/notification/view.dart';
+import 'ui/worker/necessities.dart';
 import 'ui/worker/skill.dart';
 import 'util/scoped_dependencies.dart';
 import 'util/web/web_utils.dart';
@@ -260,22 +268,31 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
             await deps.put(NekoHiveProvider()).init();
             await deps.put(ItemHiveProvider()).init();
             await deps.put(SkillHiveProvider()).init();
+            await deps.put(TraitHiveProvider()).init();
+            await deps.put(FlagHiveProvider()).init();
 
+            AbstractItemRepository itemRepository =
+                deps.put(ItemRepository(Get.find()));
+            deps.put(ItemService(itemRepository));
+
+            AbstractFlagRepository flagRepository =
+                deps.put(FlagRepository(Get.find()));
+            deps.put(EnvironmentService(flagRepository));
+
+            AbstractTraitRepository traitRepository =
+                deps.put(TraitRepository(Get.find()));
             AbstractSkillRepository skillRepository =
                 deps.put(SkillRepository(Get.find()));
-            SkillService skillService = deps.put(SkillService(skillRepository));
-
             AbstractNekoRepository nekoRepository = deps.put(NekoRepository(
               Get.find(),
               initial: _state.arguments is Neko ? _state.arguments : null,
             ));
-            deps.put(NekoService(nekoRepository));
 
-            ItemRepository itemRepository =
-                deps.put(ItemRepository(Get.find()));
-            deps.put(ItemService(itemRepository));
+            NekoService nekoService = deps.put(
+                NekoService(nekoRepository, skillRepository, traitRepository));
 
-            deps.put(SkillWorker(skillService, Get.find()));
+            deps.put(SkillWorker(nekoService, Get.find()));
+            deps.put(NecessitiesWorker(nekoService, Get.find()));
 
             return deps;
           },
@@ -368,8 +385,7 @@ extension RouteLinks on RouterState {
   void map({bool push = true}) => (push ? this.push : go)(Routes.map);
 
   /// Changes router location to the [Routes.settings] page.
-  void settings({bool push = false}) =>
-      (push ? this.push : go)(Routes.settings);
+  void settings({bool push = true}) => (push ? this.push : go)(Routes.settings);
 
   /// Changes router location to the [Routes.more] page.
   void more({bool push = true}) => (push ? this.push : go)(Routes.more);

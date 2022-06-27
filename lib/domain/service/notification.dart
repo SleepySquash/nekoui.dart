@@ -1,11 +1,10 @@
 import 'dart:async' show Timer;
 import 'dart:math';
 
-import 'package:audioplayers/audioplayers.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart' show IconData;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter/services.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 import '../disposable_service.dart';
 import '/util/obs/obs.dart';
@@ -23,9 +22,6 @@ class NotificationService extends DisposableService {
   /// Instance of a [FlutterLocalNotificationsPlugin] used to send notifications
   /// on non-web platforms.
   FlutterLocalNotificationsPlugin? _plugin;
-
-  /// [AudioPlayer] playing a notification sound.
-  AudioPlayer? _audioPlayer;
 
   /// Initializes this [NotificationService].
   ///
@@ -48,8 +44,9 @@ class NotificationService extends DisposableService {
       // user's interaction.
       WebUtils.onSelectNotification = onNotificationResponse;
     } else {
-      _initAudio();
       if (_plugin == null) {
+        tz.initializeTimeZones();
+
         _plugin = FlutterLocalNotificationsPlugin();
         await _plugin!.initialize(
           InitializationSettings(
@@ -68,14 +65,6 @@ class NotificationService extends DisposableService {
     }
   }
 
-  @override
-  void onClose() {
-    _audioPlayer?.dispose();
-    [AudioCache.instance.loadedFiles['audio/notification.mp3']]
-        .whereNotNull()
-        .forEach(AudioCache.instance.clear);
-  }
-
   // TODO: Implement icons and attachments on non-web platforms.
   /// Shows a notification with a [title] and an optional [body] and [icon].
   ///
@@ -85,7 +74,6 @@ class NotificationService extends DisposableService {
     String? body,
     String? payload,
     String? icon,
-    bool playSound = true,
   }) async {
     if (PlatformUtils.isWeb) {
       WebUtils.showNotification(
@@ -95,29 +83,43 @@ class NotificationService extends DisposableService {
         icon: icon,
       ).onError((_, __) => false);
     } else {
-      if (playSound) {
-        _audioPlayer?.play(
-          AssetSource('audio/notification.mp3'),
-          position: Duration.zero,
-        );
-      }
-
       await _plugin!.show(
         Random().nextInt(1 << 31),
         title,
         body,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            'com.instrumentisto.messenger',
-            'Gapopa',
-            playSound: playSound,
-            sound: const RawResourceAndroidNotificationSound('notification'),
-          ),
+        const NotificationDetails(
+          android:
+              AndroidNotificationDetails('com.melancholyhill.nekoui', 'nekoui'),
         ),
         payload: payload,
       );
     }
   }
+
+  Future<void> schedule(
+    String title, {
+    required Duration at,
+    int id = 0,
+    String? body,
+    String? payload,
+    String? icon,
+  }) async {
+    await _plugin!.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.now(tz.local).add(at),
+      const NotificationDetails(
+        android:
+            AndroidNotificationDetails('com.melancholyhill.nekoui', 'nekoui'),
+      ),
+      androidAllowWhileIdle: false,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
+  Future<void> cancel(int id) => _plugin!.cancel(id);
 
   void notify(LocalNotification notification) {
     notifications.add(notification);
@@ -129,16 +131,6 @@ class NotificationService extends DisposableService {
     });
 
     _timers.add(timer);
-  }
-
-  /// Initializes the [_audioPlayer].
-  Future<void> _initAudio() async {
-    try {
-      _audioPlayer = AudioPlayer(playerId: 'notificationPlayer');
-      // await AudioCache.instance.loadAll(['audio/notification.mp3']);
-    } on MissingPluginException {
-      _audioPlayer = null;
-    }
   }
 }
 

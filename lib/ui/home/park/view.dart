@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 import '/ui/home/neko/view.dart';
 import '/ui/home/room/view.dart';
-import '/ui/widget/neko.dart';
+import '../../widget/neko/chibi/view.dart';
 import 'controller.dart';
 
 class ParkView extends StatelessWidget {
@@ -41,11 +41,7 @@ class ParkView extends StatelessWidget {
                         child: SizedBox(
                           width: 70,
                           height: 70,
-                          child: NekoWidget(
-                            Get.find(),
-                            key: c.nekoKey,
-                            isPerson: false,
-                          ),
+                          child: NekoChibi(key: c.nekoKey),
                         ),
                       ),
                     ),

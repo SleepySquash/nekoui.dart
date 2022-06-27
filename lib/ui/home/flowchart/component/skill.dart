@@ -1,12 +1,42 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:nekoui/domain/model/skill.dart';
+import 'package:nekoui/ui/home/flowchart/controller.dart';
+import 'package:nekoui/ui/widget/delayed/delayed_scale.dart';
+import 'package:nekoui/util/obs/obs.dart';
 
-import '/domain/model/skill.dart';
-import '/ui/widget/delayed/delayed_scale.dart';
-import '/util/obs/obs.dart';
-import 'widget/hex_grid.dart';
-import 'widget/skill_oval.dart';
+import '../widget/hex_grid.dart';
+import '../widget/skill_oval.dart';
+
+class SkillTab extends StatelessWidget {
+  const SkillTab(this.c, {Key? key}) : super(key: key);
+
+  final FlowchartController c;
+
+  @override
+  Widget build(BuildContext context) {
+    return InteractiveViewer(
+      minScale: 0.5,
+      maxScale: 3,
+      transformationController: c.initial.transformation,
+      child: Center(
+        child: Obx(() {
+          Iterable<MapEntry<String, Skill>> skills = c.skills.entries;
+          return HexGrid(
+            children: skills
+                .mapIndexed((i, e) => AnimatedDelayedScale(
+                      delay: Duration(milliseconds: 5 * i),
+                      child: SkillOval(e),
+                    ))
+                .toList(),
+          );
+        }),
+      ),
+    );
+  }
+}
 
 class SkillSubView extends StatelessWidget {
   const SkillSubView({

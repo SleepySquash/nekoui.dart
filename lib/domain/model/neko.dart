@@ -2,40 +2,30 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 
 import '../model_type_id.dart';
-import '/util/obs/obs.dart';
 import 'mbti.dart';
 import 'mood.dart';
 import 'necessities.dart';
-import 'trait.dart';
-
-part 'neko.g.dart';
 
 /// Person representing a cat-girl.
 @HiveType(typeId: ModelTypeId.neko)
 class Neko extends HiveObject {
   Neko({
-    RxString? name,
-    RxInt? age,
-    RxInt? height,
-    RxInt? weight,
+    String? name,
+    int? age,
+    int? height,
+    int? weight,
     Necessities? necessities,
-    RxInt? affinity,
+    int? affinity,
     MBTI? mbti,
-    Map<String, Trait>? traits,
-  })  : name = name ?? RxString('Vanilla'),
-        age = age ?? 3.obs,
-        height = height ?? 60.obs,
-        weight = weight ?? 10.obs,
+    Mood mood = const Mood(0, 0),
+  })  : name = RxString(name ?? 'Vanilla'),
+        age = RxInt(age ?? 3),
+        height = RxInt(height ?? 60),
+        weight = RxInt(weight ?? 10),
         necessities = necessities ?? Necessities(),
-        affinity = affinity ?? 0.obs,
+        affinity = RxInt(affinity ?? 0),
         mbti = mbti ?? MBTI(),
-        traits = RxObsMap(traits ?? {}) {
-    if (this.necessities.areSatisfied) {
-      mood = Rx(Mood.neutral);
-    } else {
-      mood = Rx(Mood.exhausted);
-    }
-  }
+        mood = Rx(mood);
 
   /// Name given the this [Neko].
   @HiveField(0)
@@ -65,9 +55,6 @@ class Neko extends HiveObject {
   @HiveField(6)
   final MBTI mbti;
 
-  @HiveField(7)
-  final RxObsMap<String, Trait> traits;
-
   /// Reactive [Mood] of this [Neko].
-  late final Rx<Mood> mood;
+  final Rx<Mood> mood;
 }
