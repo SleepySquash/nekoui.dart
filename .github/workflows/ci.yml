@@ -77,7 +77,6 @@ jobs:
           cache: true
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: 
-            - build/app/outputs/flutter-apk/*.apk
+          artifacts: "build/app/outputs/flutter-apk/*.apk"
           allowUpdates: true
           token: ${{ secrets.TOKEN }}
