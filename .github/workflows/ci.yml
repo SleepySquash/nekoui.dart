@@ -24,6 +24,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     needs:
       - build
+      - dartdoc
     runs-on: ubuntu-latest
     steps:
       - run: true
@@ -50,24 +51,60 @@ jobs:
           flutter-version: $FLUTTER_VER
           channel: stable
           cache: true
-
       - run: make flutter.pub
-
       - run: make flutter.build platform=${{ matrix.platform }}
-
       - uses: actions/upload-artifact@v3
         with:
+          name: web
           path: build/web
         if: ${{ matrix.platform == 'web' }}
-      
       - uses: actions/upload-artifact@v3
         with:
-          path: build/app/outputs/flutter-apk/*.apk
+          name: apk
+          path: build/app/outputs/flutter-apk/app-release.apk
         if: ${{ matrix.platform == 'apk' }}
   
+  dartdoc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: $FLUTTER_VER
+          channel: stable
+          cache: true
+      - run: make flutter.pub
+      - run: make docs.dart clean=yes
+       - uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: doc/api
+
+
+
+
+  ###########
+  # Release #
+  ###########
+      
+  gh-pages:
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    runs-on: ubuntu-latest
+    needs:
+      - dartdoc
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+      - uses: actions/download-artifact@v3
+        with:
+          name: docs
+
   release:
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     runs-on: ubuntu-latest
+    needs:
+      - build
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -77,6 +114,6 @@ jobs:
           cache: true
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/app/outputs/flutter-apk/*.apk"
+          artifacts: "build/app/outputs/flutter-apk/app-release.apk"
           allowUpdates: true
           token: ${{ secrets.TOKEN }}

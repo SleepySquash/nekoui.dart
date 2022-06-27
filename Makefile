@@ -69,7 +69,7 @@ test: test.unit
 #	make flutter.analyze [dockerized=(no|yes)]
 
 flutter.analyze:
-ifeq ($(wildcard lib/api/backend/*.graphql.dart),)
+ifeq ($(wildcard lib/domain/model/*.g.dart),)
 	@make flutter.gen overwrite=yes dockerized=$(dockerized)
 endif
 ifeq ($(dockerized),yes)
@@ -90,7 +90,7 @@ endif
 #	                   [dockerized=(no|yes)]
 
 flutter.build:
-ifeq ($(wildcard lib/api/backend/*.graphql.dart),)
+ifeq ($(wildcard lib/domain/model/*.g.dart),)
 	@make flutter.gen overwrite=yes dockerized=$(dockerized)
 endif
 ifeq ($(dockerized),yes)
@@ -132,9 +132,6 @@ ifeq ($(dockerized),yes)
 else
 	flutter clean
 	rm -rf .cache/pub/ doc/ \
-	       lib/api/backend/*.dart \
-	       lib/api/backend/*.g.dart \
-	       lib/api/backend/*.graphql.dart \
 	       lib/domain/model/*.g.dart
 endif
 
@@ -195,7 +192,7 @@ endif
 #	                 [dart-env=<VAR1>=<VAL1>[,<VAR2>=<VAL2>...]]
 
 flutter.run:
-ifeq ($(wildcard lib/api/backend/*.graphql.dart),)
+ifeq ($(wildcard lib/domain/model/*.g.dart),)
 	@make flutter.gen overwrite=yes dockerized=$(dockerized)
 endif
 	flutter run $(if $(call eq,$(debug),no),--release,) \
@@ -215,7 +212,7 @@ endif
 #	make test.unit [dockerized=(no|yes)]
 
 test.unit:
-ifeq ($(wildcard lib/api/backend/*.graphql.dart),)
+ifeq ($(wildcard lib/domain/model/*.g.dart),)
 	@make flutter.gen overwrite=yes dockerized=$(dockerized)
 endif
 ifeq ($(dockerized),yes)
@@ -242,7 +239,7 @@ endif
 #	               [clean=(no|yes)]
 
 docs.dart:
-ifeq ($(wildcard lib/api/backend/*.graphql.dart),)
+ifeq ($(wildcard lib/domain/model/*.g.dart),)
 	@make flutter.gen overwrite=yes dockerized=$(dockerized)
 endif
 ifeq ($(clean),yes)
