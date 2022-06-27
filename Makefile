@@ -19,10 +19,19 @@ rwildcard = $(strip $(wildcard $(1)$(2))\
 # Project parameters #
 ######################
 
+RELEASE_BRANCH := release
+MAINLINE_BRANCH := main
+CURRENT_BRANCH := $(strip $(if $(call eq,$(CI),),\
+	$(shell git branch | grep \* | cut -d ' ' -f2),$(github.ref_name)))
+
+VERSION ?= $(strip $(shell grep -m1 'version: ' pubspec.yaml | cut -d ' ' -f2))
 FLUTTER_VER ?= $(strip \
 	$(shell grep -m1 'FLUTTER_VER: ' .github/workflows/ci.yml | cut -d':' -f2 \
                                                               | tr -d'"'))
 
+
+e:
+	echo $(CURRENT_BRANCH)
 
 
 
@@ -290,6 +299,31 @@ copyright:
 			$(call rwildcard,,*.kt) \
 			web/index.html \
 			Dockerfile
+
+
+
+
+################
+# Git commands #
+################
+
+# Release project version (merge to release branch and apply version tag).
+#
+# Usage:
+#	make git.release [VERSION=<proj-ver>]
+
+git.release:
+ifneq ($(CURRENT_BRANCH),$(MAINLINE_BRANCH))
+	@echo "--> Current branch is not '$(MAINLINE_BRANCH)'" && false
+endif
+	git fetch origin --tags $(RELEASE_BRANCH):$(RELEASE_BRANCH)
+ifeq ($(shell git rev-parse v$(VERSION) >/dev/null 2>&1 && echo "ok"),ok)
+	@echo "--> Tag v$(VERSION) already exists" && false
+endif
+	git fetch . $(MAINLINE_BRANCH):$(RELEASE_BRANCH)
+	git tag v$(VERSION) $(RELEASE_BRANCH)
+	git push origin $(RELEASE_BRANCH)
+	git push --tags origin $(RELEASE_BRANCH)
 
 
 
