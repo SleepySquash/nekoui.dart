@@ -40,6 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         platform:
+          - apk
           - web
     runs-on: ubuntu-latest
     steps:
@@ -53,3 +54,30 @@ jobs:
       - run: make flutter.pub
 
       - run: make flutter.build platform=${{ matrix.platform }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: build/web
+        if: ${{ matrix.platform == 'web' }}
+      
+      - uses: actions/upload-artifact@v3
+        with:
+          path: build/app/outputs/flutter-apk/*.apk
+        if: ${{ matrix.platform == 'apk' }}
+  
+  release:
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: $FLUTTER_VER
+          channel: stable
+          cache: true
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: 
+            - build/app/outputs/flutter-apk/*.apk
+          allowUpdates: true
+          token: ${{ secrets.TOKEN }}
