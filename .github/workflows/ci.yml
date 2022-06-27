@@ -104,7 +104,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./main
-          destination_dir: release
+          destination_dir: main
           commit_message: ${{ github.event.head_commit.message }}
           keep_files: true
           user_name: 'github-actions[bot]'
