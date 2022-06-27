@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+  pull_request:
+    branches: ["main"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VER: "3.0"
+
+jobs:
+
+  ################
+  # Pull Request #
+  ################
+
+  pr:
+    if: ${{ github.event_name == 'pull_request' }}
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
+
+
+
+
+  
+  ############
+  # Building #
+  ############
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: $FLUTTER_VER
+          channel: stable
+          cache: true
+
+      - run: make flutter.pub
+
+      - run: make flutter.build platform=${{ matrix.platform }}

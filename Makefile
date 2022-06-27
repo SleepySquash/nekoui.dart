@@ -7,13 +7,10 @@ comma := ,
 # Checks two given strings for equality.
 eq = $(if $(or $(1),$(2)),$(and $(findstring $(1),$(2)),\
                                 $(findstring $(2),$(1))),1)
-# Makes given string usable in URL.
-# Analogue of slugify() function from GitLab:
-# https://gitlab.com/gitlab-org/gitlab-foss/blob/master/lib/gitlab/utils.rb
-slugify = $(strip $(shell echo $(2) | tr [:upper:] [:lower:] \
-                                    | tr -c [:alnum:] - \
-                                    | cut -c 1-$(1) \
-                                    | sed -e 's/^-*//' -e 's/-*$$//'))
+
+# Recursively lists all files in the given directory with the given pattern.
+rwildcard = $(strip $(wildcard $(1)$(2))\
+                    $(foreach d,$(wildcard $(1)*),$(call rwildcard,$(d)/,$(2))))
 
 
 
@@ -22,14 +19,9 @@ slugify = $(strip $(shell echo $(2) | tr [:upper:] [:lower:] \
 # Project parameters #
 ######################
 
-VERSION ?= $(strip $(shell grep -m1 'version: ' pubspec.yaml | cut -d ' ' -f2))
-FLUTTER_VER ?= $(strip $(shell grep -m1 'FLUTTER_VER: ' .gitlab-ci.yml \
-                               | cut -d ':' -f2 | cut -d "'" -f2))
-
-SENTRY_AUTH_TOKEN ?= $(strip $(shell grep 'SENTRY_AUTH_TOKEN=' .env | cut -d '=' -f2))
-SENTRY_PROJECT ?= $(strip $(shell grep 'SENTRY_PROJECT=' .env | cut -d '=' -f2))
-SENTRY_ORG ?= $(strip $(shell grep 'SENTRY_ORG=' .env | cut -d '=' -f2))
-SENTRY_URL ?= $(strip $(shell grep 'SENTRY_URL=' .env | cut -d '=' -f2))
+FLUTTER_VER ?= $(strip \
+	$(shell grep -m1 'FLUTTER_VER: ' .github/workflows/ci.yml | cut -d':' -f2 \
+                                                              | tr -d'"'))
 
 
 
@@ -41,16 +33,13 @@ SENTRY_URL ?= $(strip $(shell grep 'SENTRY_URL=' .env | cut -d '=' -f2))
 build: flutter.build
 
 
-clean: clean.e2e clean.flutter
+clean: clean.flutter
 
 
 deps: flutter.pub
 
 
 docs: docs.dart
-
-
-e2e: test.e2e
 
 
 fmt: flutter.fmt
@@ -63,9 +52,6 @@ lint: flutter.analyze
 
 
 run: flutter.run
-
-
-serve: flutter.serve
 
 
 test: test.unit
@@ -83,7 +69,7 @@ test: test.unit
 #	make flutter.analyze [dockerized=(no|yes)]
 
 flutter.analyze:
-ifeq ($(wildcard lib/provider/hive/*.g.dart),)
+ifeq ($(wildcard lib/api/backend/*.graphql.dart),)
 	@make flutter.gen overwrite=yes dockerized=$(dockerized)
 endif
 ifeq ($(dockerized),yes)
@@ -104,7 +90,7 @@ endif
 #	                   [dockerized=(no|yes)]
 
 flutter.build:
-ifeq ($(wildcard lib/provider/hive/*.g.dart),)
+ifeq ($(wildcard lib/api/backend/*.graphql.dart),)
 	@make flutter.gen overwrite=yes dockerized=$(dockerized)
 endif
 ifeq ($(dockerized),yes)
@@ -128,11 +114,12 @@ else
 	flutter build $(or $(platform),apk) --release \
 		$(if $(call eq,$(platform),web),--web-renderer html --source-maps,) \
 		$(if $(call eq,$(or $(platform),apk),apk),--split-debug-info=symbols,) \
-		$(if $(call eq,$(dart-env),),,--dart-define=$(dart-env))
+		$(if $(call eq,$(dart-env),),,--dart-define=$(dart-env)) \
+		$(if $(call eq,$(platform),ios),--no-codesign,)
 endif
 
 
-# Clean all the Flutter dependencies and generated files.
+# Clean all Flutter dependencies and generated files.
 #
 # Usage:
 #	make flutter.clean [dockerized=(no|yes)]
@@ -167,7 +154,7 @@ else
 endif
 
 
-# Run `build_runner` Flutter tool to generate project Dart code.
+# Run `build_runner` Flutter tool to generate project Dart sources.
 #
 # Usage:
 #	make flutter.gen [overwrite=(yes|no)] [dockerized=(no|yes)]
@@ -208,34 +195,12 @@ endif
 #	                 [dart-env=<VAR1>=<VAL1>[,<VAR2>=<VAL2>...]]
 
 flutter.run:
-ifeq ($(wildcard lib/provider/hive/*.g.dart),)
+ifeq ($(wildcard lib/api/backend/*.graphql.dart),)
 	@make flutter.gen overwrite=yes dockerized=$(dockerized)
 endif
 	flutter run $(if $(call eq,$(debug),no),--release,) \
 		$(if $(call eq,$(device),),,-d $(device)) \
 		$(if $(call eq,$(dart-env),),,--dart-define=$(dart-env))
-
-
-# Set up Docker Compose development environment and start the application.
-#
-# Usage:
-#	make flutter.serve [debug=(yes|no)]
-#	                   [device=(<device-id>|linux|macos|windows|chrome)]
-#	                   [dart-env=<VAR1>=<VAL1>[,<VAR2>=<VAL2>...]]
-
-flutter.serve:
-	make docker.up background=yes log=no
-	make flutter.run debug=$(debug) device=$(device) dart-env='$(dart-env)'
-
-
-# Show project version from Flutter's Pub manifest.
-#
-# Usage:
-#	make flutter.version
-
-flutter.version:
-	@printf "$(VERSION)"
-
 
 
 
@@ -244,51 +209,13 @@ flutter.version:
 # Testing commands #
 ####################
 
-# Run Flutter E2E tests.
-#
-# Usage:
-#	make test.e2e [( [start-app=no]
-#	               | start-app=yes [TAG=(dev|<docker-tag>)]
-#	                               [no-cache=(no|yes)]
-#	                               [pull=(no|yes)] )]
-#	              [device=(chrome|web-server|macos|linux|windows|<device-id>)]
-#	              [dockerized=(no|yes)]
-#	              [gen=(no|yes)]
-
-test.e2e:
-ifeq ($(if $(call eq,$(gen),yes),,$(wildcard test/e2e/*.g.dart)),)
-	@make flutter.gen overwrite=yes dockerized=$(dockerized)
-endif
-ifeq ($(start-app),yes)
-	@make docker.up TAG=$(TAG) no-cache=$(no-cache) pull=$(pull) \
-	                background=yes log=no
-	while ! timeout 1 bash -c "echo > /dev/tcp/localhost/4444"; do sleep 1; done
-	docker logs -f socmob-webdriver-chrome &
-endif
-ifeq ($(dockerized),yes)
-	docker run --rm -v "$(PWD)":/app -w /app \
-	           --network=container:socmob-mobile \
-	           -v "$(HOME)/.pub-cache":/usr/local/flutter/.pub-cache \
-		ghcr.io/instrumentisto/flutter:$(FLUTTER_VER) \
-			make test.e2e dockerized=no start-app=no gen=no device=$(device)
-else
-	flutter drive --headless -d $(or $(device),chrome) \
-		--web-renderer html --web-port 50000 \
-		--driver=test_driver/integration_test_driver.dart \
-		--target=test/e2e/suite.dart
-endif
-ifeq ($(start-app),yes)
-	@make docker.down
-endif
-
-
 # Run Flutter unit tests.
 #
 # Usage:
 #	make test.unit [dockerized=(no|yes)]
 
 test.unit:
-ifeq ($(wildcard lib/provider/hive/*.g.dart),)
+ifeq ($(wildcard lib/api/backend/*.graphql.dart),)
 	@make flutter.gen overwrite=yes dockerized=$(dockerized)
 endif
 ifeq ($(dockerized),yes)
@@ -315,7 +242,7 @@ endif
 #	               [clean=(no|yes)]
 
 docs.dart:
-ifeq ($(wildcard lib/provider/hive/*.g.dart),)
+ifeq ($(wildcard lib/api/backend/*.graphql.dart),)
 	@make flutter.gen overwrite=yes dockerized=$(dockerized)
 endif
 ifeq ($(clean),yes)
@@ -340,65 +267,32 @@ endif
 # Cleaning commands #
 #####################
 
-# Clean E2E tests generated cache.
-#
-# Usage:
-#	make clean.e2e
-
-clean.e2e:
-	rm -rf .dart_tool/build/generated/nekoui/integration_test \
-	       test/e2e/gherkin/reports/
-
-
 clean.flutter: flutter.clean
 
 
 
 
-###################
-# Sentry commands #
-###################
+######################
+# Copyright commands #
+######################
 
-# Upload source maps and debug symbols to Sentry.
+# Populate project sources with copyright notice.
 #
 # Usage:
-#	make sentry.upload [token=<SENTRY_AUTH_TOKEN>]
-#	                   [project=<SENTRY_PROJECT_NAME>]
-#	                   [org=<SENTRY_ORG_NAME>]
-#	                   [url=<SENTRY_URL>] [dockerized=(no|yes)]
+#	make copyright [check=(no|yes)]
 
-sentry-auth-token = $(or $(token),$(SENTRY_AUTH_TOKEN))
-sentry-project = $(or $(project),$(SENTRY_PROJECT))
-sentry-org = $(or $(org),$(SENTRY_ORG))
-sentry-url = $(or $(url),$(SENTRY_URL))
-
-sentry.upload:
-ifeq ($(sentry-auth-token),)
-	$(error Sentry API authorization token must be specified via `token` argument)
-endif
-ifeq ($(sentry-project),)
-	$(error Sentry project name must be specified via `project` argument)
-endif
-ifeq ($(sentry-org),)
-	$(error Sentry organization name must be specified via `org` argument)
-endif
-ifeq ($(sentry-url),)
-	$(error Sentry URL must be specified via `url` argument)
-endif
-ifeq ($(dockerized),yes)
-	docker run --rm -v "$(PWD)":/app -w /app \
-		-v "$(HOME)/.pub-cache":/root/.pub-cache \
-		ghcr.io/instrumentisto/flutter:$(FLUTTER_VER) \
-			make sentry.upload dockerized=no token=$(token) \
-			                   project=$(project) org=$(org)
-else
-	SENTRY_AUTH_TOKEN=$(sentry-auth-token) \
-	SENTRY_PROJECT=$(sentry-project) \
-	SENTRY_ORG=$(sentry-org) \
-	SENTRY_URL=$(sentry-url) \
-	flutter packages pub run sentry_dart_plugin
-endif
-
+copyright:
+	docker run --rm -v "$(PWD)":/src -w /src \
+		ghcr.io/google/addlicense \
+			-f NOTICE $(if $(call eq,$(check),yes),-check,-v) \
+			$(foreach pat,\
+				$(shell grep -v '#' .gitignore | sed 's/^\///' | grep '\S'),\
+					-ignore '$(pat)') \
+			$(call rwildcard,,*.dart) \
+			$(call rwildcard,,*.graphql) \
+			$(call rwildcard,,*.kt) \
+			web/index.html \
+			Dockerfile
 
 
 
@@ -407,18 +301,10 @@ endif
 # .PHONY section #
 ##################
 
-.PHONY: build clean deps docs down e2e fmt gen lint run serve test up \
-        clean.e2e clean.flutter clean.yarn \
+.PHONY: build clean deps docs fmt gen lint run test \
+        clean.flutter \
+        copyright \
         docs.dart \
         flutter.analyze flutter.clean flutter.build flutter.fmt flutter.gen \
-        	flutter.pub flutter.run flutter.serve flutter.version \
-        docker.auth docker.build docker.down docker.pull docker.push \
-        	docker.tag docker.tar docker.untar docker.up \
-        git.release git.squash \
-        gitlab.release.notes \
-        helm helm.build helm.dep helm.down helm.lint helm.list helm.up \
-        	helm.discover.sftp \
-        minikube.boot \
-        sentry.upload \
-        test.e2e test.unit \
-        yarn yarn.clean
+            flutter.pub flutter.run \
+        test.unit
