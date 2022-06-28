@@ -209,6 +209,15 @@ endif
 		$(if $(call eq,$(dart-env),),,--dart-define=$(dart-env))
 
 
+# Show project version from Flutter's Pub manifest.
+#
+# Usage:
+#	make flutter.version
+
+flutter.version:
+	@printf "$(VERSION)"
+
+
 
 
 ####################
@@ -299,6 +308,36 @@ copyright:
 			$(call rwildcard,,*.kt) \
 			web/index.html \
 			Dockerfile
+
+
+
+
+###################
+# GitHub commands #
+###################
+
+# Prepare release notes for GitHub release.
+#
+# Usage:
+#	make github.release.notes [VERSION=<proj-version>]
+#	     [project-url=(https://github.com/team113/messenger|<github-project-url>)]
+
+github-proj-url = $(strip $(or $(project-url),\
+	https://github.com/team113/messenger))
+
+github.release.notes:
+	@echo "$(strip \
+		[Changelog]($(github-proj-url)/-/blob/v$(VERSION)/CHANGELOG.md#$(shell \
+			sed -n '/^## \[$(VERSION)\]/{\
+				s/^## \[\(.*\)\][^0-9]*\([0-9].*\)/\1-\2/;\
+				s/[^0-9a-z-]*//g;\
+				p;\
+			}' CHANGELOG.md)) | \
+		[Milestone]($(github-proj-url)/-/milestones/$(shell \
+			sed -n '/^## \[$(VERSION)\]/,/Milestone/{\
+				s/.*milestones.\([0-9]*\).*/\1/p;\
+			}' CHANGELOG.md)) | \
+		[Repository]($(github-proj-url)/-/tree/v$(VERSION)))"
 
 
 
