@@ -200,7 +200,5 @@ jobs:
           artifacts: "**/*.apk, windows.zip, linux.zip, web.zip, docs.zip"
           allowUpdates: true
           name: $(make flutter.version)
-          tag_name: $CI_COMMIT_TAG
-          milestones: ['$(make flutter.version)']
           bodyFile: ./release_notes.md
           token: ${{ secrets.GITHUB_TOKEN }}
