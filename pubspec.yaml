@@ -55,7 +55,6 @@ flutter:
     - assets/images/room/
     - assets/images/ui/
     - assets/rive/
-    - assets/sounds/
     - pubspec.yaml
 
   # An image asset can refer to one or more resolution-specific "variants", see
