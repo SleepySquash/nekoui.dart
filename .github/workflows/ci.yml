@@ -154,8 +154,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: test "$CI_COMMIT_TAG" == "v$(make flutter.version)"
-      - run: make gitlab.release.notes project-url="$CI_PROJECT_URL"
-        > ./release_notes.md
+      - run: make gitlab.release.notes project-url="$CI_PROJECT_URL" > ./release_notes.md
       - uses: actions/download-artifact@v3
         with:
           name: apk
