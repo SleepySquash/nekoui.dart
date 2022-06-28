@@ -327,17 +327,17 @@ github-proj-url = $(strip $(or $(project-url),\
 
 github.release.notes:
 	@echo "$(strip \
-		[Changelog]($(github-proj-url)/-/blob/v$(VERSION)/CHANGELOG.md#$(shell \
+		[Changelog]($(github-proj-url)/blob/v$(VERSION)/CHANGELOG.md#$(shell \
 			sed -n '/^## \[$(VERSION)\]/{\
 				s/^## \[\(.*\)\][^0-9]*\([0-9].*\)/\1-\2/;\
 				s/[^0-9a-z-]*//g;\
 				p;\
 			}' CHANGELOG.md)) | \
-		[Milestone]($(github-proj-url)/-/milestones/$(shell \
+		[Milestone]($(github-proj-url)/milestone/$(shell \
 			sed -n '/^## \[$(VERSION)\]/,/Milestone/{\
 				s/.*milestones.\([0-9]*\).*/\1/p;\
 			}' CHANGELOG.md)) | \
-		[Repository]($(github-proj-url)/-/tree/v$(VERSION)))"
+		[Repository]($(github-proj-url)/tree/v$(VERSION)))"
 
 
 

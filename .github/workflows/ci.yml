@@ -183,6 +183,6 @@ jobs:
         with:
           artifacts: "**/*.apk, windows.zip, linux.zip, web.zip, docs.zip"
           allowUpdates: true
-          name: $(make flutter.version)
+          name: ${{ github.ref_name }}
           bodyFile: ./release_notes.md
           token: ${{ secrets.GITHUB_TOKEN }}
