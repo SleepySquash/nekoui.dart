@@ -50,8 +50,8 @@ class InventoryView extends StatelessWidget {
                             child: DragTarget<Item>(
                               onAccept: (i) {
                                 c.use(i);
-                                c.lockDragging();
-                                Navigator.of(context).pop();
+                                // c.lockDragging();
+                                // Navigator.of(context).pop();
                               },
                               builder: ((context, candidates, rejected) {
                                 return Center(
@@ -89,67 +89,33 @@ class InventoryView extends StatelessWidget {
                   curve: Curves.ease,
                   offset:
                       c.isDragging.value ? const Offset(-0.9, 0) : Offset.zero,
-                  child: Scaffold(
-                    backgroundColor: Colors.white,
-                    body: SafeArea(
-                      child: Obx(() {
-                        return c.items.isEmpty
-                            ? const Center(child: Text('Empty'))
-                            : Center(
-                                child: Wrap(
-                                  children: c.items.values.map(
-                                    (e) {
-                                      return Draggable<Item>(
-                                        dragAnchorStrategy:
-                                            pointerDragAnchorStrategy,
-                                        onDragStarted: () =>
-                                            c.setDragging(true),
-                                        onDragCompleted: () =>
-                                            c.setDragging(false),
-                                        onDragEnd: (d) => c.setDragging(false),
-                                        onDraggableCanceled: (d, v) =>
-                                            c.setDragging(false),
-                                        rootOverlay: true,
-                                        data: e,
-                                        feedback: Transform.translate(
-                                          offset: const Offset(-20, -20),
-                                          child: SizedBox(
-                                            width: 40,
-                                            height: 40,
-                                            child: Image(
-                                                image: AssetImage(e.asset)),
-                                          ),
-                                        ),
-                                        child: Container(
-                                          width: 100,
-                                          height: 100,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            color: const Color(0xFFDDDDDD),
-                                          ),
-                                          margin: const EdgeInsets.all(8),
-                                          padding: const EdgeInsets.all(8),
-                                          child: Badge(
-                                            badgeContent: Text(
-                                              '${e.count}',
-                                              style: const TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                            child: Image(
-                                                image: AssetImage(e.asset)),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ).toList(),
-                                ),
-                              );
-                      }),
-                    ),
-                    floatingActionButton: FloatingActionButton(
-                      onPressed: Navigator.of(context).pop,
-                      child: const Icon(Icons.close),
+                  child: DefaultTabController(
+                    length: 3,
+                    child: Scaffold(
+                      backgroundColor: Colors.white,
+                      appBar: AppBar(
+                        automaticallyImplyLeading: false,
+                        title: const TabBar(
+                          tabs: [
+                            Tab(text: 'Food', icon: Icon(Icons.fastfood)),
+                            Tab(text: 'Gifts', icon: Icon(Icons.favorite)),
+                            Tab(text: 'Stuff', icon: Icon(Icons.add_box)),
+                          ],
+                        ),
+                      ),
+                      body: SafeArea(
+                        child: TabBarView(
+                          children: [
+                            _buildItems(c, InventoryCategory.food),
+                            _buildItems(c, InventoryCategory.gift),
+                            _buildItems(c, InventoryCategory.stuff),
+                          ],
+                        ),
+                      ),
+                      floatingActionButton: FloatingActionButton(
+                        onPressed: Navigator.of(context).pop,
+                        child: const Icon(Icons.close),
+                      ),
                     ),
                   ),
                 ),
@@ -159,5 +125,85 @@ class InventoryView extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Widget _buildItems(InventoryController c, InventoryCategory category) {
+    return Obx(() {
+      Iterable<MapEntry<String, Item>> items = {};
+
+      switch (category) {
+        case InventoryCategory.food:
+          items = c.items.entries.where((e) => e.value is Consumable);
+          break;
+
+        case InventoryCategory.gift:
+          items = c.items.entries.where((e) => e.value is Giftable);
+          break;
+
+        case InventoryCategory.stuff:
+          items = c.items.entries
+              .where((e) => e.value is! Consumable && e.value is! Giftable);
+          break;
+      }
+
+      if (items.isEmpty) {
+        return Center(
+          key: Key(category.name),
+          child: const Text('Empty'),
+        );
+      }
+
+      return Center(
+        key: Key(category.name),
+        child: Wrap(
+          children: items.map(
+            (e) {
+              return Draggable<Item>(
+                dragAnchorStrategy: pointerDragAnchorStrategy,
+                onDragStarted: () => c.setDragging(true),
+                onDragCompleted: () => c.setDragging(false),
+                onDragEnd: (d) => c.setDragging(false),
+                onDraggableCanceled: (d, v) => c.setDragging(false),
+                rootOverlay: true,
+                data: e.value,
+                feedback: Transform.translate(
+                  offset: const Offset(-20, -20),
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Image(
+                      image: AssetImage(
+                        e.value.asset,
+                      ),
+                    ),
+                  ),
+                ),
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: const Color(0xFFDDDDDD),
+                  ),
+                  margin: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
+                  child: Badge(
+                    badgeContent: Text(
+                      '${e.value.count}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    child: Image(
+                      image: AssetImage(
+                        e.value.asset,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ).toList(),
+        ),
+      );
+    });
   }
 }

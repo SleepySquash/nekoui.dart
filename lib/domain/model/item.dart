@@ -15,6 +15,7 @@ abstract class Item extends HiveObject {
 }
 
 mixin Consumable on Item {}
+mixin Giftable on Item {}
 
 /// [Item] that is edible by a [Neko].
 mixin Eatable implements Consumable {

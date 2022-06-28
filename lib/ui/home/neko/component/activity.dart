@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nekoui/ui/novel/novel.dart';
 
-import '/ui/widget/backdrop_button.dart';
 import '../controller.dart';
 
 class ActivityScreen extends StatelessWidget {
@@ -11,26 +9,25 @@ class ActivityScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var activities = [
-      BackdropBubble(
-        text: 'Сходить в парк',
-        icon: Icons.favorite,
-        color: Colors.red,
-        onTap: () async {
-          await Novel.show(
-            context: context,
-            scenario: [
-              BackgroundLine('park.jpg', wait: false),
-              CharacterLine('person.png'),
-              DialogueLine('Вау, тут так красиво!', by: c.name),
-              DialogueLine('Спасибо, что сходил со мной!! :3', by: c.name),
-            ],
-          );
+    List<Widget> bubbles = c.activities.map((e) => e.build()).toList();
 
-          c.talk(affinity: 2);
-        },
-      ),
-    ];
+    bool left = true;
+    List<Widget> rows = [];
+    for (int i = 0; i < bubbles.length; ++i) {
+      var e = bubbles[i];
+      rows.add(
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (left) const Spacer(flex: 10),
+            Flexible(flex: 10, child: e),
+            if (!left) const Spacer(flex: 10),
+          ],
+        ),
+      );
+
+      left = !left;
+    }
 
     return Stack(
       key: const Key('ActivityScreen'),
@@ -38,7 +35,17 @@ class ActivityScreen extends StatelessWidget {
         Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Wrap(children: activities),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: rows
+                  .map((e) => Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: e,
+                        ),
+                      ))
+                  .toList(),
+            ),
           ),
         ),
       ],

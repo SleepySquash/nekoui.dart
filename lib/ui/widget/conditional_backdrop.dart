@@ -109,6 +109,12 @@ class _AnimatedBackdropFilterState extends State<AnimatedBackdropFilter>
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: CurvedAnimation(curve: widget.curve, parent: _controller),

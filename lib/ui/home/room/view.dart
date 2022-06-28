@@ -14,7 +14,7 @@ import 'controller.dart';
 class RoomView extends StatelessWidget {
   const RoomView({Key? key}) : super(key: key);
 
-  static Widget weather(Rx<Weather?> weather, RxnDouble tempreature) {
+  static Widget weather(Rx<Weather> weather, RxDouble tempreature) {
     return Obx(() {
       Widget? icon;
 

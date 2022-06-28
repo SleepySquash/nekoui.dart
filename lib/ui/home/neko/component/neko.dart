@@ -45,7 +45,7 @@ class NekoScreen extends StatelessWidget {
                         BackdropIconButton(
                           icon: Icons.help,
                           text: text ? 'Просьба' : null,
-                          onTap: () => c.screen.value = NekoViewScreen.request,
+                          onTap: () => c.open(NekoViewScreen.request),
                         ),
                         0,
                       ),
@@ -56,7 +56,7 @@ class NekoScreen extends StatelessWidget {
                         BackdropIconButton(
                           icon: Icons.chat_rounded,
                           text: text ? 'Поговорить' : null,
-                          onTap: () => c.screen.value = NekoViewScreen.talk,
+                          onTap: () => c.open(NekoViewScreen.talk),
                         ),
                         1,
                       ),
@@ -67,7 +67,7 @@ class NekoScreen extends StatelessWidget {
                         BackdropIconButton(
                           icon: Icons.attractions,
                           text: text ? 'Занятие' : null,
-                          onTap: () => c.screen.value = NekoViewScreen.activity,
+                          onTap: () => c.open(NekoViewScreen.activity),
                         ),
                         2,
                       ),
@@ -78,7 +78,7 @@ class NekoScreen extends StatelessWidget {
                         BackdropIconButton(
                           icon: Icons.handshake_rounded,
                           text: text ? 'Действие' : null,
-                          onTap: () => c.screen.value = NekoViewScreen.action,
+                          onTap: () => c.open(NekoViewScreen.action),
                         ),
                         3,
                       ),

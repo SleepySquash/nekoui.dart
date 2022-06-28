@@ -72,7 +72,8 @@ class _DialogueWidgetState extends State<DialogueWidget> {
                   //  color: Colors.red,
                   constraints: const BoxConstraints(maxWidth: 700),
                   margin: EdgeInsets.symmetric(
-                      horizontal: context.isMobile ? 10 : 100),
+                    horizontal: context.isMobile ? 10 : 100,
+                  ),
                   width: 700,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +101,7 @@ class _DialogueWidgetState extends State<DialogueWidget> {
                               strokeColor: outline2,
                               strokeWidth: 6,
                               child: Text(
-                                '$_text',
+                                _text,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 24,
@@ -125,13 +126,17 @@ class _DialogueWidgetState extends State<DialogueWidget> {
   void _progress() {
     Future.delayed(10.milliseconds, () {
       if (mounted) {
-        ++_i;
-        setState(() => _text = '「${widget.text.substring(0, _i)}');
-
-        if (_i < widget.text.length) {
-          _progress();
+        if (_i >= widget.text.length - 1) {
+          setState(() => _text = '$_text」');
         } else {
-          _text = '$_text」';
+          ++_i;
+          setState(() => _text = '「${widget.text.substring(0, _i)}');
+
+          if (_i < widget.text.length) {
+            _progress();
+          } else {
+            _text = '$_text」';
+          }
         }
       }
     });

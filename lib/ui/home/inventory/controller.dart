@@ -35,3 +35,9 @@ class InventoryController extends GetxController {
     }
   }
 }
+
+enum InventoryCategory {
+  food,
+  gift,
+  stuff,
+}

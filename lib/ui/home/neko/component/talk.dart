@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:nekoui/ui/novel/novel.dart';
-import 'package:nekoui/ui/widget/backdrop_button.dart';
 
 import '../controller.dart';
+import '/ui/widget/backdrop_button.dart';
 
 class TalkScreen extends StatelessWidget {
   const TalkScreen(this.c, {Key? key}) : super(key: key);
@@ -11,89 +10,12 @@ class TalkScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var topics = [
-      BackdropBubble(
-        text: 'Мне нравится твоя улыбка',
-        icon: Icons.favorite,
-        color: Colors.red,
-        onTap: () async {
-          await Novel.show(
-            context: context,
-            scenario: [
-              ObjectLine(BackdropRect(), wait: false),
-              CharacterLine('person.png', duration: Duration.zero),
-              DialogueLine('Ух ты!', by: c.name),
-            ],
-          );
-
-          c.talk(affinity: 1);
-        },
-      ),
-      BackdropBubble(
-        text: 'Как дела с учёбой?',
-        icon: Icons.school,
-        color: Colors.blueGrey,
-        onTap: () async {
-          await Novel.show(
-            context: context,
-            scenario: [
-              ObjectLine(BackdropRect(), wait: false),
-              CharacterLine('person.png', duration: Duration.zero),
-              DialogueLine('Памаги...', by: c.name),
-            ],
-          );
-
-          c.talk(affinity: 1);
-        },
-      ),
-      const BackdropBubble(
-        text: 'Проголодалась?',
-        icon: Icons.fastfood,
-        color: Colors.orange,
-      ),
-      const BackdropBubble(
-        text: 'Хочешь чем-нибудь заняться?',
-        icon: Icons.people,
-        color: Colors.pink,
-      ),
-      const BackdropBubble(
-        text: 'Как тебе "Тортик"?',
-        icon: Icons.fastfood,
-        color: Colors.orange,
-      ),
-      BackdropBubble(
-        text: 'Про теорему Пифагора',
-        icon: Icons.school,
-        color: Colors.blueGrey,
-        onTap: () async {
-          await Novel.show(
-            context: context,
-            scenario: [
-              ObjectLine(BackdropRect(), wait: false),
-              CharacterLine('person.png', duration: Duration.zero),
-              DialogueLine(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi cursus velit magna.',
-                by: c.name,
-              ),
-            ],
-          );
-
-          c.talk(affinity: 1);
-        },
-      ),
-      const BackdropBubble(
-        text: 'Как ты любишь проводить время?',
-        icon: Icons.chat,
-        color: Colors.blue,
-      ),
-    ];
+    List<Widget> bubbles = c.topics.map((e) => e.build()).toList();
 
     bool left = true;
-
     List<Widget> rows = [];
-
-    for (int i = 0; i < topics.length; ++i) {
-      var e = topics[i];
+    for (int i = 0; i < bubbles.length; ++i) {
+      var e = bubbles[i];
       rows.add(
         Row(
           mainAxisSize: MainAxisSize.min,

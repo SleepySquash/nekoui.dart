@@ -1,4 +1,4 @@
-import 'package:collection/collection.dart';
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -7,11 +7,7 @@ import 'package:nekoui/ui/home/flowchart/component/progress.dart';
 import 'package:nekoui/ui/home/flowchart/component/skill.dart';
 import 'package:nekoui/ui/home/flowchart/widget/keep_alive.dart';
 
-import 'widget/skill_oval.dart';
-import '/ui/widget/delayed/delayed_scale.dart';
-import '/domain/model/skill.dart';
 import 'controller.dart';
-import 'widget/hex_grid.dart';
 
 class FlowchartView extends StatelessWidget {
   const FlowchartView({Key? key}) : super(key: key);
@@ -56,11 +52,27 @@ class FlowchartView extends StatelessWidget {
               backgroundColor: Colors.white,
               appBar: AppBar(
                 automaticallyImplyLeading: false,
-                title: const TabBar(
+                title: TabBar(
                   tabs: [
-                    Tab(icon: Icon(Icons.book)),
-                    Tab(icon: Icon(Icons.interests)),
-                    Tab(icon: Icon(Icons.move_down)),
+                    const Tab(text: 'Skills', icon: Icon(Icons.book)),
+                    const Tab(text: 'Interests', icon: Icon(Icons.interests)),
+                    Tab(
+                      text: 'Progress',
+                      icon: Badge(
+                        badgeContent: const Padding(
+                          padding: EdgeInsets.all(2),
+                          child: Text(
+                            '1',
+                            style: TextStyle(
+                              fontSize: 9,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        position: BadgePosition.bottomEnd(),
+                        child: const Icon(Icons.move_down),
+                      ),
+                    ),
                   ],
                 ),
               ),

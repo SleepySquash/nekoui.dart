@@ -49,28 +49,19 @@ class Skill extends HiveObject {
 
 /// Available [Skill]s list.
 enum Skills {
-  /// [BasicSkills].
-  basic,
-
-  /// [DrawingSkills].
-  drawing,
-
-  /// [CookingSkills].
-  cooking,
-
-  sewing,
+  basic, // [BasicSkills].
+  choreography,
+  cooking, // [CookingSkills].
   cosplaying,
   crafting,
-  programming,
-  sports,
-  perception,
-  choreography,
+  drawing, // [DrawingSkills].
   music,
-
-  /// [ScienceSkills].
-  science,
-
+  perception,
   photography,
+  programming,
+  science, // [ScienceSkills].
+  sewing,
+  sports,
 }
 
 /// [Skills.basic] skills subset.

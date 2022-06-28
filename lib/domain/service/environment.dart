@@ -26,8 +26,8 @@ class EnvironmentService extends DisposableService {
 
   static const Duration refreshInterval = Duration(minutes: 4);
 
-  final Rx<Weather?> weather = Rx(null);
-  final RxnDouble temperature = RxnDouble();
+  final Rx<Weather> weather = Rx(Weather.clouds);
+  late final RxDouble temperature;
 
   final AbstractFlagRepository _flagRepository;
 
@@ -36,6 +36,58 @@ class EnvironmentService extends DisposableService {
 
   @override
   void onInit() {
+    DateTime now = DateTime.now();
+
+    switch (now.month) {
+      case 1:
+        temperature = RxDouble(-12);
+        break;
+
+      case 2:
+        temperature = RxDouble(-20);
+        break;
+
+      case 3:
+        temperature = RxDouble(-4);
+        break;
+
+      case 4:
+        temperature = RxDouble(3);
+        break;
+
+      case 5:
+        temperature = RxDouble(10);
+        break;
+
+      case 6:
+        temperature = RxDouble(20);
+        break;
+
+      case 7:
+        temperature = RxDouble(29);
+        break;
+
+      case 8:
+        temperature = RxDouble(26);
+        break;
+
+      case 9:
+        temperature = RxDouble(18);
+        break;
+
+      case 10:
+        temperature = RxDouble(6);
+        break;
+
+      case 11:
+        temperature = RxDouble(3);
+        break;
+
+      default:
+        temperature = RxDouble(-13);
+        break;
+    }
+
     _initEnvironment();
     super.onInit();
   }

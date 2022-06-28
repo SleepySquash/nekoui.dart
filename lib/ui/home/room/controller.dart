@@ -22,8 +22,8 @@ class RoomController extends GetxController {
   late final RxDouble y;
 
   Rx<Neko?> get neko => _neko.neko;
-  Rx<Weather?> get weather => _environment.weather;
-  RxnDouble get temperature => _environment.temperature;
+  Rx<Weather> get weather => _environment.weather;
+  RxDouble get temperature => _environment.temperature;
 
   bool get isFocused => router.routes.length == 1 && !_neko.hasAttention;
 

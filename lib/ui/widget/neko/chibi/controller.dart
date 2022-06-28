@@ -46,6 +46,21 @@ class NekoChibiController extends GetxController {
       }
     });
 
+    DateTime now = DateTime.now();
+    String greetings = '...';
+
+    if (now.hour >= 23 || now.hour < 4) {
+      greetings = 'Доброй ночки!';
+    } else if (now.hour < 10) {
+      greetings = 'Добрейшего утречка!!';
+    } else if (now.hour < 17) {
+      greetings = 'Добрый день!!';
+    } else if (now.hour < 23) {
+      greetings = 'Добрый вечер!!';
+    }
+
+    _nekoService.addThought(Thought(greetings));
+
     super.onInit();
   }
 
