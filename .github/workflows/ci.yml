@@ -135,10 +135,10 @@ jobs:
       - build
     steps:
       - uses: actions/checkout@v3
-      - run: echo "v$(make flutter.version)"
-      - run: echo "${{ github.ref_name }}"
       - run: test "${{ github.ref_name }}" == "v$(make flutter.version)"
-      - run: make gitlab.release.notes project-url="$CI_PROJECT_URL" > ./release_notes.md
+      - run: make github.release.notes
+             project-url="${{ github.server_url }}/${{ github.repository }}"
+             > ./release_notes.md
       - uses: actions/download-artifact@v3
         with:
           name: apk
