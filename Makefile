@@ -124,7 +124,7 @@ else
 		$(if $(call eq,$(platform),web),--web-renderer html --source-maps,) \
 		$(if $(call eq,$(or $(platform),apk),apk),--split-debug-info=symbols,) \
 		$(if $(call eq,$(dart-env),),,--dart-define=$(dart-env)) \
-		$(if $(call eq,$(platform),ios),--no-codesign,) --verbose
+		$(if $(call eq,$(platform),ios),--no-codesign,)
 endif
 
 

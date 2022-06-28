@@ -40,13 +40,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - apk
-          - linux
-          - windows
-          - web
-          #- macos
-          #- ios
+        include:
+          - platform: apk
+            artifacts: build/app/outputs/flutter-apk/app-release.apk
+          - platform: linux
+            artifacts: build/linux/x64/release/bundle
+          - platform: windows
+            artifacts: build/windows/runner/Release
+          - platform: web
+            artifacts: build/web
     runs-on: ${{ ((matrix.platform == 'ios' || matrix.platform == 'macos')
                                                   && 'macos-latest')
                  || (matrix.platform == 'windows' && 'windows-latest')
@@ -75,30 +77,10 @@ jobs:
                 || matrix.platform == 'windows' }}
       - run: make flutter.pub
       - run: make flutter.build platform=${{ matrix.platform }}
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: build/linux
-        if: ${{ matrix.platform == 'linux' }}
       - uses: actions/upload-artifact@v3
         with:
-          name: web
-          path: build/web
-        if: ${{ matrix.platform == 'web' }}
-      - uses: actions/upload-artifact@v3
-        with:
-          name: apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-        if: ${{ matrix.platform == 'apk' }}
-      - uses: actions/upload-artifact@v3
-        with:
-          name: windows
-          path: build/windows/runner/Release
-        if: ${{ matrix.platform == 'windows' }}
-      - uses: actions/upload-artifact@v3
-        with:
-          name: linux
-          path: build/linux/x64/release/bundle
-        if: ${{ matrix.platform == 'linux' }}
+          name: ${{ matrix.platform }}
+          path: ${{ matrix.artifacts }}
   
   dartdoc:
     runs-on: ubuntu-latest
@@ -153,7 +135,9 @@ jobs:
       - build
     steps:
       - uses: actions/checkout@v3
-      - run: test "$CI_COMMIT_TAG" == "v$(make flutter.version)"
+      - run: echo "v$(make flutter.version)"
+      - run: echo "$(github.ref_name)"
+      - run: test "$(github.ref_name)" == "v$(make flutter.version)"
       - run: make gitlab.release.notes project-url="$CI_PROJECT_URL" > ./release_notes.md
       - uses: actions/download-artifact@v3
         with:
