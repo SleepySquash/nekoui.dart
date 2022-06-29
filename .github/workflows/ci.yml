@@ -112,10 +112,9 @@ jobs:
   
   gh-pages:
     name: Publish to GitHub Pages
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.ref == 'main' || startsWith(github.ref, 'refs/tags/') }}
     runs-on: ubuntu-latest
-    needs:
-      - dartdoc
+    needs: ["dartdoc"]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -123,7 +122,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: docs
-          path: main
+          path: ${{ (github.ref == 'main' && 'main') || 'release' }}
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -177,17 +176,17 @@ jobs:
       - uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
-          filename: 'package/$ARTIFACT_PREFIX-windows-x86_64.zip'
+          filename: 'package/{{ env.ARTIFACT_PREFIX }}-windows-x86_64.zip'
           path: windows
       - uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
-          filename: 'package/$ARTIFACT_PREFIX-linux-x86_64.zip'
+          filename: 'package/{{ env.ARTIFACT_PREFIX }}-linux-x86_64.zip'
           path: linux
       - uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
-          filename: 'package/$ARTIFACT_PREFIX-web.zip'
+          filename: 'package/{{ env.ARTIFACT_PREFIX }}-web.zip'
           path: web
       - uses: thedoctor0/zip-release@main
         with:
@@ -196,13 +195,13 @@ jobs:
           path: docs
 
       - run: mv android/app-arm64-v8a-release.apk 
-                package/$ARTIFACT_PREFIX-android-arm64-v8a.apk
+                package/{{ env.ARTIFACT_PREFIX }}-android-arm64-v8a.apk
       - run: mv android/app-armeabi-v7a-release.apk
-                package/$ARTIFACT_PREFIX-android-armeabi-v7a.apk
+                package/{{ env.ARTIFACT_PREFIX }}-android-armeabi-v7a.apk
       - run: mv android/app-x86_64-release.apk
-                package/$ARTIFACT_PREFIX-android-x86_64.apk
+                package/{{ env.ARTIFACT_PREFIX }}-android-x86_64.apk
       - run: mv android/app-release.aab
-                package/$ARTIFACT_PREFIX-android.aab
+                package/{{ env.ARTIFACT_PREFIX }}-android.aab
 
       - name: Generate SHA256 checksums
         run: ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"
