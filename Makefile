@@ -94,7 +94,8 @@ endif
 # Build Flutter project from sources.
 #
 # Usage:
-#	make flutter.build [platform=(apk|web|linux|macos|windows)]
+#	make flutter.build [( [platform=apk] [split-per-abi=(no|yes)]
+#	                    | platform=(appbundle|web|linux|macos|windows|ios) )]
 #	                   [dart-env=<VAR1>=<VAL1>[,<VAR2>=<VAL2>...]]
 #	                   [dockerized=(no|yes)]
 
@@ -112,7 +113,7 @@ else
 	           -v "$(HOME)/.pub-cache":/usr/local/flutter/.pub-cache \
 		ghcr.io/instrumentisto/flutter:$(FLUTTER_VER) \
 			make flutter.build platform=$(platform) dart-env='$(dart-env)' \
-			                   dockerized=no
+			                   split-per-abi=$(split-per-abi) dockerized=no
 endif
 else
 # TODO: `--split-debug-info` should be used on any non-Web platform.
@@ -122,9 +123,13 @@ else
 #          https://github.com/getsentry/sentry-dart/issues/433
 	flutter build $(or $(platform),apk) --release \
 		$(if $(call eq,$(platform),web),--web-renderer html --source-maps,) \
-		$(if $(call eq,$(or $(platform),apk),apk),--split-debug-info=symbols,) \
-		$(if $(call eq,$(dart-env),),,--dart-define=$(dart-env)) \
-		$(if $(call eq,$(platform),ios),--no-codesign,)
+		$(if $(call eq,$(or $(platform),apk),apk),\
+		    --split-debug-info=symbols \
+		    $(if $(call eq,$(split-per-abi),yes),--split-per-abi,), \
+		) \
+		$(if $(call eq,$(platform),appbundle),--split-debug-info=symbols,) \
+		$(if $(call eq,$(platform),ios),--no-codesign,) \
+		$(if $(call eq,$(dart-env),),,--dart-define=$(dart-env))
 endif
 
 
@@ -335,7 +340,7 @@ github.release.notes:
 			}' CHANGELOG.md)) | \
 		[Milestone]($(github-proj-url)/milestone/$(shell \
 			sed -n '/^## \[$(VERSION)\]/,/Milestone/{\
-				s/.*milestones.\([0-9]*\).*/\1/p;\
+				s/.*milestone.\([0-9]*\).*/\1/p;\
 			}' CHANGELOG.md)) | \
 		[Repository]($(github-proj-url)/tree/v$(VERSION)))"
 
