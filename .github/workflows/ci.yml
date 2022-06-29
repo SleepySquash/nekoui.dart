@@ -170,6 +170,7 @@ jobs:
           name: docs
           path: docs/
       
+      - run: mkdir package
       - run: ls -R
 
       - uses: thedoctor0/zip-release@main
