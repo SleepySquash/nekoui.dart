@@ -30,9 +30,6 @@ FLUTTER_VER ?= $(strip \
                                                               | tr -d'"'))
 
 
-e:
-	echo $(CURRENT_BRANCH)
-
 
 
 ###########
