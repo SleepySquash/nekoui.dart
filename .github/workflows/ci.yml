@@ -149,6 +149,9 @@ jobs:
         with:
           name: build
           path: package/
+      
+      - run: ls -R
+        working-directory: package/
 
       - uses: thedoctor0/zip-release@main
         with:
