@@ -175,33 +175,35 @@ jobs:
       - uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
-          filename: 'nekoui-windows-x86_64.zip'
+          filename: 'package/nekoui-windows-x86_64.zip'
           path: windows
       - uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
-          filename: 'nekoui-linux-x86_64.zip'
+          filename: 'package/nekoui-linux-x86_64.zip'
           path: linux
       - uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
-          filename: 'nekoui-web.zip'
+          filename: 'package/nekoui-web.zip'
           path: web
       - uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
-          filename: 'docs.zip'
+          filename: 'package/docs.zip'
           path: docs
 
-      - run: mv android/app-arm64-v8a-release.apk nekoui-arm64-v8a.apk
-      - run: mv android/app-armeabi-v7a-release.apk nekoui-armeabi-v7a.apk
-      - run: mv android/app-x86_64-release.apk nekoui-x86_64.apk
-      - run: mv android/app-release.aab nekoui.aab
+      - run: mv android/app-arm64-v8a-release.apk package/nekoui-arm64-v8a.apk
+      - run: mv android/app-armeabi-v7a-release.apk package/nekoui-armeabi-v7a.apk
+      - run: mv android/app-x86_64-release.apk package/nekoui-x86_64.apk
+      - run: mv android/app-release.aab package/nekoui.aab
 
       - name: Generate SHA256 checksums
         run: ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"
+        working-directory: package/
       - name: Show generated SHA256 checksums
         run: cat *.sha256sum
+        working-directory: package/
 
       - uses: ncipollo/release-action@v1
         with:
@@ -210,3 +212,4 @@ jobs:
           name: ${{ github.ref_name }}
           bodyFile: ./release_notes.md
           token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: package/
