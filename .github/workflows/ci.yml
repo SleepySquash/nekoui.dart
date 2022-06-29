@@ -126,8 +126,8 @@ jobs:
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./main
-          destination_dir: main
+          publish_dir: ./${{ (github.ref == 'main' && 'main') || 'release' }}
+          destination_dir: ${{ (github.ref == 'main' && 'main') || 'release' }}
           commit_message: ${{ github.event.head_commit.message }}
           keep_files: true
           user_name: 'github-actions[bot]'
