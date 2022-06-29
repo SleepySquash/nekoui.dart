@@ -208,7 +208,11 @@ jobs:
 
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "package/*.apk, package/*.aab, package/*.zip, package/*.sha256sum"
+          artifacts: |
+            package/*.apk
+            package/*.aab
+            package/*.zip
+            package/*.sha256sum
           allowUpdates: true
           artifactErrorsFailBuild: true
           name: ${{ github.ref_name }}
