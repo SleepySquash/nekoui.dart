@@ -126,6 +126,7 @@ jobs:
           publish_dir: docs
           destination_dir: ${{ (github.ref == 'main' && 'main') || 'release' }}
           commit_message: ${{ github.event.head_commit.message }}
+          force_orphan: true
           keep_files: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
@@ -172,22 +173,18 @@ jobs:
 
       - uses: thedoctor0/zip-release@main
         with:
-          type: 'zip'
           filename: 'package/${{ env.ARTIFACT_PREFIX }}-windows-x86_64.zip'
           path: windows
       - uses: thedoctor0/zip-release@main
         with:
-          type: 'zip'
           filename: 'package/${{ env.ARTIFACT_PREFIX }}-linux-x86_64.zip'
           path: linux
       - uses: thedoctor0/zip-release@main
         with:
-          type: 'zip'
           filename: 'package/${{ env.ARTIFACT_PREFIX }}-web.zip'
           path: web
       - uses: thedoctor0/zip-release@main
         with:
-          type: 'zip'
           filename: 'package/docs.zip'
           path: docs
 
