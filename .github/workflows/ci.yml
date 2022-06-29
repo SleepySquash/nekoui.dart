@@ -82,7 +82,7 @@ jobs:
              split-per-abi=yes
       - uses: actions/upload-artifact@v3
         with:
-          name: build
+          name: ${{ matrix.platform }}
           path: ${{ matrix.artifacts }}
           if-no-files-found: error
   
@@ -147,37 +147,56 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: build
-          path: package/
+          name: apk
+          path: android/
+      - uses: actions/download-artifact@v3
+        with:
+          name: appbundle
+          path: android/
+      - uses: actions/download-artifact@v3
+        with:
+          name: web
+          path: web/
+      - uses: actions/download-artifact@v3
+        with:
+          name: windows
+          path: windows/
+      - uses: actions/download-artifact@v3
+        with:
+          name: linux
+          path: linux/
+      - uses: actions/download-artifact@v3
+        with:
+          name: docs
+          path: docs/
       
       - run: ls -R
-        working-directory: package/
 
       - uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
           filename: 'nekoui-windows-x86_64.zip'
-          path: package/windows
+          path: windows
       - uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
           filename: 'nekoui-linux-x86_64.zip'
-          path: package/linux
+          path: linux
       - uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
           filename: 'nekoui-web.zip'
-          path: package/web
+          path: web
       - uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
           filename: 'docs.zip'
-          path: package/docs
+          path: docs
 
-      - run: mv package/app-arm64-v8a-release.apk nekoui-arm64-v8a.apk
-      - run: mv package/app-armeabi-v7a-release.apk nekoui-armeabi-v7a.apk
-      - run: mv package/app-x86_64-release.apk nekoui-x86_64.apk
-      - run: mv package/app-release.aab nekoui.aab
+      - run: mv android/app-arm64-v8a-release.apk nekoui-arm64-v8a.apk
+      - run: mv android/app-armeabi-v7a-release.apk nekoui-armeabi-v7a.apk
+      - run: mv android/app-x86_64-release.apk nekoui-x86_64.apk
+      - run: mv android/app-release.aab nekoui.aab
 
       - name: Generate SHA256 checksums
         run: ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"

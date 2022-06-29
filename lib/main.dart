@@ -8,7 +8,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     show NotificationResponse;
 import 'package:get/get.dart';
@@ -16,13 +15,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:universal_io/io.dart';
-import 'package:yaml/yaml.dart';
 
 import 'config.dart';
 import 'domain/service/auth.dart';
 import 'domain/service/notification.dart';
 import 'l10n/_l10n.dart';
 import 'provider/hive/session.dart';
+import 'pubspec.g.dart';
 import 'router.dart';
 import 'theme.dart';
 import 'util/log.dart';
@@ -32,13 +31,12 @@ import 'util/web/web_utils.dart';
 /// Entry point of this application.
 void main() async {
   await Config.init();
-  YamlMap pubspec = loadYaml(await rootBundle.loadString('pubspec.yaml'));
 
   // Initializes and runs the [App].
   Future<void> _appRunner() async {
     WebUtils.setPathUrlStrategy();
 
-    await _initHive(pubspec);
+    await _initHive();
 
     Get.put(NotificationService())
         .init(onNotificationResponse: onNotificationResponse);
@@ -70,7 +68,7 @@ void main() async {
     (options) => {
       options.dsn = Config.sentryDsn,
       options.tracesSampleRate = 1.0,
-      options.release = '${pubspec['name']}@${pubspec['version']}',
+      options.release = '${Pubspec.name}@${Pubspec.version}',
       options.debug = true,
       options.diagnosticLevel = SentryLevel.info,
       options.enablePrintBreadcrumbs = true,
@@ -129,7 +127,7 @@ class App extends StatelessWidget {
 
 /// Initializes a [Hive] storage and registers a [SessionDataHiveProvider] in
 /// the [Get]'s context.
-Future<void> _initHive([YamlMap? pubspec]) async {
+Future<void> _initHive() async {
   await Hive.initFlutter('hive');
   await Get.put(SessionHiveProvider()).init();
 }

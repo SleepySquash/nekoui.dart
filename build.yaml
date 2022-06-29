@@ -1,0 +1,13 @@
+targets:
+  $default:
+    builders:
+      nekoui|pubspec_builder:
+        enabled: true
+
+builders:
+  pubspec_builder:
+    import: "package:nekoui/util/version/builder.dart"
+    builder_factories: ["pubspecBuilder"]
+    build_extensions: {"$package$": [".g.dart"]}
+    auto_apply: dependents
+    build_to: source
