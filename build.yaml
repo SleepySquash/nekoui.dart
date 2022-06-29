@@ -6,7 +6,7 @@ targets:
 
 builders:
   pubspec_builder:
-    import: "package:nekoui/util/version/builder.dart"
+    import: "package:nekoui/util/pubspec_builder.dart"
     builder_factories: ["pubspecBuilder"]
     build_extensions: {"$package$": [".g.dart"]}
     auto_apply: dependents
