@@ -139,7 +139,7 @@ jobs:
       - run: make flutter.pub
       - run: make flutter.build platform=${{ matrix.platform }}
              split-per-abi=yes
-      - run: mv ${{ matrix.artifacts }} ${{ matrix.artifacts }}/${{ ARTIFACT_PREFIX }}.app
+      - run: mv ${{ matrix.artifacts }} ${{ matrix.artifacts }}/${{ env.ARTIFACT_PREFIX }}.app
         if: ${{ matrix.platform == 'macos' || matrix.platform == 'ios' }}
       - uses: actions/upload-artifact@v3
         with:
