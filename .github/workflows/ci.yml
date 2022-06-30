@@ -265,25 +265,30 @@ jobs:
 
       - uses: thedoctor0/zip-release@main
         with:
-          filename: 'package/${{ env.ARTIFACT_PREFIX }}-windows-x86_64.zip'
-          path: _/windows
+          filename: '../package/${{ env.ARTIFACT_PREFIX }}-windows-x86_64.zip'
+          path: windows
+          directory: _
       - uses: thedoctor0/zip-release@main
         with:
-          filename: 'package/${{ env.ARTIFACT_PREFIX }}-linux-x86_64.zip'
-          path: _/linux
+          filename: '../package/${{ env.ARTIFACT_PREFIX }}-linux-x86_64.zip'
+          path: linux
+          directory: _
       - uses: thedoctor0/zip-release@main
         with:
-          filename: 'package/${{ env.ARTIFACT_PREFIX }}-web.zip'
-          path: _/web
+          filename: '../package/${{ env.ARTIFACT_PREFIX }}-web.zip'
+          path: web
+          directory: _
       - run: mv macos macos.app
       - uses: thedoctor0/zip-release@main
         with:
-          filename: 'package/${{ env.ARTIFACT_PREFIX }}-macos.zip'
-          path: _/macos
+          filename: '../package/${{ env.ARTIFACT_PREFIX }}-macos.zip'
+          path: macos
+          directory: _
       - uses: thedoctor0/zip-release@main
         with:
-          filename: 'package/docs.zip'
-          path: _/docs
+          filename: '../package/docs.zip'
+          path: docs
+          directory: _
 
       - run: mv _/android/app-arm64-v8a-release.apk 
                 package/${{ env.ARTIFACT_PREFIX }}-android-arm64-v8a.apk
