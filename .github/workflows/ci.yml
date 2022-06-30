@@ -120,11 +120,11 @@ jobs:
         with:
           ref: gh-pages
 
-      - run: rm -rf ${{ (github.ref == 'main' && 'main') || 'release' }}
+      - run: rm -rf main
       - uses: actions/download-artifact@v3
         with:
           name: docs
-          path: ${{ (github.ref == 'main' && 'main') || 'release' }}
+          path: main
 
       - uses: peaceiris/actions-gh-pages@v3
         with:
