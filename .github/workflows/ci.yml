@@ -25,14 +25,68 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     needs:
       - build
+      - copyright
+      - dartanalyze
       - dartdoc
+      - dartfmt
+      - pubspec
+      - test-unit
     runs-on: ubuntu-latest
     steps:
       - run: true
 
 
 
-  
+
+  ##########################
+  # Linting and formatting #
+  ##########################
+
+  copyright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: make copyright check=yes
+
+  dartanalyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: $FLUTTER_VER
+          channel: stable
+          cache: true
+      - run: make flutter.pub
+      - run: make flutter.analyze
+
+  dartfmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: $FLUTTER_VER
+          channel: stable
+          cache: true
+      - run: make flutter.fmt check=yes
+
+  pubspec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: $FLUTTER_VER
+          channel: stable
+          cache: true
+      - run: make flutter.pub
+      - name: Check `pubspec.lock` is in sync with `pubspec.yaml`
+        run: git diff --exit-code
+
+
+
+
   ############
   # Building #
   ############
@@ -102,6 +156,28 @@ jobs:
         with:
           name: docs
           path: doc/api
+
+
+
+
+  ###########
+  # Testing #
+  ###########
+
+  test-unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: $FLUTTER_VER
+          channel: stable
+          cache: true
+
+      - run: make flutter.pub
+
+      - run: make test.unit
 
 
 
