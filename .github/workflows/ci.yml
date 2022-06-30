@@ -139,6 +139,8 @@ jobs:
       - run: make flutter.pub
       - run: make flutter.build platform=${{ matrix.platform }}
              split-per-abi=yes
+      - run: mv ${{ matrix.artifacts }} ${{ matrix.artifacts }}/${{ ARTIFACT_PREFIX }}.app
+        if: ${{ matrix.platform == 'macos' || matrix.platform == 'ios' }}
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.platform }}
@@ -262,7 +264,7 @@ jobs:
           name: docs
           path: docs/
       
-      - run: mkdir package && mkdir _macos
+      - run: mkdir package
 
       - uses: thedoctor0/zip-release@main
         with:
@@ -276,11 +278,10 @@ jobs:
         with:
           filename: 'package/${{ env.ARTIFACT_PREFIX }}-web.zip'
           path: web
-      - run: mv macos _macos/macos.app
       - uses: thedoctor0/zip-release@main
         with:
           filename: 'package/${{ env.ARTIFACT_PREFIX }}-macos.zip'
-          path: _macos
+          path: macos
       - uses: thedoctor0/zip-release@main
         with:
           filename: 'package/docs.zip'
