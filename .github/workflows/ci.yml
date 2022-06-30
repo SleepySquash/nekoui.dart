@@ -100,12 +100,16 @@ jobs:
             artifacts: build/app/outputs/flutter-apk/app-*.apk
           - platform: appbundle
             artifacts: build/app/outputs/bundle/release/app-release.aab
+          # - platform: ios
+          #   artifacts: build/ios/iphoneos/Runner.app
           - platform: linux
             artifacts: build/linux/x64/release/bundle
-          - platform: windows
-            artifacts: build/windows/runner/Release
+          - platform: macos
+            artifacts: build/macos/Build/Products/Release/nekoui.app
           - platform: web
             artifacts: build/web
+          - platform: windows
+            artifacts: build/windows/runner/Release
     runs-on: ${{ ((matrix.platform == 'ios' || matrix.platform == 'macos')
                                                   && 'macos-latest')
                  || (matrix.platform == 'windows' && 'windows-latest')
@@ -245,6 +249,14 @@ jobs:
         with:
           name: linux
           path: linux/
+      # - uses: actions/download-artifact@v3
+      #   with:
+      #     name: ios
+      #     path: ios/
+      - uses: actions/download-artifact@v3
+        with:
+          name: macos
+          path: macos/
       - uses: actions/download-artifact@v3
         with:
           name: docs
@@ -264,6 +276,10 @@ jobs:
         with:
           filename: 'package/${{ env.ARTIFACT_PREFIX }}-web.zip'
           path: web
+      - uses: thedoctor0/zip-release@main
+        with:
+          filename: 'package/${{ env.ARTIFACT_PREFIX }}-macos.zip'
+          path: macos
       - uses: thedoctor0/zip-release@main
         with:
           filename: 'package/docs.zip'
