@@ -1,5 +1,5 @@
 name: nekoui
-description: Neko tamagochi-like game.
+description: Neko tamagotchi-like game.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 0.1.0-alpha.1
 
