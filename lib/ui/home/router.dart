@@ -6,6 +6,7 @@ import '/router.dart';
 import 'flowchart/view.dart';
 import 'grocery/checkout/view.dart';
 import 'grocery/view.dart';
+import 'guild/view.dart';
 import 'inventory/view.dart';
 import 'map/view.dart';
 import 'more/settings/view.dart';
@@ -97,6 +98,12 @@ class HomeRouterDelegate extends RouterDelegate<RouteConfiguration>
           key: ValueKey('MapPage'),
           name: Routes.map,
           child: MapView(),
+        ));
+      } else if (route == Routes.guild) {
+        pages.add(const TransitionPage(
+          key: ValueKey('GuildPage'),
+          name: Routes.guild,
+          child: GuildView(),
         ));
       }
     }

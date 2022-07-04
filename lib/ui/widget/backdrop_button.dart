@@ -105,7 +105,7 @@ class BackdropBubble extends StatelessWidget {
     this.onTap,
   }) : super(key: key);
 
-  final IconData? icon;
+  final Icon? icon;
   final Color? color;
   final String text;
   final VoidCallback? onTap;
@@ -137,8 +137,10 @@ class BackdropBubble extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon, size: 24, color: color),
-                  const SizedBox(width: 8),
+                  if (icon != null) ...[
+                    icon!,
+                    const SizedBox(width: 8),
+                  ],
                   Flexible(
                     child: Text(
                       text,

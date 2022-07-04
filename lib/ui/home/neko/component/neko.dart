@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:nekoui/domain/model/skill.dart';
-import 'package:nekoui/domain/service/neko.dart';
-import 'package:nekoui/router.dart';
-import 'package:nekoui/ui/novel/novel.dart';
-import 'package:nekoui/ui/widget/backdrop_button.dart';
-import 'package:nekoui/ui/widget/delayed/delayed_slide.dart';
 
 import '../controller.dart';
+import '/router.dart';
+import '/ui/widget/backdrop_button.dart';
+import '/ui/widget/delayed/delayed_slide.dart';
 
 class NekoScreen extends StatelessWidget {
   const NekoScreen(this.c, {Key? key}) : super(key: key);

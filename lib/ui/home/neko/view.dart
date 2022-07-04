@@ -218,7 +218,27 @@ class _NekoViewState extends State<NekoView>
                 mini: false,
                 onPressed: c.screen.value == null
                     ? _dismiss
-                    : () => c.screen.value = null,
+                    : () {
+                        switch (c.screen.value) {
+                          case NekoViewScreen.action:
+                          case NekoViewScreen.activity:
+                          case NekoViewScreen.request:
+                            c.screen.value = null;
+                            break;
+
+                          case NekoViewScreen.talk:
+                            if (c.topic.value == null) {
+                              c.screen.value = null;
+                            } else {
+                              c.topic.value = null;
+                            }
+                            break;
+
+                          default:
+                            c.screen.value = null;
+                            break;
+                        }
+                      },
                 child: c.screen.value == null
                     ? const Icon(Icons.close_rounded)
                     : const Icon(Icons.arrow_back),

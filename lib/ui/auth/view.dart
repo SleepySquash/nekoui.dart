@@ -26,6 +26,8 @@ class AuthView extends StatelessWidget {
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: router.introduction,
+                        style:
+                            ElevatedButton.styleFrom(primary: Colors.lightBlue),
                         child: const Text(
                           'Play',
                           style: TextStyle(color: Colors.white),
@@ -39,6 +41,8 @@ class AuthView extends StatelessWidget {
                             c.clean();
                           }
                         },
+                        style:
+                            ElevatedButton.styleFrom(primary: Colors.lightBlue),
                         child: const Text(
                           'Clear cache',
                           style: TextStyle(color: Colors.white),

@@ -52,7 +52,7 @@ class GroceryCheckoutView extends StatelessWidget {
                 child: Obx(() {
                   return BackdropBubble(
                     onTap: c.cart.isEmpty ? null : c.buy,
-                    icon: Icons.payment,
+                    icon: const Icon(Icons.payment),
                     text: 'Buy',
                   );
                 }),

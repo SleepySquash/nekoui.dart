@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nekoui/ui/novel/novel.dart';
-import 'package:nekoui/ui/widget/backdrop_button.dart';
 
 import '../controller.dart';
 

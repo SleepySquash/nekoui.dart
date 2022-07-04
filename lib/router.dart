@@ -52,6 +52,10 @@ class Routes {
   static const park = '/park';
   static const settings = '/more/settings';
   static const wardrobe = '/wardrobe';
+  static const guild = '/guild';
+  static const hospital = '/hospital';
+  static const monastery = '/monastery';
+  static const church = '/church';
 }
 
 /// Application's router state.
@@ -398,6 +402,9 @@ extension RouteLinks on RouterState {
 
   /// Changes router location to the [Routes.introduction] page.
   void introduction() => go(Routes.introduction);
+
+  /// Changes router location to the [Routes.guild] page.
+  void guild() => go(Routes.guild);
 }
 
 /// Extension adding helper methods to an [AppLifecycleState].

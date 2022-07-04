@@ -28,31 +28,67 @@ class MapView extends StatelessWidget {
                   icon: Icons.local_grocery_store,
                   onTap: router.grocery,
                 ),
-                Location(
+                const Location(
+                  'restaurant',
+                  icon: Icons.restaurant,
+                  onTap: null,
+                ),
+                const Location(
                   'shopkeeper',
                   icon: Icons.shop,
-                  onTap: () {},
+                  onTap: null,
                 ),
-                Location(
+                const Location(
                   'job',
                   icon: Icons.shop,
-                  onTap: () {},
+                  onTap: null,
                 ),
                 Location(
                   'park',
                   icon: Icons.park,
                   onTap: router.park,
                 ),
-                Location(
+                const Location(
                   'neko_science',
                   icon: Icons.science_rounded,
-                  onTap: () {},
+                  onTap: null,
+                ),
+                const Location(
+                  'church',
+                  icon: Icons.church,
+                  onTap: null,
+                ),
+                const Location(
+                  'monastery',
+                  icon: Icons.church_outlined,
+                  onTap: null,
+                ),
+                const Location(
+                  'school',
+                  icon: Icons.school_outlined,
+                  onTap: null,
+                ),
+                const Location(
+                  'university',
+                  icon: Icons.school,
+                  onTap: null,
+                ),
+                const Location(
+                  'hospital',
+                  icon: Icons.local_hospital,
+                  onTap: null,
+                ),
+                Location(
+                  'guild',
+                  icon: Icons.biotech,
+                  onTap: router.guild,
                 ),
               ]
                   .map(
                     (e) => ListTile(
                       leading: Icon(e.icon),
                       title: Text(e.id),
+                      enabled: e.onTap != null,
                       onTap: () {
                         e.onTap?.call();
                         Navigator.of(context).pop();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nekoui/ui/widget/backdrop_button.dart';
 
 import '../controller.dart';
 
@@ -9,7 +10,16 @@ class ActivityScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> bubbles = c.activities.map((e) => e.build()).toList();
+    List<Widget> bubbles = c.activities
+        .map(
+          (e) => BackdropBubble(
+            text: e.topic,
+            icon: e.icon,
+            color: e.icon.color,
+            onTap: e.novel,
+          ),
+        )
+        .toList();
 
     bool left = true;
     List<Widget> rows = [];

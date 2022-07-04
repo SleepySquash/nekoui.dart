@@ -1,4 +1,5 @@
-import 'package:nekoui/ui/novel/novel.dart';
+import 'package:nekoui/domain/model/topic.dart';
+import 'package:novel/novel.dart';
 
 import '../controller.dart';
 
@@ -13,12 +14,12 @@ extension ActivityExtension on NekoController {
           DialogueLine('Вау, тут так красиво!', by: name),
           DialogueLine('Спасибо, что сходил со мной!! :3', by: name),
         ],
-        type: TopicType.together,
+        type: TopicType.casual,
       ),
       TalkTopic(
         'Cмотреть анимки',
         [DialogueLine('Ух ты!', by: name)],
-        type: TopicType.together,
+        type: TopicType.casual,
       ),
     ];
   }

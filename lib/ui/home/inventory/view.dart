@@ -10,27 +10,6 @@ import 'controller.dart';
 class InventoryView extends StatelessWidget {
   const InventoryView({Key? key}) : super(key: key);
 
-  /// Displays a dialog with the provided [novel] above the current contents.
-  static Future<T?> show<T extends Object?>({required BuildContext context}) {
-    return showGeneralDialog(
-      context: context,
-      pageBuilder: (
-        BuildContext buildContext,
-        Animation<double> animation,
-        Animation<double> secondaryAnimation,
-      ) {
-        final CapturedThemes themes = InheritedTheme.capture(
-          from: context,
-          to: Navigator.of(context, rootNavigator: true).context,
-        );
-        return themes.wrap(const InventoryView());
-      },
-      barrierDismissible: false,
-      barrierColor: Colors.transparent,
-      transitionDuration: 300.milliseconds,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return EscapePopper(

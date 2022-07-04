@@ -1,5 +1,6 @@
-import 'package:nekoui/ui/novel/novel.dart';
+import 'package:novel/novel.dart';
 
+import '/domain/model/topic.dart';
 import '../controller.dart';
 
 extension TopicExtension on NekoController {
@@ -8,22 +9,22 @@ extension TopicExtension on NekoController {
       TalkTopic(
         'Мне нравится твоя улыбка',
         [DialogueLine('Ух ты!', by: name)],
-        type: TopicType.romantic,
+        type: TopicType.romance,
       ),
       TalkTopic(
         'Как дела с учёбой?',
         [DialogueLine('Ух ты!', by: name)],
-        type: TopicType.study,
+        type: TopicType.profession,
       ),
       TalkTopic(
         'Проголодалась?',
         [DialogueLine('Ух ты!', by: name)],
-        type: TopicType.food,
+        type: TopicType.preference,
       ),
       TalkTopic(
         'Хочешь чем-нибудь заняться?',
         [DialogueLine('Ух ты!', by: name)],
-        type: TopicType.together,
+        type: TopicType.casual,
       ),
       TalkTopic(
         'Про теорему Пифагора?',
@@ -33,11 +34,12 @@ extension TopicExtension on NekoController {
             by: name,
           ),
         ],
-        type: TopicType.study,
+        type: TopicType.profession,
       ),
       TalkTopic(
-        'Выглядишь мило >3<',
+        'Выглядишь мило',
         [DialogueLine('Ух ты!', by: name)],
+        type: TopicType.romance,
       ),
       TalkTopic(
         'Как ты себя чувствуешь?',
@@ -46,14 +48,17 @@ extension TopicExtension on NekoController {
       TalkTopic(
         'Твой любимый цвет?',
         [DialogueLine('Ух ты!', by: name)],
+        type: TopicType.preference,
       ),
       TalkTopic(
         'Твоя любимая еда?',
         [DialogueLine('Ух ты!', by: name)],
+        type: TopicType.preference,
       ),
       TalkTopic(
         'Твой нелюбимый цвет?',
         [DialogueLine('Ух ты!', by: name)],
+        type: TopicType.preference,
       ),
       TalkTopic(
         'Ща такую шутку расскажу...',
@@ -66,6 +71,7 @@ extension TopicExtension on NekoController {
       TalkTopic(
         'Коммунизм - это хорошо?',
         [DialogueLine('Ух ты!', by: name)],
+        type: TopicType.preference,
       ),
       TalkTopic(
         'Иногда я хочу быть вертолётом...',
@@ -74,11 +80,12 @@ extension TopicExtension on NekoController {
       TalkTopic(
         'В чём смысл жизни?',
         [DialogueLine('Ух ты!', by: name)],
+        type: TopicType.preference,
       ),
       TalkTopic(
         'Ты меня заводишь...',
         [DialogueLine('Но... п-папа...', by: name)],
-        type: TopicType.romantic,
+        type: TopicType.romance,
       ),
       TalkTopic(
         'Это выбор Врат Штейна!!',

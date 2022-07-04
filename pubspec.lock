@@ -527,6 +527,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
+  novel:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: improve-implementation
+      resolved-ref: d23ae44853495fda920007dbf06d65d765f0ba86
+      url: "https://github.com/SleepySquash/novel.dart.git"
+    source: git
+    version: "0.0.1"
   package_config:
     dependency: transitive
     description:
@@ -890,5 +899,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.17.0 <3.0.0"
+  dart: ">=2.17.5 <3.0.0"
   flutter: ">=3.0.0"

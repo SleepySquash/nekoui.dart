@@ -24,6 +24,11 @@ dependencies:
   hive: ^2.1.0
   js: ^0.6.4
   mutex: ^3.0.0
+  novel:
+    # path: ../novel
+    git:
+      url: https://github.com/SleepySquash/novel.dart.git
+      ref: improve-implementation
   page_transition: ^2.0.5
   path_provider: ^2.0.10
   rive: ^0.8.4
@@ -47,6 +52,7 @@ flutter:
   
   assets:
     - assets/conf.toml
+    - assets/character/
     - assets/fonts/
     - assets/images/background/
     - assets/images/furniture/
@@ -54,6 +60,7 @@ flutter:
     - assets/images/neko/
     - assets/images/room/
     - assets/images/ui/
+    - assets/room/floor/
     - assets/rive/
     - pubspec.yaml
 

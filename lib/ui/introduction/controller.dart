@@ -1,21 +1,37 @@
 import 'package:flutter/widgets.dart' show TextEditingController;
 import 'package:get/get.dart';
+import 'package:novel/novel.dart';
+import 'package:rive/rive.dart';
 
 import '/domain/model/neko.dart';
 import '/domain/service/auth.dart';
 import '/router.dart';
-import '/ui/novel/novel.dart';
+
+enum IntroductionStage {
+  novel,
+  character,
+  name,
+}
 
 class IntroductionController extends GetxController {
   IntroductionController(this._authService);
 
-  final RxBool naming = RxBool(false);
+  final Rx<IntroductionStage> stage = Rx(IntroductionStage.novel);
+
   final RxBool nameIsEmpty = RxBool(true);
   final TextEditingController name = TextEditingController();
+
+  late final RiveAnimationController animation;
 
   final AuthService _authService;
 
   Rx<RxStatus> get authStatus => _authService.status;
+
+  @override
+  void onInit() {
+    animation = SimpleAnimation('Idle1');
+    super.onInit();
+  }
 
   @override
   void onReady() {
@@ -45,6 +61,7 @@ class IntroductionController extends GetxController {
         DialogueLine('And you?', by: 'Vanilla'),
       ],
     );
-    naming.value = true;
+
+    stage.value = IntroductionStage.character;
   }
 }

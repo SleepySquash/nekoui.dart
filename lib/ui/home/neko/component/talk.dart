@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:nekoui/domain/model/topic.dart';
+import 'package:nekoui/ui/home/neko/collection/topic.dart';
 
 import '../controller.dart';
 import '/ui/widget/backdrop_button.dart';
@@ -10,57 +13,63 @@ class TalkScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> bubbles = c.topics.map((e) => e.build()).toList();
+    return Obx(() {
+      List<Widget> bubbles;
 
-    bool left = true;
-    List<Widget> rows = [];
-    for (int i = 0; i < bubbles.length; ++i) {
-      var e = bubbles[i];
-      rows.add(
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (left) const Spacer(flex: 10),
-            Flexible(flex: 10, child: e),
-            if (!left) const Spacer(flex: 10),
-          ],
+      if (c.topic.value == null) {
+        bubbles = TopicType.values.map(
+          (e) {
+            return BackdropBubble(
+              text: e.name,
+              icon: TalkTopic('', [], type: e).icon,
+              color: TalkTopic('', [], type: e).icon.color,
+              onTap: () => c.topic.value = e,
+            );
+          },
+        ).toList();
+      } else {
+        bubbles = TopicExtension.topics(c.name)
+            .where((e) => e.type == c.topic.value)
+            .map(
+              (e) => BackdropBubble(
+                text: e.topic,
+                icon: e.icon,
+                color: e.icon.color,
+                onTap: e.novel,
+              ),
+            )
+            .toList();
+      }
+
+      bool left = true;
+      List<Widget> rows = [];
+      for (int i = 0; i < bubbles.length; ++i) {
+        var e = bubbles[i];
+        rows.add(
+          Align(
+            alignment: left ? Alignment.centerLeft : Alignment.centerRight,
+            child: e,
+          ),
+        );
+
+        left = !left;
+      }
+
+      return ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          children: rows
+              .map(
+                (e) => Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: Center(child: e),
+                ),
+              )
+              .toList(),
         ),
       );
-
-      left = !left;
-    }
-
-    return Stack(
-      key: const Key('TalkScreen'),
-      children: [
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: rows
-                  .map((e) => Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: e,
-                        ),
-                      ))
-                  .toList(),
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: BackdropIconButton(
-              icon: Icons.chat,
-              color: Colors.blue.withOpacity(0.4),
-              onTap: () {},
-            ),
-          ),
-        ),
-      ],
-    );
+    });
   }
 }

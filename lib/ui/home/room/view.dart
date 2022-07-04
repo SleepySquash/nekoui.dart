@@ -4,6 +4,7 @@ import 'package:circular_menu/circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nekoui/domain/service/environment.dart';
+import 'package:nekoui/ui/home/room/components/room.dart';
 
 import '/domain/model/neko.dart';
 import '/router.dart';
@@ -14,7 +15,7 @@ import 'controller.dart';
 class RoomView extends StatelessWidget {
   const RoomView({Key? key}) : super(key: key);
 
-  static Widget weather(Rx<Weather> weather, RxDouble tempreature) {
+  static Widget weather(Rx<Weather> weather, RxDouble temperature) {
     return Obx(() {
       Widget? icon;
 
@@ -73,7 +74,7 @@ class RoomView extends StatelessWidget {
             icon!,
             const SizedBox(height: 10),
             Text(
-              '${tempreature.value} ℃',
+              '${temperature.value} ℃',
               style: const TextStyle(color: Colors.white),
             ),
           ]
@@ -122,12 +123,12 @@ class RoomView extends StatelessWidget {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _need(Icons.fastfood, needs?.hunger.value),
+          _need(Icons.restaurant_rounded, needs?.hunger.value),
           _need(Icons.local_drink_rounded, needs?.thirst.value),
-          _need(Icons.wc, needs?.naturalNeed.value),
-          _need(Icons.shower, needs?.cleanness.value),
+          _need(Icons.wc_rounded, needs?.naturalNeed.value),
+          _need(Icons.shower_rounded, needs?.cleanness.value),
           _need(Icons.bedtime_rounded, needs?.energy.value),
-          _need(Icons.chat_bubble_rounded, needs?.social.value),
+          _need(Icons.question_answer_rounded, needs?.social.value),
         ],
       );
     });
@@ -217,6 +218,7 @@ class RoomView extends StatelessWidget {
                 maxScale: 100,
                 child: Stack(
                   children: [
+                    RoomWidget(c),
                     Positioned.fill(
                       child: Image.asset(
                         'assets/images/room/room.png',
