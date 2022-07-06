@@ -19,6 +19,7 @@ rwildcard = $(strip $(wildcard $(1)$(2))\
 # Project parameters #
 ######################
 
+IMAGE_REPO := $(strip $(shell grep 'IMAGE_REPO=' .env | cut -d '=' -f2))
 IMAGE_NAME := $(strip $(shell grep 'IMAGE_NAME=' .env | cut -d '=' -f2))
 
 RELEASE_BRANCH := release
@@ -354,109 +355,114 @@ endif
 	$(docker-env) \
 	docker build --network=host --force-rm \
 		$(if $(call eq,$(no-cache),yes),--no-cache --pull,) \
-		-t $(docker-build-image-name):$(or $(tag),dev) $(docker-build-dir)/
+		-t $(IMAGE_REPO)/$(IMAGE_NAME):$(or $(tag),dev) $(docker-build-dir)/
 
 
 # Pull project Docker images from Container Registry.
 #
 # Usage:
-#	make docker.pull [image=(<empty>|review|artifacts)]
-#	                 [tags=(dev|@all|<t1>[,<t2>...])]
-#	                 [minikube=(no|yes)]
+#	make docker.pull
+#		[image=(<empty>|review|artifacts)]
+#		[repos=($(IMAGE_REPO)|<prefix-1>[,<prefix-2>...])]
+#		[tags=(@all|<t1>[,<t2>...])]
+#		[minikube=(no|yes)]
 
-docker-pull-image-name = $(IMAGE_NAME)$(if $(call eq,$(image),),,/$(image))
-docker-pull-tags = $(or $(tags),dev)
+docker-pull-repos = $(or $(repos),$(IMAGE_REPO))
+docker-pull-tags = $(or $(tags),@all)
 
 docker.pull:
 ifeq ($(docker-pull-tags),@all)
-	$(docker-env) \
-	docker pull $(docker-pull-image-name) --all-tags
+	$(foreach repo,$(subst $(comma), ,$(docker-pull-repos)),\
+		$(call docker.pull.do,$(repo)/$(IMAGE_NAME) --all-tags))
 else
 	$(foreach tag,$(subst $(comma), ,$(docker-pull-tags)),\
-		$(call docker.pull.do,$(tag)))
+		$(foreach repo,$(subst $(comma), ,$(docker-pull-repos)),\
+			$(call docker.pull.do,$(repo)/$(IMAGE_NAME):$(tag))))
 endif
 define docker.pull.do
-	$(eval tag := $(strip $(1)))
+	$(eval image-full := $(strip $(1)))
 	$(docker-env) \
-	docker pull $(docker-pull-image-name):$(tag)
+	docker pull $(image-full)
 endef
 
 
 # Push project Docker images to Container Registry.
 #
 # Usage:
-#	make docker.push [image=(<empty>|review|artifacts)]
-#	                 [tags=(dev|<t1>[,<t2>...])]
-#	                 [minikube=(no|yes)]
+#	make docker.push
+#		[image=(<empty>|review|artifacts)]
+#		[repos=($(IMAGE_REPO)|<prefix-1>[,<prefix-2>...])]
+#		[tags=(dev|<t1>[,<t2>...])]
+#		[minikube=(no|yes)]
 
-docker-push-image-name = $(IMAGE_NAME)$(if $(call eq,$(image),),,/$(image))
+docker-push-repos = $(or $(repos),$(IMAGE_REPO))
+docker-push-tags = $(or $(tags),dev)
 
 docker.push:
-	$(foreach tag,$(subst $(comma), ,$(or $(tags),dev)),\
-		$(call docker.push.do,$(tag)))
+	$(foreach tag,$(subst $(comma), ,$(docker-push-tags)),\
+		$(foreach repo,$(subst $(comma), ,$(docker-push-repos)),\
+			$(call docker.push.do,$(repo)/$(IMAGE_NAME):$(tag))))
 define docker.push.do
-	$(eval tag := $(strip $(1)))
+	$(eval image-full := $(strip $(1)))
 	$(docker-env) \
-	docker push $(docker-push-image-name):$(tag)
+	docker push $(image-full)
 endef
 
 
-# Tag project Docker image with the given tags.
+# Tag project Docker image with given tags.
 #
 # Usage:
-#	make docker.tag [image=(<empty>|review|artifacts)]
-#	                [of=(dev|<of-tag>)] [tags=(dev|<with-t1>[,<with-t2>...])]
-#	                [as=(<empty>|review|artifacts)]
-#	                [minikube=(no|yes)]
+#	make docker.tag [of=(dev|<tag>)]
+#		[image=(<empty>|review|artifacts)]
+#		[repos=($(IMAGE_REPO)|<with-prefix-1>[,<with-prefix-2>...])]
+#		[tags=(dev|<with-t1>[,<with-t2>...])]
+#		[minikube=(no|yes)]
 
-docker-tag-image-name = $(IMAGE_NAME)$(if $(call eq,$(image),),,/$(image))
-docker-tag-as-image-name = $(strip $(if $(call eq,$(as),),\
-	$(docker-tag-image-name),$(IMAGE_NAME)/$(as)))
+docker-tag-of := $(or $(of),dev)
+docker-tag-with := $(or $(tags),dev)
+docker-tag-repos = $(or $(repos),$(IMAGE_REPO))
 
 docker.tag:
-	$(foreach tag,$(subst $(comma), ,$(or $(tags),dev)),\
-		$(call docker.tag.do,$(or $(of),dev),$(tag)))
+	$(foreach tag,$(subst $(comma), ,$(docker-tag-with)),\
+		$(foreach repo,$(subst $(comma), ,$(docker-tag-repos)),\
+			$(call docker.tag.do,$(repo),$(tag))))
 define docker.tag.do
-	$(eval from := $(strip $(1)))
-	$(eval to := $(strip $(2)))
+	$(eval repo := $(strip $(1)))
+	$(eval tag := $(strip $(2)))
 	$(docker-env) \
-	docker tag $(docker-tag-image-name):$(from) \
-	           $(docker-tag-as-image-name):$(to)
+	docker tag $(IMAGE_REPO)/$(IMAGE_NAME):$(if $(call eq,$(of),),dev,$(of)) \
+	           $(repo)/$(IMAGE_NAME):$(tag)
 endef
 
 
-# Save project Docker images into a tarball file.
+# Save project Docker images to a tarball file.
 #
 # Usage:
-#	make docker.tar [image=(<empty>|review|artifacts)]
-#	                [tags=(dev|<t1>[,<t2>...])]
-#	                [minikube=(no|yes)]
+#	make docker.tar [to-file=(.cache/image.tar|<file-path>)]
+#		[image=(<empty>|review|artifacts)]
+#		[tags=(dev|<t1>[,<t2>...])]
+#		[minikube=(no|yes)]
 
-docker-tar-image-name = $(IMAGE_NAME)$(if $(call eq,$(image),),,/$(image))
-docker-tar-dir = .cache/docker/$(docker-tar-image-name)
+docker-tar-file = $(or $(to-file),.cache/image.tar)
 docker-tar-tags = $(or $(tags),dev)
 
 docker.tar:
-	@mkdir -p $(docker-tar-dir)/
+	@mkdir -p $(dir $(docker-tar-file))
 	$(docker-env) \
-	docker save -o $(docker-tar-dir)/$(subst $(comma),_,$(docker-tar-tags)).tar\
+	docker save -o $(docker-tar-file) \
 		$(foreach tag,$(subst $(comma), ,$(docker-tar-tags)),\
-			$(docker-tar-image-name):$(tag))
+			$(IMAGE_REPO)/$(IMAGE_NAME):$(tag))
 
 
 # Load project Docker images from a tarball file.
 #
 # Usage:
-#	make docker.untar [image=(<empty>|review|artifacts)]
-#	                  [tags=(dev|<t1>[,<t2>...])]
-#	                  [minikube=(no|yes)]
-
-docker-untar-image-name = $(IMAGE_NAME)$(if $(call eq,$(image),),,/$(image))
-docker-untar-dir = .cache/docker/$(docker-untar-image-name)
+#	make docker.untar [from-file=(.cache/image.tar|<file-path>)]
+#		[minikube=(no|yes)]
 
 docker.untar:
 	$(docker-env) \
-	docker load -i $(docker-untar-dir)/$(subst $(comma),_,$(or $(tags),dev)).tar
+	docker load -i $(or $(from-file),.cache/image.tar)
 
 
 
