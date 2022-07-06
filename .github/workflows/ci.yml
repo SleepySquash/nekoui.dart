@@ -14,6 +14,7 @@ concurrency:
 env:
   ARTIFACT_PREFIX: nekoui
   FLUTTER_VER: "3.0"
+  IMAGE_NAME: nekoui
 
 jobs:
 
@@ -161,6 +162,28 @@ jobs:
           name: docs
           path: doc/api
 
+  docker:
+    name: Docker image
+    needs: ["build"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/setup-buildx-action@v2
+
+      - run: make docker.build debug=no no-cache=yes
+                  image=${{ env.IMAGE_NAME }}
+                  tag=build-${{ github.run_number }}
+
+      - run: make docker.tar to-file=image.tar
+                  image=${{ env.IMAGE_NAME }}
+                  tags=build-${{ github.run_number }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: docker-${{ env.IMAGE_NAME }}-${{ github.run_number }}
+          path: image.tar
+          retention-days: 1
+
 
 
 
@@ -189,34 +212,8 @@ jobs:
   #############
   # Releasing #
   #############
-  
-  gh-pages:
-    name: Publish to GitHub Pages
-    if: ${{ github.ref_name == 'main' || startsWith(github.ref, 'refs/tags/') }}
-    runs-on: ubuntu-latest
-    needs: ["dartdoc"]
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: gh-pages
 
-      - run: rm -rf ${{ (github.ref_name == 'main' && 'main') || 'release' }}
-      - uses: actions/download-artifact@v3
-        with:
-          name: docs
-          path: ${{ (github.ref_name == 'main' && 'main') || 'release' }}
-
-      - uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          commit_message: ${{ github.event.head_commit.message }}
-          force_orphan: true
-          keep_files: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-
-  release:
+  release-github:
     name: Release on GitHub
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     runs-on: ubuntu-latest
@@ -318,3 +315,122 @@ jobs:
           name: ${{ github.ref_name }}
           bodyFile: ./release_notes.md
           token: ${{ secrets.GITHUB_TOKEN }}
+
+  release-docker:
+    name: Release Docker image
+    needs: ["docker"]
+    if: ${{ github.ref_name == 'impl-docker-workflow' || startsWith(github.ref, 'refs/tags/v') }}
+    strategy:
+      matrix:
+        include:
+          - image: ${{ env.IMAGE_NAME }}
+            tags: edge
+            repos: ghcr.io/sleepysquash
+            if: ${{ github.ref == 'refs/heads/impl-docker-workflow' }}
+          - image: ${{ env.IMAGE_NAME }}
+            tags: latest,@versions
+            repos: ghcr.io/sleepysquash
+            if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        if: ${{ matrix.if }}
+      - uses: docker/setup-buildx-action@v2
+        if: ${{ matrix.if }}
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: docker-${{ env.IMAGE_NAME }}-${{ github.run_number }}
+        if: ${{ matrix.if }}
+      - run: make docker.untar from-file=image.tar
+        if: ${{ matrix.if }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          if: ${{ matrix.if && startsWith(matrix.repos, 'ghcr.io') }}
+
+      - name: Parse semver versions from Git tag
+        id: semver
+        uses: actions-ecosystem/action-regex-match@v2
+        with:
+          text: ${{ github.ref }}
+          regex: '^refs/tags/v(((([0-9]+)\.[0-9]+)\.[0-9]+)(-.+)?)$'
+        if: ${{ matrix.if }}
+      - run: echo ${{ steps.semver.outputs.group1 }}
+        if: ${{ matrix.if }}
+      - run: echo ${{ steps.semver.outputs.group2 }}
+        if: ${{ matrix.if }}
+      - run: echo ${{ steps.semver.outputs.group3 }}
+        if: ${{ matrix.if }}
+      - run: echo ${{ steps.semver.outputs.group4 }}
+        if: ${{ matrix.if }}
+      - name: Form Docker version tags
+        id: versions
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            let versions = '${{ steps.semver.outputs.group1 }}';
+            if ('${{ steps.semver.outputs.group4 }}' === '') {
+              versions += ',${{ steps.semver.outputs.group2 }}';
+              if ('${{ steps.semver.outputs.group3 }}' !== '0') {
+                versions += ',${{ steps.semver.outputs.group3 }}';
+              }
+            }
+            return versions;
+        if: ${{ matrix.if && contains(matrix.tags, '@versions') }}
+      - name: Prepare final image tags
+        id: tags
+        uses: bluwy/substitute-string-action@v1
+        with:
+          _input-text: ${{ matrix.tags }}
+          "@versions": ${{ steps.versions.outputs.result }}
+        if: ${{ matrix.if }}
+
+      - run: echo ${{ steps.tags.outputs.result }}
+        if: ${{ matrix.if }}
+
+      - run: make docker.tag tags=${{ steps.tags.outputs.result }}
+                  image=${{ env.IMAGE_NAME }} of=build-${{ github.run_number }}
+                  repos=${{ matrix.repos }}
+        if: ${{ matrix.if }}
+      - run: make docker.push tags=${{ steps.tags.outputs.result }}
+                  image=${{ env.IMAGE_NAME }} repos=${{ matrix.repos }}
+        if: ${{ matrix.if }}
+
+
+
+
+  #############
+  # Deploying #
+  #############
+  
+  gh-pages:
+    name: Publish to GitHub Pages
+    if: ${{ github.ref_name == 'main' || startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: ubuntu-latest
+    needs: ["dartdoc"]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+
+      - run: rm -rf ${{ (github.ref_name == 'main' && 'main') || 'release' }}
+      - uses: actions/download-artifact@v3
+        with:
+          name: docs
+          path: ${{ (github.ref_name == 'main' && 'main') || 'release' }}
+
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          commit_message: ${{ github.event.head_commit.message }}
+          force_orphan: true
+          keep_files: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'

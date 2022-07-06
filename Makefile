@@ -19,6 +19,8 @@ rwildcard = $(strip $(wildcard $(1)$(2))\
 # Project parameters #
 ######################
 
+IMAGE_NAME := $(strip $(shell grep 'IMAGE_NAME=' .env | cut -d '=' -f2))
+
 RELEASE_BRANCH := release
 MAINLINE_BRANCH := main
 CURRENT_BRANCH := $(strip $(if $(call eq,$(CI),),\
@@ -315,6 +317,151 @@ copyright:
 
 
 ###################
+# Docker commands #
+###################
+
+docker-env = $(strip $(if $(call eq,$(minikube),yes),\
+	$(subst export,,$(shell minikube docker-env | cut -d '\#' -f1)),))
+
+# Build project Docker image.
+#
+# Usage:
+#	make docker.build [image=(<empty>|review|artifacts)]
+#	                  [tag=(dev|<tag>)]
+#	                  [no-cache=(no|yes)]
+#	                  [minikube=(no|yes)]
+
+docker-build-image-name = $(IMAGE_NAME)$(if $(call eq,$(image),),,/$(image))
+docker-build-dir = .
+ifeq ($(image),artifacts)
+docker-build-dir = docker/artifacts
+endif
+
+docker.build:
+ifeq ($(image),artifacts)
+ifeq ($(wildcard doc/api),)
+	@make docs.dart clean=no open=no dockerized=$(dockerized)
+endif
+	@rm -rf docker/artifacts/rootfs/docs/dart
+	@mkdir -p docker/artifacts/rootfs/docs/dart/
+	cp -rf doc/api/* docker/artifacts/rootfs/docs/dart/
+else
+ifeq ($(wildcard build/web),)
+	@make flutter.build platform=web dart-env='$(dart-env)' \
+	                    dockerized=$(dockerized)
+endif
+endif
+	$(docker-env) \
+	docker build --network=host --force-rm \
+		$(if $(call eq,$(no-cache),yes),--no-cache --pull,) \
+		-t $(docker-build-image-name):$(or $(tag),dev) $(docker-build-dir)/
+
+
+# Pull project Docker images from Container Registry.
+#
+# Usage:
+#	make docker.pull [image=(<empty>|review|artifacts)]
+#	                 [tags=(dev|@all|<t1>[,<t2>...])]
+#	                 [minikube=(no|yes)]
+
+docker-pull-image-name = $(IMAGE_NAME)$(if $(call eq,$(image),),,/$(image))
+docker-pull-tags = $(or $(tags),dev)
+
+docker.pull:
+ifeq ($(docker-pull-tags),@all)
+	$(docker-env) \
+	docker pull $(docker-pull-image-name) --all-tags
+else
+	$(foreach tag,$(subst $(comma), ,$(docker-pull-tags)),\
+		$(call docker.pull.do,$(tag)))
+endif
+define docker.pull.do
+	$(eval tag := $(strip $(1)))
+	$(docker-env) \
+	docker pull $(docker-pull-image-name):$(tag)
+endef
+
+
+# Push project Docker images to Container Registry.
+#
+# Usage:
+#	make docker.push [image=(<empty>|review|artifacts)]
+#	                 [tags=(dev|<t1>[,<t2>...])]
+#	                 [minikube=(no|yes)]
+
+docker-push-image-name = $(IMAGE_NAME)$(if $(call eq,$(image),),,/$(image))
+
+docker.push:
+	$(foreach tag,$(subst $(comma), ,$(or $(tags),dev)),\
+		$(call docker.push.do,$(tag)))
+define docker.push.do
+	$(eval tag := $(strip $(1)))
+	$(docker-env) \
+	docker push $(docker-push-image-name):$(tag)
+endef
+
+
+# Tag project Docker image with the given tags.
+#
+# Usage:
+#	make docker.tag [image=(<empty>|review|artifacts)]
+#	                [of=(dev|<of-tag>)] [tags=(dev|<with-t1>[,<with-t2>...])]
+#	                [as=(<empty>|review|artifacts)]
+#	                [minikube=(no|yes)]
+
+docker-tag-image-name = $(IMAGE_NAME)$(if $(call eq,$(image),),,/$(image))
+docker-tag-as-image-name = $(strip $(if $(call eq,$(as),),\
+	$(docker-tag-image-name),$(IMAGE_NAME)/$(as)))
+
+docker.tag:
+	$(foreach tag,$(subst $(comma), ,$(or $(tags),dev)),\
+		$(call docker.tag.do,$(or $(of),dev),$(tag)))
+define docker.tag.do
+	$(eval from := $(strip $(1)))
+	$(eval to := $(strip $(2)))
+	$(docker-env) \
+	docker tag $(docker-tag-image-name):$(from) \
+	           $(docker-tag-as-image-name):$(to)
+endef
+
+
+# Save project Docker images into a tarball file.
+#
+# Usage:
+#	make docker.tar [image=(<empty>|review|artifacts)]
+#	                [tags=(dev|<t1>[,<t2>...])]
+#	                [minikube=(no|yes)]
+
+docker-tar-image-name = $(IMAGE_NAME)$(if $(call eq,$(image),),,/$(image))
+docker-tar-dir = .cache/docker/$(docker-tar-image-name)
+docker-tar-tags = $(or $(tags),dev)
+
+docker.tar:
+	@mkdir -p $(docker-tar-dir)/
+	$(docker-env) \
+	docker save -o $(docker-tar-dir)/$(subst $(comma),_,$(docker-tar-tags)).tar\
+		$(foreach tag,$(subst $(comma), ,$(docker-tar-tags)),\
+			$(docker-tar-image-name):$(tag))
+
+
+# Load project Docker images from a tarball file.
+#
+# Usage:
+#	make docker.untar [image=(<empty>|review|artifacts)]
+#	                  [tags=(dev|<t1>[,<t2>...])]
+#	                  [minikube=(no|yes)]
+
+docker-untar-image-name = $(IMAGE_NAME)$(if $(call eq,$(image),),,/$(image))
+docker-untar-dir = .cache/docker/$(docker-untar-image-name)
+
+docker.untar:
+	$(docker-env) \
+	docker load -i $(docker-untar-dir)/$(subst $(comma),_,$(or $(tags),dev)).tar
+
+
+
+
+###################
 # GitHub commands #
 ###################
 
@@ -325,7 +472,7 @@ copyright:
 #	     [project-url=(https://github.com/team113/messenger|<github-project-url>)]
 
 github-proj-url = $(strip $(or $(project-url),\
-	https://github.com/team113/messenger))
+	https://github.com/SleepySquash/nekoui.dart))
 
 github.release.notes:
 	@echo "$(strip \

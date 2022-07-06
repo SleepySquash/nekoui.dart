@@ -57,6 +57,9 @@ app.*.map.json
 /test_driver/build/
 /test_driver/report.json
 
+# Docker related
+.cache/
+
 # Private
 my.*Makefile
 my.*env
