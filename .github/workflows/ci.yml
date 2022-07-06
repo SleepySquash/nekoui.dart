@@ -372,7 +372,7 @@ jobs:
         id: tags
         uses: bluwy/substitute-string-action@v1
         with:
-          _input-text: $TAGS
+          _input-text: ${{ env.TAGS }}
           "@versions": ${{ steps.versions.outputs.result }}
 
       - run: make docker.tag tags=${{ steps.tags.outputs.result }}
