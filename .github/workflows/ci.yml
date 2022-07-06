@@ -167,8 +167,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VER }}
+          channel: stable
+          cache: true
       - uses: docker/setup-buildx-action@v2
 
+      - run: make flutter.pub
       - run: make docker.build debug=no no-cache=yes
                   image=nekoui
                   tag=build-${{ github.run_number }}
