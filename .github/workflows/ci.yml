@@ -196,20 +196,20 @@ jobs:
   # Testing #
   ###########
 
-  test-unit:
-    name: Unit tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: $FLUTTER_VER
-          channel: stable
-          cache: true
+  # test-unit:
+  #   name: Unit tests
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: $FLUTTER_VER
+  #         channel: stable
+  #         cache: true
 
-      - run: make flutter.pub
+  #     - run: make flutter.pub
 
-      - run: make test.unit
+  #     - run: make test.unit
 
 
 
@@ -324,14 +324,14 @@ jobs:
   release-docker:
     name: Release Docker image
     needs: ["docker"]
-    if: ${{ github.ref_name == 'impl-docker-workflow' || startsWith(github.ref, 'refs/tags/v') }}
+    if: true # if: ${{ github.ref_name == 'impl-docker-workflow' || startsWith(github.ref, 'refs/tags/v') }}
     strategy:
       matrix:
         include:
           - image: nekoui
             tags: edge
             repos: ghcr.io/sleepysquash
-            if: ${{ github.ref == 'refs/heads/impl-docker-workflow' }}
+            if: true # ${{ github.ref == 'refs/heads/impl-docker-workflow' }}
           - image: nekoui
             tags: latest,@versions
             repos: ghcr.io/sleepysquash
