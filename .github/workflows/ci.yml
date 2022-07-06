@@ -324,31 +324,20 @@ jobs:
   release-docker:
     name: Release Docker image
     needs: ["docker"]
-    if: true # if: ${{ github.ref_name == 'impl-docker-workflow' || startsWith(github.ref, 'refs/tags/v') }}
-    strategy:
-      matrix:
-        include:
-          - image: nekoui
-            tags: edge
-            repos: ghcr.io/sleepysquash
-            if: true # ${{ github.ref == 'refs/heads/impl-docker-workflow' }}
-          - image: nekoui
-            tags: latest,@versions
-            repos: ghcr.io/sleepysquash
-            if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    if: true # ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
+    env:
+      IMAGE: nekoui
+      REPOS: ghcr.io/sleepysquash
+      TAGS: ${{ (startsWith(github.ref, 'refs/tags/v') && 'latest,@versions') || 'edge' }}
     steps:
       - uses: actions/checkout@v3
-        if: ${{ matrix.if }}
       - uses: docker/setup-buildx-action@v2
-        if: ${{ matrix.if }}
 
       - uses: actions/download-artifact@v3
         with:
-          name: docker-${{ matrix.image }}-${{ github.run_number }}
-        if: ${{ matrix.if }}
+          name: docker-$IMAGE-${{ github.run_number }}
       - run: make docker.untar from-file=image.tar
-        if: ${{ matrix.if }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
@@ -356,7 +345,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          if: ${{ matrix.if && startsWith(matrix.repos, 'ghcr.io') }}
+          if: ${{ contains(REPOS, 'ghcr.io') }}
 
       - name: Parse semver versions from Git tag
         id: semver
@@ -364,15 +353,6 @@ jobs:
         with:
           text: ${{ github.ref }}
           regex: '^refs/tags/v(((([0-9]+)\.[0-9]+)\.[0-9]+)(-.+)?)$'
-        if: ${{ matrix.if }}
-      - run: echo ${{ steps.semver.outputs.group1 }}
-        if: ${{ matrix.if }}
-      - run: echo ${{ steps.semver.outputs.group2 }}
-        if: ${{ matrix.if }}
-      - run: echo ${{ steps.semver.outputs.group3 }}
-        if: ${{ matrix.if }}
-      - run: echo ${{ steps.semver.outputs.group4 }}
-        if: ${{ matrix.if }}
       - name: Form Docker version tags
         id: versions
         uses: actions/github-script@v6
@@ -387,25 +367,19 @@ jobs:
               }
             }
             return versions;
-        if: ${{ matrix.if && contains(matrix.tags, '@versions') }}
+        if: ${{ contains(TAGS, '@versions') }}
       - name: Prepare final image tags
         id: tags
         uses: bluwy/substitute-string-action@v1
         with:
-          _input-text: ${{ matrix.tags }}
+          _input-text: $TAGS
           "@versions": ${{ steps.versions.outputs.result }}
-        if: ${{ matrix.if }}
-
-      - run: echo ${{ steps.tags.outputs.result }}
-        if: ${{ matrix.if }}
 
       - run: make docker.tag tags=${{ steps.tags.outputs.result }}
-                  image=${{ matrix.image }} of=build-${{ github.run_number }}
-                  repos=${{ matrix.repos }}
-        if: ${{ matrix.if }}
+                  image=$IMAGE of=build-${{ github.run_number }}
+                  repos=$REPOS
       - run: make docker.push tags=${{ steps.tags.outputs.result }}
-                  image=${{ matrix.image }} repos=${{ matrix.repos }}
-        if: ${{ matrix.if }}
+                  image=$IMAGE repos=$REPOS
 
 
 
