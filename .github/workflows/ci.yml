@@ -345,7 +345,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          if: ${{ contains(env.REPOS, 'ghcr.io') }}
+        if: ${{ contains(env.REPOS, 'ghcr.io') }}
 
       - name: Parse semver versions from Git tag
         id: semver
