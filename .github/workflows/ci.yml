@@ -336,7 +336,7 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: docker-$IMAGE-${{ github.run_number }}
+          name: docker-${{ env.IMAGE }}-${{ github.run_number }}
       - run: make docker.untar from-file=image.tar
 
       - name: Login to GitHub Container Registry
@@ -376,10 +376,10 @@ jobs:
           "@versions": ${{ steps.versions.outputs.result }}
 
       - run: make docker.tag tags=${{ steps.tags.outputs.result }}
-                  image=$IMAGE of=build-${{ github.run_number }}
-                  repos=$REPOS
+                  image=${{ env.IMAGE }} of=build-${{ github.run_number }}
+                  repos=${{ env.REPOS }}
       - run: make docker.push tags=${{ steps.tags.outputs.result }}
-                  image=$IMAGE repos=$REPOS
+                  image=${{ env.IMAGE }} repos=${{ env.REPOS }}
 
 
 
