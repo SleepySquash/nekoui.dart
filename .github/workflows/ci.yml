@@ -14,7 +14,6 @@ concurrency:
 env:
   ARTIFACT_PREFIX: nekoui
   FLUTTER_VER: "3.0"
-  IMAGE_NAME: nekoui
 
 jobs:
 
@@ -171,16 +170,16 @@ jobs:
       - uses: docker/setup-buildx-action@v2
 
       - run: make docker.build debug=no no-cache=yes
-                  image=${{ env.IMAGE_NAME }}
+                  image=nekoui
                   tag=build-${{ github.run_number }}
 
       - run: make docker.tar to-file=image.tar
-                  image=${{ env.IMAGE_NAME }}
+                  image=nekoui
                   tags=build-${{ github.run_number }}
 
       - uses: actions/upload-artifact@v3
         with:
-          name: docker-${{ env.IMAGE_NAME }}-${{ github.run_number }}
+          name: docker-nekoui-${{ github.run_number }}
           path: image.tar
           retention-days: 1
 
@@ -323,11 +322,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - image: ${{ env.IMAGE_NAME }}
+          - image: nekoui
             tags: edge
             repos: ghcr.io/sleepysquash
             if: ${{ github.ref == 'refs/heads/impl-docker-workflow' }}
-          - image: ${{ env.IMAGE_NAME }}
+          - image: nekoui
             tags: latest,@versions
             repos: ghcr.io/sleepysquash
             if: ${{ startsWith(github.ref, 'refs/tags/v') }}
@@ -340,7 +339,7 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: docker-${{ env.IMAGE_NAME }}-${{ github.run_number }}
+          name: docker-${{ matrix.image }}-${{ github.run_number }}
         if: ${{ matrix.if }}
       - run: make docker.untar from-file=image.tar
         if: ${{ matrix.if }}
@@ -395,11 +394,11 @@ jobs:
         if: ${{ matrix.if }}
 
       - run: make docker.tag tags=${{ steps.tags.outputs.result }}
-                  image=${{ env.IMAGE_NAME }} of=build-${{ github.run_number }}
+                  image=${{ matrix.image }} of=build-${{ github.run_number }}
                   repos=${{ matrix.repos }}
         if: ${{ matrix.if }}
       - run: make docker.push tags=${{ steps.tags.outputs.result }}
-                  image=${{ env.IMAGE_NAME }} repos=${{ matrix.repos }}
+                  image=${{ matrix.image }} repos=${{ matrix.repos }}
         if: ${{ matrix.if }}
 
 
