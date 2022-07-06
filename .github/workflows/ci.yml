@@ -345,7 +345,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          if: ${{ contains(REPOS, 'ghcr.io') }}
+          if: ${{ contains(env.REPOS, 'ghcr.io') }}
 
       - name: Parse semver versions from Git tag
         id: semver
@@ -367,7 +367,7 @@ jobs:
               }
             }
             return versions;
-        if: ${{ contains(TAGS, '@versions') }}
+        if: ${{ contains(env.TAGS, '@versions') }}
       - name: Prepare final image tags
         id: tags
         uses: bluwy/substitute-string-action@v1
