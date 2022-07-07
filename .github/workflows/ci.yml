@@ -354,7 +354,6 @@ jobs:
           text: ${{ github.ref }}
           regex: '^refs/tags/v((([0-9]+)\.[0-9]+)\.[0-9]+(-.+)?)$'
         if: ${{ contains(env.TAGS, '@versions') }}
-      - run: make docker.tags of=build-${{ github.run_number }}
       - name: Form Docker version tags
         id: versions
         uses: actions/github-script@v6
