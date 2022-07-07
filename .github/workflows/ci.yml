@@ -176,16 +176,14 @@ jobs:
 
       - run: make flutter.pub
       - run: make docker.build debug=no no-cache=yes
-                  image=nekoui
                   tag=build-${{ github.run_number }}
 
       - run: make docker.tar to-file=image.tar
-                  image=nekoui
                   tags=build-${{ github.run_number }}
 
       - uses: actions/upload-artifact@v3
         with:
-          name: docker-nekoui-${{ github.run_number }}
+          name: docker-${{ github.run_number }}
           path: image.tar
           retention-days: 1
 
@@ -336,7 +334,7 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: docker-${{ env.IMAGE }}-${{ github.run_number }}
+          name: docker-${{ github.run_number }}
       - run: make docker.untar from-file=image.tar
 
       - name: Login to GitHub Container Registry

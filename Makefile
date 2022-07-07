@@ -324,48 +324,47 @@ copyright:
 docker-env = $(strip $(if $(call eq,$(minikube),yes),\
 	$(subst export,,$(shell minikube docker-env | cut -d '\#' -f1)),))
 
+# Authenticate to GitHub Container Registry.
+#
+# Note that Personal Access Token (PAT) might be required to be passed as a
+# password.
+#
+# Usage:
+#	make docker.auth [user=<github-username>] [pass-stdin=(no|yes)]
+#	                 [minikube=(no|yes)]
+
+docker.auth:
+	$(docker-env) $(if $(call eq,$(token),),,CR_PAT=$(token)) \
+	docker login ghcr.io \
+		$(if $(call eq,$(user),),,-u $(user)) \
+		$(if $(call eq,$(pass-stdin),yes),--password-stdin,)
+		
+
+
 # Build project Docker image.
 #
 # Usage:
-#	make docker.build [image=(<empty>|review|artifacts)]
-#	                  [tag=(dev|<tag>)]
+#	make docker.build [tag=(dev|<tag>)]
 #	                  [no-cache=(no|yes)]
 #	                  [minikube=(no|yes)]
 
-docker-build-image-name = $(IMAGE_NAME)$(if $(call eq,$(image),),,/$(image))
-docker-build-dir = .
-ifeq ($(image),artifacts)
-docker-build-dir = docker/artifacts
-endif
-
 docker.build:
-ifeq ($(image),artifacts)
-ifeq ($(wildcard doc/api),)
-	@make docs.dart clean=no open=no dockerized=$(dockerized)
-endif
-	@rm -rf docker/artifacts/rootfs/docs/dart
-	@mkdir -p docker/artifacts/rootfs/docs/dart/
-	cp -rf doc/api/* docker/artifacts/rootfs/docs/dart/
-else
 ifeq ($(wildcard build/web),)
 	@make flutter.build platform=web dart-env='$(dart-env)' \
 	                    dockerized=$(dockerized)
 endif
-endif
 	$(docker-env) \
 	docker build --network=host --force-rm \
 		$(if $(call eq,$(no-cache),yes),--no-cache --pull,) \
-		-t $(IMAGE_REPO)/$(IMAGE_NAME):$(or $(tag),dev) $(docker-build-dir)/
+		-t $(IMAGE_REPO)/$(IMAGE_NAME):$(or $(tag),dev) .
 
 
 # Pull project Docker images from Container Registry.
 #
 # Usage:
-#	make docker.pull
-#		[image=(<empty>|review|artifacts)]
-#		[repos=($(IMAGE_REPO)|<prefix-1>[,<prefix-2>...])]
-#		[tags=(@all|<t1>[,<t2>...])]
-#		[minikube=(no|yes)]
+#	make docker.pull [repos=($(IMAGE_REPO)|<prefix-1>[,<prefix-2>...])]
+#	                 [tags=(@all|<t1>[,<t2>...])]
+#	                 [minikube=(no|yes)]
 
 docker-pull-repos = $(or $(repos),$(IMAGE_REPO))
 docker-pull-tags = $(or $(tags),@all)
@@ -389,11 +388,9 @@ endef
 # Push project Docker images to Container Registry.
 #
 # Usage:
-#	make docker.push
-#		[image=(<empty>|review|artifacts)]
-#		[repos=($(IMAGE_REPO)|<prefix-1>[,<prefix-2>...])]
-#		[tags=(dev|<t1>[,<t2>...])]
-#		[minikube=(no|yes)]
+#	make docker.push [repos=($(IMAGE_REPO)|<prefix-1>[,<prefix-2>...])]
+#	                 [tags=(dev|<t1>[,<t2>...])]
+#	                 [minikube=(no|yes)]
 
 docker-push-repos = $(or $(repos),$(IMAGE_REPO))
 docker-push-tags = $(or $(tags),dev)
@@ -413,14 +410,14 @@ endef
 #
 # Usage:
 #	make docker.tag [of=(dev|<tag>)]
-#		[image=(<empty>|review|artifacts)]
-#		[repos=($(IMAGE_REPO)|<with-prefix-1>[,<with-prefix-2>...])]
-#		[tags=(dev|<with-t1>[,<with-t2>...])]
-#		[minikube=(no|yes)]
+#	                [repos=($(IMAGE_REPO)|<prefix-1>[,<prefix-2>...])]
+#	                [tags=(dev|<t1>[,<t2>...])]
+#	                [minikube=(no|yes)]
 
 docker-tag-of := $(or $(of),dev)
 docker-tag-with := $(or $(tags),dev)
 docker-tag-repos = $(or $(repos),$(IMAGE_REPO))
+docker-tag-image = $(or $(image),$(IMAGE_NAME))
 
 docker.tag:
 	$(foreach tag,$(subst $(comma), ,$(docker-tag-with)),\
@@ -431,7 +428,7 @@ define docker.tag.do
 	$(eval tag := $(strip $(2)))
 	$(docker-env) \
 	docker tag $(IMAGE_REPO)/$(IMAGE_NAME):$(if $(call eq,$(of),),dev,$(of)) \
-	           $(repo)/$(IMAGE_NAME):$(tag)
+	           $(repo)/$(docker-tag-image):$(tag)
 endef
 
 
@@ -439,9 +436,8 @@ endef
 #
 # Usage:
 #	make docker.tar [to-file=(.cache/image.tar|<file-path>)]
-#		[image=(<empty>|review|artifacts)]
-#		[tags=(dev|<t1>[,<t2>...])]
-#		[minikube=(no|yes)]
+#	                [tags=(dev|<t1>[,<t2>...])]
+#	                [minikube=(no|yes)]
 
 docker-tar-file = $(or $(to-file),.cache/image.tar)
 docker-tar-tags = $(or $(tags),dev)
