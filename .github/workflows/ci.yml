@@ -33,7 +33,11 @@ jobs:
           text: ${{ github.ref }}
           regex: '^refs/tags/v((([0-9]+)\.[0-9]+)\.[0-9]+(-.+)?)$'
         if: ${{ contains(env.TAGS, '@versions') }}
-      - run: echo ${{ steps.semver.outputs.group1 }}${{ steps.semver.outputs.group2 }}${{ steps.semver.outputs.group3 }}${{ steps.semver.outputs.group4 }}
+      - run: echo ${{ steps.semver.outputs.group1 }}
+      - run: echo ${{ steps.semver.outputs.group2 }}
+      - run: echo ${{ steps.semver.outputs.group3 }}
+      - run: echo ${{ steps.semver.outputs.group4 }}
+      - run: echo ${{ steps.semver.outputs.group5 }}
       - name: Prepare final image tags
         id: tags
         uses: bluwy/substitute-string-action@v1
