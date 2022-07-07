@@ -1,0 +1,417 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+  pull_request:
+    branches: ["main"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ARTIFACT_PREFIX: nekoui
+  FLUTTER_VER: "3.0"
+
+jobs:
+
+  ################
+  # Pull Request #
+  ################
+
+  # pr:
+  #   if: ${{ github.event_name == 'pull_request' }}
+  #   needs:
+  #     - build
+  #     - copyright
+  #     - dartanalyze
+  #     - dartdoc
+  #     - dartfmt
+  #     - pubspec
+  #     - test-unit
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: true
+
+
+
+
+  ##########################
+  # Linting and formatting #
+  ##########################
+
+  # copyright:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - run: make copyright check=yes
+
+  # dartanalyze:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: $FLUTTER_VER
+  #         channel: stable
+  #         cache: true
+  #     - run: make flutter.pub
+  #     - run: make flutter.analyze
+
+  # dartfmt:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: $FLUTTER_VER
+  #         channel: stable
+  #         cache: true
+  #     - run: make flutter.fmt check=yes
+
+  # pubspec:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: $FLUTTER_VER
+  #         channel: stable
+  #         cache: true
+  #     - run: make flutter.pub
+  #     - name: Check `pubspec.lock` is in sync with `pubspec.yaml`
+  #       run: git diff --exit-code
+
+
+
+
+  ############
+  # Building #
+  ############
+
+  # build:
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       include:
+  #         - platform: apk
+  #           artifacts: build/app/outputs/flutter-apk/app-*.apk
+  #         - platform: appbundle
+  #           artifacts: build/app/outputs/bundle/release/app-release.aab
+  #         # - platform: ios
+  #         #   artifacts: build/ios/iphoneos/Runner.app
+  #         - platform: linux
+  #           artifacts: build/linux/x64/release/bundle
+  #         - platform: macos
+  #           artifacts: build/macos/Build/Products/Release/nekoui.app
+  #         - platform: web
+  #           artifacts: build/web
+  #         - platform: windows
+  #           artifacts: build/windows/runner/Release
+  #   runs-on: ${{ ((matrix.platform == 'ios' || matrix.platform == 'macos')
+  #                                                 && 'macos-latest')
+  #                || (matrix.platform == 'windows' && 'windows-latest')
+  #                || (matrix.platform == 'linux'   && 'ubuntu-22.04')
+  #                                                 || 'ubuntu-latest' }}
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: ${{ env.FLUTTER_VER }}
+  #         channel: stable
+  #         cache: true
+  #     - run: sudo apt-get update -y
+  #       if: ${{ matrix.platform == 'linux' }}
+  #     - run: sudo apt-get install -y --allow-downgrades
+  #            ninja-build
+  #            libunwind-dev
+  #            libgtk-3-dev
+  #            libgstreamer1.0-dev
+  #            libgstreamer-plugins-base1.0-dev
+  #            libpulse-dev
+  #            libudev1=249.11-0ubuntu3
+  #       if: ${{ matrix.platform == 'linux' }}
+  #     - run: flutter config --enable-${{ matrix.platform }}-desktop
+  #       if: ${{ matrix.platform == 'linux'
+  #               || matrix.platform == 'macos'
+  #               || matrix.platform == 'windows' }}
+  #     - run: make flutter.pub
+  #     - run: make flutter.build platform=${{ matrix.platform }}
+  #            split-per-abi=yes
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: ${{ matrix.platform }}
+  #         path: ${{ matrix.artifacts }}
+  #         if-no-files-found: error
+  
+  # dartdoc:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: ${{ env.FLUTTER_VER }}
+  #         channel: stable
+  #         cache: true
+  #     - run: make flutter.pub
+  #     - run: make docs.dart clean=yes
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: docs
+  #         path: doc/api
+
+  docker:
+    name: Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VER }}
+          channel: stable
+          cache: true
+      - uses: docker/setup-buildx-action@v2
+
+      - run: make flutter.pub
+      - run: make docker.build debug=no no-cache=yes
+                  image=nekoui
+                  tag=build-${{ github.run_number }}
+
+      - run: make docker.tar to-file=image.tar
+                  image=nekoui
+                  tags=build-${{ github.run_number }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: docker-nekoui-${{ github.run_number }}
+          path: image.tar
+          retention-days: 1
+
+
+
+
+  ###########
+  # Testing #
+  ###########
+
+  # test-unit:
+  #   name: Unit tests
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: $FLUTTER_VER
+  #         channel: stable
+  #         cache: true
+
+  #     - run: make flutter.pub
+
+  #     - run: make test.unit
+
+
+
+
+  #############
+  # Releasing #
+  #############
+
+  # release-github:
+  #   name: Release on GitHub
+  #   if: ${{ startsWith(github.ref, 'refs/tags/') }}
+  #   runs-on: ubuntu-latest
+  #   needs: ["build"]
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Verify tag matches version
+  #       run: test "${{ github.ref_name }}" == "v$(make flutter.version)"
+  #     - run: make github.release.notes
+  #            project-url="${{ github.server_url }}/${{ github.repository }}"
+  #            > ./release_notes.md
+
+  #     - run: mkdir _ && mkdir package
+  #     - uses: actions/download-artifact@v3
+  #       with:
+  #         name: apk
+  #         path: _/android/
+  #     - uses: actions/download-artifact@v3
+  #       with:
+  #         name: appbundle
+  #         path: _/android/
+  #     - uses: actions/download-artifact@v3
+  #       with:
+  #         name: web
+  #         path: _/web/
+  #     - uses: actions/download-artifact@v3
+  #       with:
+  #         name: windows
+  #         path: _/windows/
+  #     - uses: actions/download-artifact@v3
+  #       with:
+  #         name: linux
+  #         path: _/linux/
+  #     # - uses: actions/download-artifact@v3
+  #     #   with:
+  #     #     name: ios
+  #     #     path: ios/
+  #     - uses: actions/download-artifact@v3
+  #       with:
+  #         name: macos
+  #         path: _/macos/
+  #     - uses: actions/download-artifact@v3
+  #       with:
+  #         name: docs
+  #         path: _/docs/
+
+  #     - uses: thedoctor0/zip-release@main
+  #       with:
+  #         filename: '../package/${{ env.ARTIFACT_PREFIX }}-windows-x86_64.zip'
+  #         path: windows
+  #         directory: _
+  #     - uses: thedoctor0/zip-release@main
+  #       with:
+  #         filename: '../package/${{ env.ARTIFACT_PREFIX }}-linux-x86_64.zip'
+  #         path: linux
+  #         directory: _
+  #     - uses: thedoctor0/zip-release@main
+  #       with:
+  #         filename: '../package/${{ env.ARTIFACT_PREFIX }}-web.zip'
+  #         path: web
+  #         directory: _
+  #     - run: mv macos macos.app
+  #     - uses: thedoctor0/zip-release@main
+  #       with:
+  #         filename: '../package/${{ env.ARTIFACT_PREFIX }}-macos.zip'
+  #         path: macos
+  #         directory: _
+  #     - uses: thedoctor0/zip-release@main
+  #       with:
+  #         filename: '../package/docs.zip'
+  #         path: docs
+  #         directory: _
+
+  #     - run: mv _/android/app-arm64-v8a-release.apk 
+  #               package/${{ env.ARTIFACT_PREFIX }}-android-arm64-v8a.apk
+  #     - run: mv _/android/app-armeabi-v7a-release.apk
+  #               package/${{ env.ARTIFACT_PREFIX }}-android-armeabi-v7a.apk
+  #     - run: mv _/android/app-x86_64-release.apk
+  #               package/${{ env.ARTIFACT_PREFIX }}-android-x86_64.apk
+  #     - run: mv _/android/app-release.aab
+  #               package/${{ env.ARTIFACT_PREFIX }}-android.aab
+
+  #     - name: Generate SHA256 checksums
+  #       run: ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"
+  #       working-directory: package/
+  #     - name: Show generated SHA256 checksums
+  #       run: cat *.sha256sum
+  #       working-directory: package/
+
+  #     - uses: ncipollo/release-action@v1
+  #       with:
+  #         artifacts: |
+  #           package/*.apk
+  #           package/*.aab
+  #           package/*.zip
+  #           package/*.sha256sum
+  #         allowUpdates: true
+  #         artifactErrorsFailBuild: true
+  #         name: ${{ github.ref_name }}
+  #         bodyFile: ./release_notes.md
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+
+  release-docker:
+    name: Release Docker image
+    needs: ["docker"]
+    if: true # ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: ubuntu-latest
+    env:
+      IMAGE: nekoui
+      REPOS: ghcr.io/sleepysquash
+      TAGS: ${{ (startsWith(github.ref, 'refs/tags/v') && 'latest,@versions') || 'edge' }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/setup-buildx-action@v2
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: docker-${{ env.IMAGE }}-${{ github.run_number }}
+      - run: make docker.untar from-file=image.tar
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ contains(env.REPOS, 'ghcr.io') }}
+
+      - name: Parse semver versions from Git tag
+        id: semver
+        uses: actions-ecosystem/action-regex-match@v2
+        with:
+          text: ${{ github.ref }}
+          regex: '^refs/tags/v((([0-9]+)\.[0-9]+)\.[0-9]+(-.+)?)$'
+        if: ${{ contains(env.TAGS, '@versions') }}
+      - run: make docker.tags of=build-${{ github.run_number }}
+      - name: Form Docker version tags
+        id: versions
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            let versions = '${{ steps.semver.outputs.group1 }}';
+            if ('${{ steps.semver.outputs.group4 }}' === '') {
+              versions += ',${{ steps.semver.outputs.group2 }}';
+              if ('${{ steps.semver.outputs.group3 }}' !== '0') {
+                versions += ',${{ steps.semver.outputs.group3 }}';
+              }
+            }
+            return versions;
+        if: ${{ contains(env.TAGS, '@versions') }}
+      - name: Prepare final image tags
+        id: tags
+        uses: bluwy/substitute-string-action@v1
+        with:
+          _input-text: ${{ env.TAGS }}
+          "@versions": ${{ steps.versions.outputs.result }}
+
+      - run: make docker.tag tags=${{ steps.tags.outputs.result }}
+                  image=${{ env.IMAGE }} of=build-${{ github.run_number }}
+                  repos=${{ env.REPOS }}
+      - run: make docker.push tags=${{ steps.tags.outputs.result }}
+                  image=${{ env.IMAGE }} repos=${{ env.REPOS }}
+
+
+
+
+  #############
+  # Deploying #
+  #############
+  
+  # gh-pages:
+  #   name: Publish to GitHub Pages
+  #   if: ${{ github.ref_name == 'main' || startsWith(github.ref, 'refs/tags/v') }}
+  #   runs-on: ubuntu-latest
+  #   needs: ["dartdoc"]
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         ref: gh-pages
+
+  #     - run: rm -rf ${{ (github.ref_name == 'main' && 'main') || 'release' }}
+  #     - uses: actions/download-artifact@v3
+  #       with:
+  #         name: docs
+  #         path: ${{ (github.ref_name == 'main' && 'main') || 'release' }}
+
+  #     - uses: peaceiris/actions-gh-pages@v3
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         publish_dir: .
+  #         commit_message: ${{ github.event.head_commit.message }}
+  #         force_orphan: true
+  #         keep_files: true
+  #         user_name: 'github-actions[bot]'
+  #         user_email: 'github-actions[bot]@users.noreply.github.com'

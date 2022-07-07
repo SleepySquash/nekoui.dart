@@ -18,7 +18,7 @@
 FROM nginx:stable-alpine
 
 
-COPY --chown=nobody:nobody build/web/ /usr/share/nginx/html/
+COPY --chown=nobody:nobody build/web/ /var/www/public/
 
 
 WORKDIR /var/www/public
