@@ -362,10 +362,15 @@ jobs:
           result-encoding: string
           script: |
             let versions = '${{ steps.semver.outputs.group1 }}';
-            if ('${{ steps.semver.outputs.group4 }}' === '') {
-              versions += ',${{ steps.semver.outputs.group2 }}';
-              if ('${{ steps.semver.outputs.group3 }}' !== '0') {
+            if ('${{ steps.semver.outputs.group2 }}' !== '') {
+              if ('${{ steps.semver.outputs.group1 }}' !== '${{ steps.semver.outputs.group2 }}') {
+                versions += ',${{ steps.semver.outputs.group2 }}';
+              }
+              if ('${{ steps.semver.outputs.group3 }}' !== '') {
                 versions += ',${{ steps.semver.outputs.group3 }}';
+                if ('${{ steps.semver.outputs.group4 }}' !== '') {
+                  versions += ',${{ steps.semver.outputs.group4 }}';
+                }
               }
             }
             return versions;

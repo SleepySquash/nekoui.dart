@@ -46,7 +46,8 @@ jobs:
           script: |
             let versions = '${{ steps.semver.outputs.group1 }}';
             if ('${{ steps.semver.outputs.group2 }}' !== '') {
-              if ('${{ steps.semver.outputs.group1 }}' !== '${{ steps.semver.outputs.group2 }}') {
+              if ('${{ steps.semver.outputs.group1 }}' !==
+                  '${{ steps.semver.outputs.group2 }}') {
                 versions += ',${{ steps.semver.outputs.group2 }}';
               }
               if ('${{ steps.semver.outputs.group3 }}' !== '') {
@@ -58,8 +59,6 @@ jobs:
             }
             return versions;
         if: ${{ contains(env.TAGS, '@versions') }}
-      - run: echo ${{ steps.versions.outputs.result }}
-      - run: make docker.tags of=build-${{ github.run_number }}
       - name: Prepare final image tags
         id: tags
         uses: bluwy/substitute-string-action@v1
