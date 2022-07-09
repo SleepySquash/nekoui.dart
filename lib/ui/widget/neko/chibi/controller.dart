@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart' hide Node;
-import 'package:nekoui/domain/model/thought.dart';
-import 'package:nekoui/router.dart';
 import 'package:rive/components.dart';
 import 'package:rive/rive.dart';
 
+import '/domain/model/thought.dart';
 import '/domain/service/neko.dart';
 import '/util/obs/obs.dart';
 

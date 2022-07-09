@@ -3,13 +3,13 @@ import 'dart:math';
 import 'package:circular_menu/circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/domain/service/environment.dart';
-import 'package:nekoui/ui/home/room/components/room.dart';
 
 import '/domain/model/neko.dart';
+import '/domain/service/environment.dart';
 import '/router.dart';
 import '/ui/home/neko/view.dart';
-import '../../widget/neko/chibi/view.dart';
+import '/ui/home/room/components/room.dart';
+import '/ui/widget/neko/chibi/view.dart';
 import 'controller.dart';
 
 class RoomView extends StatelessWidget {

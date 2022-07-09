@@ -2,10 +2,11 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/ui/home/flowchart/component/interest.dart';
-import 'package:nekoui/ui/home/flowchart/component/progress.dart';
-import 'package:nekoui/ui/home/flowchart/component/skill.dart';
-import 'package:nekoui/ui/home/flowchart/widget/keep_alive.dart';
+
+import 'component/interest.dart';
+import 'component/progress.dart';
+import 'component/skill.dart';
+import 'widget/keep_alive.dart';
 
 import 'controller.dart';
 

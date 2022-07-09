@@ -1,9 +1,9 @@
 import 'package:circular_menu/circular_menu.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/domain/service/environment.dart';
 
 import '/domain/model/neko.dart';
+import '/domain/service/environment.dart';
 import '/domain/service/neko.dart';
 import '/router.dart';
 

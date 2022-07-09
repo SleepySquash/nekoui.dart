@@ -4,11 +4,12 @@ import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:nekoui/config.dart';
-import 'package:nekoui/domain/disposable_service.dart';
-import 'package:nekoui/domain/repository/flag.dart';
-import 'package:nekoui/util/message_popup.dart';
-import 'package:nekoui/util/platform_utils.dart';
+
+import '/config.dart';
+import '/domain/disposable_service.dart';
+import '/domain/repository/flag.dart';
+import '/util/message_popup.dart';
+import '/util/platform_utils.dart';
 
 enum Weather {
   clear,

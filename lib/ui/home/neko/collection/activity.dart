@@ -1,7 +1,7 @@
-import 'package:nekoui/domain/model/topic.dart';
 import 'package:novel/novel.dart';
 
 import '../controller.dart';
+import '/domain/model/topic.dart';
 
 extension ActivityExtension on NekoController {
   static List<TalkTopic> activities(String? name) {

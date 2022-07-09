@@ -1,5 +1,5 @@
-import 'package:nekoui/domain/repository/flag.dart';
-import 'package:nekoui/provider/hive/flag.dart';
+import '/domain/repository/flag.dart';
+import '/provider/hive/flag.dart';
 
 class FlagRepository implements AbstractFlagRepository {
   FlagRepository(this._local);

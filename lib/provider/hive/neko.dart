@@ -1,8 +1,8 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:nekoui/domain/model/mood.dart';
-import 'package:nekoui/domain/model_type_id.dart';
 
+import '/domain/model_type_id.dart';
 import '/domain/model/mbti.dart';
+import '/domain/model/mood.dart';
 import '/domain/model/necessities.dart';
 import '/domain/model/neko.dart';
 import '/domain/model/trait.dart';

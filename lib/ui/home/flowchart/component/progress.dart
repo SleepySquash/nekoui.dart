@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nekoui/ui/home/flowchart/controller.dart';
+
+import '../controller.dart';
 
 class ProgressTab extends StatelessWidget {
   const ProgressTab(this.c, {Key? key}) : super(key: key);

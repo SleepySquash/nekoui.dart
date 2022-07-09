@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/domain/model/topic.dart';
-import 'package:nekoui/ui/home/neko/collection/topic.dart';
 
+import '../collection/topic.dart';
 import '../controller.dart';
+import '/domain/model/topic.dart';
 import '/ui/widget/backdrop_button.dart';
 
 class TalkScreen extends StatelessWidget {

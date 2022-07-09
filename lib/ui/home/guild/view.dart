@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/router.dart';
 
+import '/router.dart';
 import '/ui/widget/escape_popper.dart';
 import 'controller.dart';
 

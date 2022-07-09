@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nekoui/ui/home/flowchart/controller.dart';
+
+import '../controller.dart';
 
 class InterestTab extends StatelessWidget {
   const InterestTab(this.c, {Key? key}) : super(key: key);

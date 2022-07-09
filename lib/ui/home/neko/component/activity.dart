@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:nekoui/ui/widget/backdrop_button.dart';
 
 import '../controller.dart';
+import '/ui/widget/backdrop_button.dart';
 
 class ActivityScreen extends StatelessWidget {
   const ActivityScreen(this.c, {Key? key}) : super(key: key);

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart' show Icon, Icons, Colors;
 import 'package:get/get.dart';
-import 'package:nekoui/domain/model/skill.dart';
-import 'package:nekoui/domain/service/neko.dart';
-import 'package:nekoui/router.dart';
 import 'package:novel/novel.dart';
+
+import '/domain/model/skill.dart';
+import '/domain/service/neko.dart';
+import '/router.dart';
 
 enum TopicType {
   casual, // discussions, small-talks, etc

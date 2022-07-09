@@ -463,36 +463,6 @@ docker.untar:
 
 
 
-###################
-# GitHub commands #
-###################
-
-# Prepare release notes for GitHub release.
-#
-# Usage:
-#	make github.release.notes [VERSION=<proj-version>]
-#	     [project-url=(https://github.com/team113/messenger|<github-project-url>)]
-
-github-proj-url = $(strip $(or $(project-url),\
-	https://github.com/SleepySquash/nekoui.dart))
-
-github.release.notes:
-	@echo "$(strip \
-		[Changelog]($(github-proj-url)/blob/v$(VERSION)/CHANGELOG.md#$(shell \
-			sed -n '/^## \[$(VERSION)\]/{\
-				s/^## \[\(.*\)\][^0-9]*\([0-9].*\)/\1-\2/;\
-				s/[^0-9a-z-]*//g;\
-				p;\
-			}' CHANGELOG.md)) | \
-		[Milestone]($(github-proj-url)/milestone/$(shell \
-			sed -n '/^## \[$(VERSION)\]/,/Milestone/{\
-				s/.*milestone.\([0-9]*\).*/\1/p;\
-			}' CHANGELOG.md)) | \
-		[Repository]($(github-proj-url)/tree/v$(VERSION)))"
-
-
-
-
 ################
 # Git commands #
 ################

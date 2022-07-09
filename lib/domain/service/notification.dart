@@ -89,7 +89,7 @@ class NotificationService extends DisposableService {
         body,
         const NotificationDetails(
           android:
-              AndroidNotificationDetails('com.melancholyhill.nekoui', 'nekoui'),
+              AndroidNotificationDetails('com.sleepysquash.nekoui', 'nekoui'),
         ),
         payload: payload,
       );
@@ -111,7 +111,7 @@ class NotificationService extends DisposableService {
       tz.TZDateTime.now(tz.local).add(at),
       const NotificationDetails(
         android:
-            AndroidNotificationDetails('com.melancholyhill.nekoui', 'nekoui'),
+            AndroidNotificationDetails('com.sleepysquash.nekoui', 'nekoui'),
       ),
       androidAllowWhileIdle: false,
       uiLocalNotificationDateInterpretation:
