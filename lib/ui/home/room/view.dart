@@ -1,15 +1,31 @@
+// Copyright © 2022 NIKITA ISAENKO, <https://github.com/SleepySquash>
+//
+// This program is free software: you can redistribute it and/or modify it under
+// the terms of the GNU Affero General Public License v3.0 as published by the
+// Free Software Foundation, either version 3 of the License, or (at your
+// option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License v3.0 for
+// more details.
+//
+// You should have received a copy of the GNU Affero General Public License v3.0
+// along with this program. If not, see
+// <https://www.gnu.org/licenses/agpl-3.0.html>.
+
 import 'dart:math';
 
 import 'package:circular_menu/circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/domain/service/environment.dart';
-import 'package:nekoui/ui/home/room/components/room.dart';
 
 import '/domain/model/neko.dart';
+import '/domain/service/environment.dart';
 import '/router.dart';
 import '/ui/home/neko/view.dart';
-import '../../widget/neko/chibi/view.dart';
+import '/ui/home/room/components/room.dart';
+import '/ui/widget/neko/chibi/view.dart';
 import 'controller.dart';
 
 class RoomView extends StatelessWidget {

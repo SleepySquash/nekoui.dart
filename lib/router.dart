@@ -1,24 +1,40 @@
+// Copyright © 2022 NIKITA ISAENKO, <https://github.com/SleepySquash>
+//
+// This program is free software: you can redistribute it and/or modify it under
+// the terms of the GNU Affero General Public License v3.0 as published by the
+// Free Software Foundation, either version 3 of the License, or (at your
+// option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License v3.0 for
+// more details.
+//
+// You should have received a copy of the GNU Affero General Public License v3.0
+// along with this program. If not, see
+// <https://www.gnu.org/licenses/agpl-3.0.html>.
+
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nekoui/domain/repository/flag.dart';
-import 'package:nekoui/domain/service/environment.dart';
-import 'package:nekoui/provider/hive/flag.dart';
-import 'package:nekoui/store/flag.dart';
 
 import 'domain/model/neko.dart';
+import 'domain/repository/flag.dart';
 import 'domain/repository/item.dart';
 import 'domain/repository/neko.dart';
 import 'domain/repository/skill.dart';
 import 'domain/repository/trait.dart';
 import 'domain/service/auth.dart';
+import 'domain/service/environment.dart';
 import 'domain/service/item.dart';
 import 'domain/service/neko.dart';
+import 'provider/hive/flag.dart';
 import 'provider/hive/item.dart';
 import 'provider/hive/neko.dart';
 import 'provider/hive/skill.dart';
 import 'provider/hive/trait.dart';
+import 'store/flag.dart';
 import 'store/item.dart';
 import 'store/neko.dart';
 import 'store/skill.dart';
@@ -249,12 +265,6 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
     _prefixWorker.dispose();
     super.dispose();
   }
-
-  /// Unknown page view.
-  Page<dynamic> get _notFoundPage => MaterialPage(
-        key: const ValueKey('404'),
-        child: Scaffold(body: Center(child: Text('label_unknown_page'.tr))),
-      );
 
   /// [Navigator]'s pages generation based on the [_state].
   List<Page<dynamic>> get _pages {

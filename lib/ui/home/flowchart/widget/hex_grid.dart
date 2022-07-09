@@ -1,3 +1,19 @@
+// Copyright © 2022 NIKITA ISAENKO, <https://github.com/SleepySquash>
+//
+// This program is free software: you can redistribute it and/or modify it under
+// the terms of the GNU Affero General Public License v3.0 as published by the
+// Free Software Foundation, either version 3 of the License, or (at your
+// option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License v3.0 for
+// more details.
+//
+// You should have received a copy of the GNU Affero General Public License v3.0
+// along with this program. If not, see
+// <https://www.gnu.org/licenses/agpl-3.0.html>.
+
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
@@ -59,8 +75,6 @@ class HexGrid extends StatelessWidget {
       }
     }
 
-    const double size = 90;
-
     List<Widget> rows = [];
     for (var e in map.entries) {
       rows.add(
@@ -72,11 +86,7 @@ class HexGrid extends StatelessWidget {
             children: e.value.values
                 .map((e) => Padding(
                       padding: const EdgeInsets.all(1),
-                      child: SizedBox(
-                        // width: size,
-                        // height: size,
-                        child: Center(child: e),
-                      ),
+                      child: SizedBox(child: Center(child: e)),
                     ))
                 .toList(),
           ),
@@ -87,14 +97,6 @@ class HexGrid extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: rows,
-    );
-
-    return Padding(
-      padding: const EdgeInsets.only(left: size / 2),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: rows,
-      ),
     );
   }
 }

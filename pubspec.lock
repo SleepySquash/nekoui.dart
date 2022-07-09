@@ -100,7 +100,7 @@ packages:
     source: hosted
     version: "2.0.0"
   build:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: build
       url: "https://pub.dartlang.org"
@@ -430,7 +430,7 @@ packages:
     source: hosted
     version: "0.15.0"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       url: "https://pub.dartlang.org"

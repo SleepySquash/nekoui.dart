@@ -1,14 +1,31 @@
+// Copyright © 2022 NIKITA ISAENKO, <https://github.com/SleepySquash>
+//
+// This program is free software: you can redistribute it and/or modify it under
+// the terms of the GNU Affero General Public License v3.0 as published by the
+// Free Software Foundation, either version 3 of the License, or (at your
+// option) any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License v3.0 for
+// more details.
+//
+// You should have received a copy of the GNU Affero General Public License v3.0
+// along with this program. If not, see
+// <https://www.gnu.org/licenses/agpl-3.0.html>.
+
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:nekoui/config.dart';
-import 'package:nekoui/domain/disposable_service.dart';
-import 'package:nekoui/domain/repository/flag.dart';
-import 'package:nekoui/util/message_popup.dart';
-import 'package:nekoui/util/platform_utils.dart';
+
+import '/config.dart';
+import '/domain/disposable_service.dart';
+import '/domain/repository/flag.dart';
+import '/util/message_popup.dart';
+import '/util/platform_utils.dart';
 
 enum Weather {
   clear,
@@ -155,8 +172,8 @@ class EnvironmentService extends DisposableService {
         http.Response response = await http.get(Uri.parse(url));
         Map<String, dynamic> result = json.decode(response.body);
 
-        int pressure = result['main']['pressure']; // hPa
-        int humidity = result['main']['humidity']; // %
+        // int pressure = result['main']['pressure']; // hPa
+        // int humidity = result['main']['humidity']; // %
 
         temperature.value = result['main']['feels_like'];
 
