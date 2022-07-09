@@ -14,9 +14,11 @@
 // along with this program. If not, see
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
-import 'package:nekoui/domain/service/neko.dart';
+import 'package:get/get.dart';
 
 import '../disposable_service.dart';
+import '/domain/model/neko.dart';
+import '/domain/service/neko.dart';
 
 class ProgressService extends DisposableService {
   ProgressService(this._nekoService);
@@ -24,6 +26,8 @@ class ProgressService extends DisposableService {
   late final List<ProgressCondition> conditions;
 
   final NekoService _nekoService;
+
+  Rx<Neko> get neko => _nekoService.neko;
 
   @override
   void onInit() {

@@ -75,8 +75,6 @@ class HexGrid extends StatelessWidget {
       }
     }
 
-    const double size = 90;
-
     List<Widget> rows = [];
     for (var e in map.entries) {
       rows.add(
@@ -88,11 +86,7 @@ class HexGrid extends StatelessWidget {
             children: e.value.values
                 .map((e) => Padding(
                       padding: const EdgeInsets.all(1),
-                      child: SizedBox(
-                        // width: size,
-                        // height: size,
-                        child: Center(child: e),
-                      ),
+                      child: SizedBox(child: Center(child: e)),
                     ))
                 .toList(),
           ),
@@ -103,14 +97,6 @@ class HexGrid extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: rows,
-    );
-
-    return Padding(
-      padding: const EdgeInsets.only(left: size / 2),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: rows,
-      ),
     );
   }
 }

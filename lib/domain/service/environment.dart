@@ -172,8 +172,8 @@ class EnvironmentService extends DisposableService {
         http.Response response = await http.get(Uri.parse(url));
         Map<String, dynamic> result = json.decode(response.body);
 
-        int pressure = result['main']['pressure']; // hPa
-        int humidity = result['main']['humidity']; // %
+        // int pressure = result['main']['pressure']; // hPa
+        // int humidity = result['main']['humidity']; // %
 
         temperature.value = result['main']['feels_like'];
 

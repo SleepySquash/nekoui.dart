@@ -266,12 +266,6 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
     super.dispose();
   }
 
-  /// Unknown page view.
-  Page<dynamic> get _notFoundPage => MaterialPage(
-        key: const ValueKey('404'),
-        child: Scaffold(body: Center(child: Text('label_unknown_page'.tr))),
-      );
-
   /// [Navigator]'s pages generation based on the [_state].
   List<Page<dynamic>> get _pages {
     /// [Routes.home] or [Routes.auth] page is always included.

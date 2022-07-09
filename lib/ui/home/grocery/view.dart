@@ -19,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '/router.dart';
-import '/ui/home/map/view.dart';
 import 'controller.dart';
 
 class GroceryView extends StatelessWidget {
@@ -61,7 +60,7 @@ class GroceryView extends StatelessWidget {
                           '${c.cart.firstWhereOrNull((m) => m == e)?.count}',
                           style: const TextStyle(color: Colors.white),
                         ),
-                        child: Container(
+                        child: SizedBox(
                           width: 100,
                           height: 100,
                           child: Image.asset(e.asset),

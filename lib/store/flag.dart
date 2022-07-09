@@ -19,8 +19,12 @@ import '/provider/hive/flag.dart';
 
 class FlagRepository implements AbstractFlagRepository {
   FlagRepository(this._local);
+
   final FlagHiveProvider _local;
 
+  @override
   bool? get(Flags flag) => _local.get(flag);
+
+  @override
   Future<void> set(Flags flag, bool value) => _local.put(flag, value);
 }

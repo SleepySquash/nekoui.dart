@@ -15,13 +15,17 @@
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '/domain/model/neko.dart';
 import '/domain/service/neko.dart';
 
 class NekoPerson extends StatefulWidget {
   const NekoPerson(this._nekoService, {Key? key}) : super(key: key);
 
   final NekoService _nekoService;
+
+  Rx<Neko> get neko => _nekoService.neko;
 
   @override
   State<NekoPerson> createState() => _NekoPersonState();
@@ -45,9 +49,7 @@ class _NekoPersonState extends State<NekoPerson> {
             alignment: Alignment.topCenter,
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
-              onTap: () {
-                print('mur');
-              },
+              onTap: () {},
               child: const MouseRegion(
                 opaque: false,
                 cursor: SystemMouseCursors.grab,
