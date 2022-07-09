@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rive/rive.dart';
 
+import '/domain/model/race.dart';
 import 'controller.dart';
 
 class IntroductionView extends StatelessWidget {
@@ -71,15 +72,36 @@ class IntroductionView extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 25),
-                      ElevatedButton.icon(
-                        onPressed: c.nameIsEmpty.value ? null : c.accept,
-                        icon: const Icon(Icons.done, color: Colors.white),
-                        style:
-                            ElevatedButton.styleFrom(primary: Colors.lightBlue),
-                        label: const Text(
-                          'Вот так!',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () =>
+                                c.stage.value = IntroductionStage.character,
+                            icon: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.lightBlue),
+                            label: const Text(
+                              'Назад',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          const SizedBox(width: 25),
+                          ElevatedButton.icon(
+                            onPressed: c.nameIsEmpty.value ? null : c.accept,
+                            icon: const Icon(Icons.done, color: Colors.white),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.lightGreen,
+                            ),
+                            label: const Text(
+                              'Вот так!',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -88,12 +110,21 @@ class IntroductionView extends StatelessWidget {
               break;
 
             case IntroductionStage.character:
+              Widget _layout({Key? key, List<Widget> children = const []}) {
+                return LayoutBuilder(builder: (context, constraints) {
+                  if (constraints.maxWidth < 800) {
+                    return Column(children: children);
+                  } else {
+                    return Row(children: children);
+                  }
+                });
+              }
+
               body = Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Row(
+                padding: const EdgeInsets.all(8),
+                child: _layout(
                   key: Key('${c.stage.value}'),
                   children: [
-                    const Text('123'),
                     Expanded(
                       child: RiveAnimation.asset(
                         'assets/rive/chibi1.riv',
@@ -103,18 +134,105 @@ class IntroductionView extends StatelessWidget {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ...List.generate(
-                          4,
-                          (i) => Container(
-                            width: 64,
-                            height: 64,
-                            margin: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.grey,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            FloatingActionButton(
+                              onPressed: () {
+                                int index = c.race.value.index - 1;
+                                if (index < 0) {
+                                  index = Race.values.length - 1;
+                                }
+
+                                c.race.value = Race.values[index];
+                              },
+                              child: const Icon(Icons.arrow_back_ios),
                             ),
-                          ),
+                            const SizedBox(width: 14),
+                            Obx(
+                              () => Material(
+                                type: MaterialType.card,
+                                elevation: 8,
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                                child: Container(
+                                  width: 130,
+                                  height: 55,
+                                  padding: const EdgeInsets.all(8),
+                                  child: Center(
+                                    child: Text(
+                                      c.race.value.name,
+                                      style: TextStyle(fontSize: 24),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            FloatingActionButton(
+                              onPressed: () {
+                                int index = c.race.value.index + 1;
+                                if (index >= Race.values.length) {
+                                  index = 0;
+                                }
+
+                                c.race.value = Race.values[index];
+                              },
+                              child: const Icon(Icons.arrow_forward_ios),
+                            ),
+                          ],
                         ),
+                        const SizedBox(height: 12),
+                        Obx(() {
+                          String desc;
+
+                          switch (c.race.value) {
+                            case Race.inu:
+                              desc = 'Собачки послушные и лояльные';
+                              break;
+
+                            case Race.kitsune:
+                              desc = 'Лисички хитрые';
+                              break;
+
+                            case Race.neko:
+                              desc = 'Кошечки требуют внимания';
+                              break;
+
+                            case Race.okami:
+                              desc =
+                                  'Волчицы неугомонные, но легко привязываются';
+                              break;
+
+                            case Race.tanuki:
+                              desc = 'Еноты трудолюбивые и прикольные';
+                              break;
+
+                            case Race.usagi:
+                              desc = 'Кролики стеснительные и пугливые';
+                              break;
+                          }
+
+                          return ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: 340,
+                              minHeight: 100,
+                            ),
+                            child: Center(
+                              child: BorderedText(
+                                child: Text(
+                                  desc,
+                                  style: const TextStyle(
+                                    fontSize: 21,
+                                    color: Colors.white,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                        const SizedBox(height: 21),
                         ElevatedButton.icon(
                           onPressed: () =>
                               c.stage.value = IntroductionStage.name,

@@ -20,6 +20,7 @@ import 'package:novel/novel.dart';
 import 'package:rive/rive.dart';
 
 import '/domain/model/neko.dart';
+import '/domain/model/race.dart';
 import '/domain/service/auth.dart';
 import '/router.dart';
 
@@ -36,6 +37,8 @@ class IntroductionController extends GetxController {
 
   final RxBool nameIsEmpty = RxBool(true);
   final TextEditingController name = TextEditingController();
+
+  final Rx<Race> race = Rx(Race.neko);
 
   late final RiveAnimationController animation;
 
@@ -63,7 +66,12 @@ class IntroductionController extends GetxController {
 
   Future<void> _register(String name) async {
     await _authService.register();
-    router.home(neko: Neko(name: name));
+    router.home(
+      neko: Neko(
+        name: name,
+        race: race.value,
+      ),
+    );
   }
 
   Future<void> _novel() async {

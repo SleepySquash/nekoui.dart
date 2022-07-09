@@ -40,4 +40,5 @@ class ModelTypeId {
   static const dream = 18;
   static const hiveNeko = 19;
   static const hiveFlag = 20;
+  static const race = 21;
 }

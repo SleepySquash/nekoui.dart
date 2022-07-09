@@ -19,11 +19,13 @@ import 'package:get/get.dart';
 import 'mbti.dart';
 import 'mood.dart';
 import 'necessities.dart';
+import 'race.dart';
 
 /// Person representing a cat-girl.
 class Neko {
   Neko({
     String? name,
+    this.race = Race.neko,
     int? age,
     int? height,
     int? weight,
@@ -42,6 +44,9 @@ class Neko {
 
   /// Name given the this [Neko].
   final RxString name;
+
+  /// [Race] of this [Neko].
+  final Race race;
 
   /// Age of this [Neko].
   final RxInt age;
