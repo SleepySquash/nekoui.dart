@@ -25,8 +25,8 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     needs:
       - build
-      - docker
-      #- copyright
+      #- docker
+      - copyright
       #- dartanalyze
       #- dartdoc
       #- dartfmt
@@ -43,11 +43,11 @@ jobs:
   # Linting and formatting #
   ##########################
 
-  # copyright:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - run: make copyright check=yes
+  copyright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: make copyright check=yes
 
   # dartanalyze:
   #   runs-on: ubuntu-latest
@@ -222,117 +222,117 @@ jobs:
   # Releasing #
   #############
 
-  # release-github:
-  #   name: Release on GitHub
-  #   if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-  #   needs:
-  #     - build
-  #     - copyright
-  #     - dartanalyze
-  #     - dartdoc
-  #     - dartfmt
-  #     - test-unit
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
+  release-github:
+    name: Release on GitHub
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    needs:
+      - build
+      - copyright
+      #- dartanalyze
+      #- dartdoc
+      #- dartfmt
+      #- test-unit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-  #     - name: Parse semver versions from Git tag
-  #       id: semver
-  #       uses: actions-ecosystem/action-regex-match@v2
-  #       with:
-  #         text: ${{ github.ref }}
-  #         regex: '^refs/tags/v(((([0-9]+)\.[0-9]+)\.[0-9]+)(-.+)?)$'
-  #     - name: Verify Git tag version matches `pubspec.yaml` version
-  #       run: >
-  #         test "${{ steps.semver.outputs.group1 }}"
-  #           == "$(grep -m1 'version: ' pubspec.yaml | cut -d ' ' -f2)"
+      - name: Parse semver versions from Git tag
+        id: semver
+        uses: actions-ecosystem/action-regex-match@v2
+        with:
+          text: ${{ github.ref }}
+          regex: '^refs/tags/v(((([0-9]+)\.[0-9]+)\.[0-9]+)(-.+)?)$'
+      - name: Verify Git tag version matches `pubspec.yaml` version
+        run: >
+          test "${{ steps.semver.outputs.group1 }}"
+            == "$(grep -m1 'version: ' pubspec.yaml | cut -d ' ' -f2)"
 
-  #     - name: Parse CHANGELOG link
-  #       id: changelog
-  #       run: echo ::set-output
-  #                 name=link::${{ github.server_url }}/${{ github.repository }}/blob/v${{ steps.semver.outputs.group1 }}/CHANGELOG.md#$(sed -n '/^## \[${{ steps.semver.outputs.group1 }}\]/{s/^## \[\(.*\)\][^0-9]*\([0-9].*\)/\1--\2/;s/[^0-9a-z-]*//g;p;}' CHANGELOG.md)
-  #     - name: Parse milestone link
-  #       id: milestone
-  #       run: echo ::set-output
-  #                 name=link::${{ github.server_url }}/${{ github.repository }}/milestone/$(sed -n '/^## \[${{ steps.semver.outputs.group1 }}\]/,/Milestone/{s/.*milestone.\([0-9]*\).*/\1/p;}' CHANGELOG.md)
+      - name: Parse CHANGELOG link
+        id: changelog
+        run: echo ::set-output
+                  name=link::${{ github.server_url }}/${{ github.repository }}/blob/v${{ steps.semver.outputs.group1 }}/CHANGELOG.md#$(sed -n '/^## \[${{ steps.semver.outputs.group1 }}\]/{s/^## \[\(.*\)\][^0-9]*\([0-9].*\)/\1--\2/;s/[^0-9a-z-]*//g;p;}' CHANGELOG.md)
+      - name: Parse milestone link
+        id: milestone
+        run: echo ::set-output
+                  name=link::${{ github.server_url }}/${{ github.repository }}/milestone/$(sed -n '/^## \[${{ steps.semver.outputs.group1 }}\]/,/Milestone/{s/.*milestone.\([0-9]*\).*/\1/p;}' CHANGELOG.md)
 
-  #     - uses: actions/download-artifact@v3
-  #       with:
-  #         name: build-apk-${{ github.run_number }}
-  #         path: .cache/android/
-  #     - uses: actions/download-artifact@v3
-  #       with:
-  #         name: build-appbundle-${{ github.run_number }}
-  #         path: .cache/android/
-  #     - uses: actions/download-artifact@v3
-  #       with:
-  #         name: build-linux-${{ github.run_number }}
-  #         path: .cache/linux/
-  #     - uses: actions/download-artifact@v3
-  #       with:
-  #         name: build-web-${{ github.run_number }}
-  #         path: .cache/web/
-  #     - uses: actions/download-artifact@v3
-  #       with:
-  #         name: build-windows-${{ github.run_number }}
-  #         path: .cache/windows/
-  #     - uses: actions/download-artifact@v3
-  #       with:
-  #         name: dartdoc-${{ github.run_number }}
-  #         path: .cache/dartdoc/
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-apk-${{ github.run_number }}
+          path: .cache/android/
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-appbundle-${{ github.run_number }}
+          path: .cache/android/
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-linux-${{ github.run_number }}
+          path: .cache/linux/
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-web-${{ github.run_number }}
+          path: .cache/web/
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-windows-${{ github.run_number }}
+          path: .cache/windows/
+      # - uses: actions/download-artifact@v3
+      #   with:
+      #     name: dartdoc-${{ github.run_number }}
+      #     path: .cache/dartdoc/
 
-  #     - run: mkdir artifacts/
-  #     - run: mv .cache/android/app-arm64-v8a-release.apk
-  #               artifacts/${{ env.ARTIFACT_PREFIX }}-android-arm64-v8a.apk
-  #     - run: mv .cache/android/app-armeabi-v7a-release.apk
-  #               artifacts/${{ env.ARTIFACT_PREFIX }}-android-armeabi-v7a.apk
-  #     - run: mv .cache/android/app-x86_64-release.apk
-  #               artifacts/${{ env.ARTIFACT_PREFIX }}-android-x86_64.apk
-  #     - run: mv .cache/android/app-release.aab
-  #               artifacts/${{ env.ARTIFACT_PREFIX }}-android.aab
-  #     - uses: thedoctor0/zip-release@0.6.2
-  #       with:
-  #         filename: artifacts/${{ env.ARTIFACT_PREFIX }}-linux-x86_64.zip
-  #         path: .cache/linux
-  #     - uses: thedoctor0/zip-release@0.6.2
-  #       with:
-  #         filename: artifacts/${{ env.ARTIFACT_PREFIX }}-web.zip
-  #         path: .cache/web
-  #     - uses: thedoctor0/zip-release@0.6.2
-  #       with:
-  #         filename: artifacts/${{ env.ARTIFACT_PREFIX }}-windows-x86_64.zip
-  #         path: .cache/windows
-  #     - uses: thedoctor0/zip-release@0.6.2
-  #       with:
-  #         filename: artifacts/${{ env.ARTIFACT_PREFIX }}-dartdoc.zip
-  #         path: .cache/dartdoc
+      - run: mkdir artifacts/
+      - run: mv .cache/android/app-arm64-v8a-release.apk
+                artifacts/${{ env.ARTIFACT_PREFIX }}-android-arm64-v8a.apk
+      - run: mv .cache/android/app-armeabi-v7a-release.apk
+                artifacts/${{ env.ARTIFACT_PREFIX }}-android-armeabi-v7a.apk
+      - run: mv .cache/android/app-x86_64-release.apk
+                artifacts/${{ env.ARTIFACT_PREFIX }}-android-x86_64.apk
+      - run: mv .cache/android/app-release.aab
+                artifacts/${{ env.ARTIFACT_PREFIX }}-android.aab
+      - uses: thedoctor0/zip-release@0.6.2
+        with:
+          filename: artifacts/${{ env.ARTIFACT_PREFIX }}-linux-x86_64.zip
+          path: .cache/linux
+      - uses: thedoctor0/zip-release@0.6.2
+        with:
+          filename: artifacts/${{ env.ARTIFACT_PREFIX }}-web.zip
+          path: .cache/web
+      - uses: thedoctor0/zip-release@0.6.2
+        with:
+          filename: artifacts/${{ env.ARTIFACT_PREFIX }}-windows-x86_64.zip
+          path: .cache/windows
+      # - uses: thedoctor0/zip-release@0.6.2
+      #   with:
+      #     filename: artifacts/${{ env.ARTIFACT_PREFIX }}-dartdoc.zip
+      #     path: .cache/dartdoc
 
-  #     - name: Generate SHA256 checksums
-  #       run: ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"
-  #       working-directory: artifacts/
-  #     - name: Show generated SHA256 checksums
-  #       run: cat *.sha256sum
-  #       working-directory: artifacts/
+      - name: Generate SHA256 checksums
+        run: ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"
+        working-directory: artifacts/
+      - name: Show generated SHA256 checksums
+        run: cat *.sha256sum
+        working-directory: artifacts/
 
-  #     - name: Create GitHub release
-  #       uses: softprops/action-gh-release@v1
-  #       with:
-  #         name: ${{ steps.semver.outputs.group1 }}
-  #         body: >
-  #           [Changelog](${{ steps.changelog.outputs.link }}) |
-  #           [Milestone](${{ steps.milestone.outputs.link }})
-  #         files: |
-  #           artifacts/*.apk
-  #           artifacts/*.aab
-  #           artifacts/*.zip
-  #           artifacts/*.sha256sum
-  #         fail_on_unmatched_files: true
-  #         prerelease: ${{ contains(steps.semver.outputs.group1, '-') }}
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ steps.semver.outputs.group1 }}
+          body: >
+            [Changelog](${{ steps.changelog.outputs.link }}) |
+            [Milestone](${{ steps.milestone.outputs.link }})
+          files: |
+            artifacts/*.apk
+            artifacts/*.aab
+            artifacts/*.zip
+            artifacts/*.sha256sum
+          fail_on_unmatched_files: true
+          prerelease: ${{ contains(steps.semver.outputs.group1, '-') }}
 
   release-docker:
     name: Release Docker image
     needs: ["docker"]
-    if: true # ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
+    if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     env:
       IMAGE: nekoui
