@@ -25,12 +25,12 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     needs:
       #- build
-      - copyright
-      - dartanalyze
+      #- copyright
+      #- dartanalyze
       #- dartdoc
-      - dartfmt
+      #- dartfmt
       #- pubspec
-      - test-unit
+      #- test-unit
     runs-on: ubuntu-latest
     steps:
       - run: true
@@ -42,34 +42,34 @@ jobs:
   # Linting and formatting #
   ##########################
 
-  copyright:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: make copyright check=yes
+  # copyright:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - run: make copyright check=yes
 
-  dartanalyze:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: $FLUTTER_VER
-          channel: stable
-          cache: true
-      - run: make flutter.pub
-      - run: make flutter.analyze
+  # dartanalyze:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: $FLUTTER_VER
+  #         channel: stable
+  #         cache: true
+  #     - run: make flutter.pub
+  #     - run: make flutter.analyze
 
-  dartfmt:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: $FLUTTER_VER
-          channel: stable
-          cache: true
-      - run: make flutter.fmt check=yes
+  # dartfmt:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: $FLUTTER_VER
+  #         channel: stable
+  #         cache: true
+  #     - run: make flutter.fmt check=yes
 
   # pubspec:
   #   runs-on: ubuntu-latest
@@ -91,68 +91,68 @@ jobs:
   # Building #
   ############
 
-    # build:
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     platform:
-    #       - apk
-    #       - appbundle
-    #       #- ios
-    #       - linux
-    #       - macos
-    #       - web
-    #       - windows
-    # runs-on: ${{ ((matrix.platform == 'ios' || matrix.platform == 'macos')
-    #                                            && 'macos-latest')
-    #           || (matrix.platform == 'windows' && 'windows-latest')
-    #           || (matrix.platform == 'linux'   && 'ubuntu-22.04')
-    #           ||                                  'ubuntu-latest' }}
-    # steps:
-    #   - uses: actions/checkout@v3
-    #   - uses: subosito/flutter-action@v2
-    #     with:
-    #       flutter-version: $FLUTTER_VER
-    #       channel: stable
-    #       cache: true
+    build:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - apk
+          - appbundle
+          #- ios
+          - linux
+          - macos
+          - web
+          - windows
+    runs-on: ${{ ((matrix.platform == 'ios' || matrix.platform == 'macos')
+                                               && 'macos-latest')
+              || (matrix.platform == 'windows' && 'windows-latest')
+              || (matrix.platform == 'linux'   && 'ubuntu-22.04')
+              ||                                  'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: $FLUTTER_VER
+          channel: stable
+          cache: true
 
-    #   - run: sudo apt-get update -y
-    #     if: ${{ matrix.platform == 'linux' }}
-    #   - run: sudo apt-get install -y --allow-downgrades
-    #                       ninja-build
-    #                       libunwind-dev
-    #                       libgtk-3-dev
-    #                       libgstreamer1.0-dev
-    #                       libgstreamer-plugins-base1.0-dev
-    #                       libpulse-dev
-    #                       libudev1=249.11-0ubuntu3
-    #     if: ${{ matrix.platform == 'linux' }}
+      - run: sudo apt-get update -y
+        if: ${{ matrix.platform == 'linux' }}
+      - run: sudo apt-get install -y --allow-downgrades
+                          ninja-build
+                          libunwind-dev
+                          libgtk-3-dev
+                          libgstreamer1.0-dev
+                          libgstreamer-plugins-base1.0-dev
+                          libpulse-dev
+                          libudev1=249.11-0ubuntu3
+        if: ${{ matrix.platform == 'linux' }}
 
-    #   - run: flutter config --enable-${{ matrix.platform }}-desktop
-    #     if: ${{ matrix.platform == 'linux'
-    #          || matrix.platform == 'macos'
-    #          || matrix.platform == 'windows' }}
+      - run: flutter config --enable-${{ matrix.platform }}-desktop
+        if: ${{ matrix.platform == 'linux'
+             || matrix.platform == 'macos'
+             || matrix.platform == 'windows' }}
 
-    #   - run: make flutter.pub
+      - run: make flutter.pub
 
-    #   - run: make flutter.build platform=${{ matrix.platform }}
-    #                             split-per-abi=yes
+      - run: make flutter.build platform=${{ matrix.platform }}
+                                split-per-abi=yes
 
-    #   - uses: actions/upload-artifact@v3
-    #     with:
-    #       name: build-${{ matrix.platform }}-${{ github.run_number }}
-    #       path: ${{ (matrix.platform == 'apk'
-    #                  && 'build/app/outputs/flutter-apk/app-*.apk')
-    #              || (matrix.platform == 'appbundle'
-    #                  && 'build/app/outputs/bundle/release/app-release.aab')
-    #              || (matrix.platform == 'macos'
-    #                  && 'build/macos/Build/Products/Release/nekoui.app')
-    #              || (matrix.platform == 'linux'
-    #                  && 'build/linux/x64/release/bundle')
-    #              || (matrix.platform == 'windows'
-    #                  && 'build/windows/runner/Release')
-    #              ||     'build/web'}}
-    #       if-no-files-found: error
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-${{ matrix.platform }}-${{ github.run_number }}
+          path: ${{ (matrix.platform == 'apk'
+                     && 'build/app/outputs/flutter-apk/app-*.apk')
+                 || (matrix.platform == 'appbundle'
+                     && 'build/app/outputs/bundle/release/app-release.aab')
+                 || (matrix.platform == 'macos'
+                     && 'build/macos/Build/Products/Release/nekoui.app')
+                 || (matrix.platform == 'linux'
+                     && 'build/linux/x64/release/bundle')
+                 || (matrix.platform == 'windows'
+                     && 'build/windows/runner/Release')
+                 ||     'build/web'}}
+          if-no-files-found: error
   
   # dartdoc:
   #   runs-on: ubuntu-latest
@@ -173,30 +173,27 @@ jobs:
   #       if: ${{ github.ref == 'refs/heads/main'
   #            || startsWith(github.ref, 'refs/tags/v') }}
 
-  # docker:
-  #   name: Docker image
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: subosito/flutter-action@v2
-  #       with:
-  #         flutter-version: ${{ env.FLUTTER_VER }}
-  #         channel: stable
-  #         cache: true
-  #     - uses: docker/setup-buildx-action@v2
+  docker:
+    needs: ["build"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/setup-buildx-action@v2
 
-  #     - run: make flutter.pub
-  #     - run: make docker.build debug=no no-cache=yes
-  #                 tag=build-${{ github.run_number }}
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-web-${{ github.run_number }}
+          path: build/web/
+      - run: make docker.build debug=no no-cache=yes
+                  tag=build-${{ github.run_number }}
 
-  #     - run: make docker.tar to-file=image.tar
-  #                 tags=build-${{ github.run_number }}
-
-  #     - uses: actions/upload-artifact@v3
-  #       with:
-  #         name: docker-${{ github.run_number }}
-  #         path: image.tar
-  #         retention-days: 1
+      - run: make docker.tar to-file=image.tar
+                  tags=build-${{ github.run_number }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: docker-${{ github.run_number }}
+          path: image.tar
+          retention-days: 1
 
 
 
@@ -205,18 +202,18 @@ jobs:
   # Testing #
   ###########
 
-  test-unit:
-    name: Unit tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: $FLUTTER_VER
-          channel: stable
-          cache: true
-      - run: make flutter.pub
-      - run: make test.unit
+  # test-unit:
+  #   name: Unit tests
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: $FLUTTER_VER
+  #         channel: stable
+  #         cache: true
+  #     - run: make flutter.pub
+  #     - run: make test.unit
 
 
 
@@ -332,72 +329,72 @@ jobs:
   #         fail_on_unmatched_files: true
   #         prerelease: ${{ contains(steps.semver.outputs.group1, '-') }}
 
-  # release-docker:
-  #   name: Release Docker image
-  #   needs: ["docker"]
-  #   if: true # ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     IMAGE: nekoui
-  #     REPOS: ghcr.io/sleepysquash
-  #     TAGS: ${{ (startsWith(github.ref, 'refs/tags/v') && 'latest,@versions') || 'edge' }}
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: docker/setup-buildx-action@v2
+  release-docker:
+    name: Release Docker image
+    needs: ["docker"]
+    if: true # ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: ubuntu-latest
+    env:
+      IMAGE: nekoui
+      REPOS: ghcr.io/sleepysquash
+      TAGS: ${{ (startsWith(github.ref, 'refs/tags/v') && 'latest,@versions') || 'edge' }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/setup-buildx-action@v2
 
-  #     - uses: actions/download-artifact@v3
-  #       with:
-  #         name: docker-${{ github.run_number }}
-  #     - run: make docker.untar from-file=image.tar
+      - uses: actions/download-artifact@v3
+        with:
+          name: docker-${{ github.run_number }}
+      - run: make docker.untar from-file=image.tar
 
-  #     - name: Login to GitHub Container Registry
-  #       uses: docker/login-action@v2
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.repository_owner }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-  #       if: ${{ contains(env.REPOS, 'ghcr.io') }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ contains(env.REPOS, 'ghcr.io') }}
 
-  #     - name: Parse semver versions from Git tag
-  #       id: semver
-  #       uses: actions-ecosystem/action-regex-match@v2
-  #       with:
-  #         text: ${{ github.ref }}
-  #         regex: '^refs/tags/v(((([0-9]+)\.[0-9]+)\.[0-9]+)(-.+)?)$'
-  #       if: ${{ contains(env.TAGS, '@versions') }}
-  #     - name: Form Docker version tags
-  #       id: versions
-  #       uses: actions/github-script@v6
-  #       with:
-  #         result-encoding: string
-  #         script: |
-  #           let versions = '${{ steps.semver.outputs.group1 }}';
-  #           if ('${{ steps.semver.outputs.group2 }}' !== '') {
-  #             if ('${{ steps.semver.outputs.group1 }}' !==
-  #                 '${{ steps.semver.outputs.group2 }}') {
-  #               versions += ',${{ steps.semver.outputs.group2 }}';
-  #             }
-  #             if ('${{ steps.semver.outputs.group3 }}' !== '') {
-  #               versions += ',${{ steps.semver.outputs.group3 }}';
-  #               if ('${{ steps.semver.outputs.group4 }}' !== '') {
-  #                 versions += ',${{ steps.semver.outputs.group4 }}';
-  #               }
-  #             }
-  #           }
-  #           return versions;
-  #       if: ${{ contains(env.TAGS, '@versions') }}
-  #     - name: Prepare final image tags
-  #       id: tags
-  #       uses: bluwy/substitute-string-action@v1
-  #       with:
-  #         _input-text: ${{ env.TAGS }}
-  #         "@versions": ${{ steps.versions.outputs.result }}
+      - name: Parse semver versions from Git tag
+        id: semver
+        uses: actions-ecosystem/action-regex-match@v2
+        with:
+          text: ${{ github.ref }}
+          regex: '^refs/tags/v(((([0-9]+)\.[0-9]+)\.[0-9]+)(-.+)?)$'
+        if: ${{ contains(env.TAGS, '@versions') }}
+      - name: Form Docker version tags
+        id: versions
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            let versions = '${{ steps.semver.outputs.group1 }}';
+            if ('${{ steps.semver.outputs.group2 }}' !== '') {
+              if ('${{ steps.semver.outputs.group1 }}' !==
+                  '${{ steps.semver.outputs.group2 }}') {
+                versions += ',${{ steps.semver.outputs.group2 }}';
+              }
+              if ('${{ steps.semver.outputs.group3 }}' !== '') {
+                versions += ',${{ steps.semver.outputs.group3 }}';
+                if ('${{ steps.semver.outputs.group4 }}' !== '') {
+                  versions += ',${{ steps.semver.outputs.group4 }}';
+                }
+              }
+            }
+            return versions;
+        if: ${{ contains(env.TAGS, '@versions') }}
+      - name: Prepare final image tags
+        id: tags
+        uses: bluwy/substitute-string-action@v1
+        with:
+          _input-text: ${{ env.TAGS }}
+          "@versions": ${{ steps.versions.outputs.result }}
 
-  #     - run: make docker.tag tags=${{ steps.tags.outputs.result }}
-  #                 image=${{ env.IMAGE }} of=build-${{ github.run_number }}
-  #                 repos=${{ env.REPOS }}
-  #     - run: make docker.push tags=${{ steps.tags.outputs.result }}
-  #                 image=${{ env.IMAGE }} repos=${{ env.REPOS }}
+      - run: make docker.tag tags=${{ steps.tags.outputs.result }}
+                  image=${{ env.IMAGE }} of=build-${{ github.run_number }}
+                  repos=${{ env.REPOS }}
+      - run: make docker.push tags=${{ steps.tags.outputs.result }}
+                  image=${{ env.IMAGE }} repos=${{ env.REPOS }}
 
 
 
