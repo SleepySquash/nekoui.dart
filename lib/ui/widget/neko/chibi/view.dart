@@ -55,7 +55,7 @@ class NekoChibi extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.brown.shade200,
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(30),
                       border:
                           Border.all(color: Colors.brown.shade500, width: 0.5),
                       boxShadow: [
@@ -64,11 +64,11 @@ class NekoChibi extends StatelessWidget {
                             color: Colors.black.withOpacity(0.8)),
                       ],
                     ),
-                    padding: const EdgeInsets.fromLTRB(2, 3, 2, 2),
+                    padding: const EdgeInsets.fromLTRB(7, 7, 7, 7),
                     child: Text(
                       c.thought.value!.value,
                       style: const TextStyle(
-                        fontSize: 5,
+                        fontSize: 17,
                         color: Colors.white,
                       ),
                     ),

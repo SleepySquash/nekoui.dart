@@ -14,6 +14,7 @@
 // along with this program. If not, see
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 import '../controller.dart';
@@ -23,38 +24,139 @@ class RoomWidget extends StatelessWidget {
 
   final RoomController c;
 
-  final List<Tile> tiles = [
-    Tile(0, 0, 32, 32, 'floor/wooden.jpeg'),
-    Tile(32, 32, 32, 32, 'floor/wooden.jpeg'),
+  final List<Tile> floor = [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+    [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+  ]
+      .mapIndexed(
+        (j, e) => e.mapIndexed(
+          (i, m) {
+            String? asset;
+            if (m == 1) {
+              asset = 'floor/wooden.jpeg';
+            }
+
+            if (asset == null) {
+              return null;
+            }
+
+            return Tile(100.0 * i, 100.0 * j, asset);
+          },
+        ),
+      )
+      .expand((e) => e)
+      .whereNotNull()
+      .toList();
+
+  final List<Entity> furniture = [
+    Entity(
+      1200,
+      0,
+      'furniture/fridge.png',
+      size: const Size(190, 230),
+    )
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: tiles
-          .map(
-            (e) => Positioned(
-              left: e.x,
-              top: e.y,
-              width: e.width,
-              height: e.height,
-              child: Image.asset(
-                'assets/room/${e.asset}',
-                fit: BoxFit.cover,
-              ),
-            ),
-          )
-          .toList(),
+    double width = 0;
+    double height = 0;
+
+    final List<Transform2D> tiles = [...floor, ...furniture];
+
+    for (var e in tiles) {
+      if (e.position.dx + e.size.width > width) {
+        width = e.position.dx + e.size.width;
+      }
+
+      if (e.position.dy + e.size.height > height) {
+        height = e.position.dy + e.size.height;
+      }
+    }
+
+    return SizedBox(
+      width: width,
+      height: height,
+      child: Stack(
+        children: tiles.map(
+          (e) {
+            return Positioned(
+              left: e.position.dx,
+              top: e.position.dy,
+              width: e.size.width,
+              height: e.size.height,
+              child: e.build(context),
+            );
+          },
+        ).toList(),
+      ),
     );
   }
 }
 
-class Tile {
-  Tile(this.x, this.y, this.width, this.height, this.asset);
+abstract class Drawable {
+  Widget build(BuildContext context);
+}
 
-  final double x;
-  final double y;
-  final double width;
-  final double height;
+mixin Transform2D on Drawable {
+  Offset get position => const Offset(0, 0);
+  Size get size => const Size(0, 0);
+}
+
+class Tile extends Drawable with Transform2D {
+  Tile(
+    double x,
+    double y,
+    this.asset, {
+    this.size = const Size(100, 100),
+  }) : position = Offset(x, y);
+
   final String asset;
+
+  @override
+  final Offset position;
+
+  @override
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      'assets/room/$asset',
+      fit: BoxFit.cover,
+      isAntiAlias: true,
+    );
+  }
+}
+
+class Entity extends Drawable with Transform2D {
+  Entity(
+    double x,
+    double y,
+    this.asset, {
+    this.size = const Size(100, 100),
+  }) : position = Offset(x, y);
+
+  final String asset;
+
+  @override
+  final Offset position;
+
+  @override
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      'assets/room/$asset',
+      fit: BoxFit.fitHeight,
+      isAntiAlias: true,
+    );
+  }
 }
