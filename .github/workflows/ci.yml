@@ -24,7 +24,8 @@ jobs:
   pr:
     if: ${{ github.event_name == 'pull_request' }}
     needs:
-      #- build
+      - build
+      - docker
       #- copyright
       #- dartanalyze
       #- dartdoc
