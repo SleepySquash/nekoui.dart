@@ -353,6 +353,9 @@ ifeq ($(wildcard build/web),)
 	@make flutter.build platform=web dart-env='$(dart-env)' \
 	                    dockerized=$(dockerized)
 endif
+ifeq ($(wildcard artifacts),)
+	mkdir artifacts
+endif
 	$(docker-env) \
 	docker build --network=host --force-rm \
 		$(if $(call eq,$(no-cache),yes),--no-cache --pull,) \

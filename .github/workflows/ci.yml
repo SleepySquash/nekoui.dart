@@ -97,13 +97,13 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - apk
-          - appbundle
+          #- apk
+          #- appbundle
           #- ios
           - linux
-          - macos
+          #- macos
           - web
-          - windows
+          #- windows
     runs-on: ${{ ((matrix.platform == 'ios' || matrix.platform == 'macos')
                                               && 'macos-latest')
               || (matrix.platform == 'windows' && 'windows-latest')
@@ -138,20 +138,46 @@ jobs:
       - run: make flutter.build platform=${{ matrix.platform }}
                                 split-per-abi=yes
 
-      - uses: actions/upload-artifact@v3
+      - run: mkdir artifacts/
+      - uses: thedoctor0/zip-release@0.6.2
         with:
-          name: build-${{ matrix.platform }}-${{ github.run_number }}
-          path: ${{ (matrix.platform == 'apk'
-                    && 'build/app/outputs/flutter-apk/app-*.apk')
-                || (matrix.platform == 'appbundle'
-                    && 'build/app/outputs/bundle/release/app-release.aab')
-                || (matrix.platform == 'macos'
+          filename: artifacts/${{ matrix.platform }}.zip
+          path: ${{ (matrix.platform == 'macos'
                     && 'build/macos/Build/Products/Release/nekoui.app')
                 || (matrix.platform == 'linux'
                     && 'build/linux/x64/release/bundle')
                 || (matrix.platform == 'windows'
                     && 'build/windows/runner/Release')
                 ||     'build/web'}}
+        if: ${{ matrix.platform == 'web'
+            || matrix.platform == 'windows'
+            || matrix.platform == 'linux'
+            || matrix.platform == 'macos' }}
+
+      - run: mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+                artifacts/${{ env.ARTIFACT_PREFIX }}-android-arm64-v8a.apk
+        if: ${{ matrix.platform == 'apk' }}
+      - run: mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+                artifacts/${{ env.ARTIFACT_PREFIX }}-android-armeabi-v7a.apk
+        if: ${{ matrix.platform == 'apk' }}
+      - run: mv build/app/outputs/flutter-apk/app-x86_64-release.apk
+                artifacts/${{ env.ARTIFACT_PREFIX }}-android-x86_64.apk
+        if: ${{ matrix.platform == 'apk' }}
+      - run: mv build/app/outputs/bundle/release/app-release.aab
+                artifacts/${{ env.ARTIFACT_PREFIX }}-android.aab
+        if: ${{ matrix.platform == 'appbundle' }}
+
+      - name: Generate SHA256 checksums
+        run: ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"
+        working-directory: artifacts/
+      - name: Show generated SHA256 checksums
+        run: cat *.sha256sum
+        working-directory: artifacts/
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-${{ matrix.platform }}-${{ github.run_number }}
+          path: artifacts
           if-no-files-found: error
   
   # dartdoc:
@@ -179,6 +205,32 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-buildx-action@v2
+
+      - run: mkdir artifacts/
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-web-${{ github.run_number }}
+          path: artifacts
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-apk-${{ github.run_number }}
+          path: artifacts
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-appbundle-${{ github.run_number }}
+          path: artifacts
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-linux-${{ github.run_number }}
+          path: artifacts
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-windows-${{ github.run_number }}
+          path: artifacts
+      # - uses: actions/download-artifact@v3
+      #   with:
+      #     name: build-macos-${{ github.run_number }}
+      #     path: artifacts
 
       - uses: actions/download-artifact@v3
         with:
@@ -254,59 +306,39 @@ jobs:
         run: echo ::set-output
                   name=link::${{ github.server_url }}/${{ github.repository }}/milestone/$(sed -n '/^## \[${{ steps.semver.outputs.group1 }}\]/,/Milestone/{s/.*milestone.\([0-9]*\).*/\1/p;}' CHANGELOG.md)
 
+      - run: mkdir artifacts/
       - uses: actions/download-artifact@v3
         with:
           name: build-apk-${{ github.run_number }}
-          path: .cache/android/
+          path: artifacts
       - uses: actions/download-artifact@v3
         with:
           name: build-appbundle-${{ github.run_number }}
-          path: .cache/android/
+          path: artifacts
       - uses: actions/download-artifact@v3
         with:
           name: build-linux-${{ github.run_number }}
-          path: .cache/linux/
+          path: artifacts
       - uses: actions/download-artifact@v3
         with:
           name: build-web-${{ github.run_number }}
-          path: .cache/web/
+          path: artifacts
       - uses: actions/download-artifact@v3
         with:
           name: build-windows-${{ github.run_number }}
-          path: .cache/windows/
-      # - uses: actions/download-artifact@v3
-      #   with:
-      #     name: dartdoc-${{ github.run_number }}
-      #     path: .cache/dartdoc/
+          path: artifacts
 
-      - run: mkdir artifacts/
-      - run: mv .cache/android/app-arm64-v8a-release.apk
-                artifacts/${{ env.ARTIFACT_PREFIX }}-android-arm64-v8a.apk
-      - run: mv .cache/android/app-armeabi-v7a-release.apk
-                artifacts/${{ env.ARTIFACT_PREFIX }}-android-armeabi-v7a.apk
-      - run: mv .cache/android/app-x86_64-release.apk
-                artifacts/${{ env.ARTIFACT_PREFIX }}-android-x86_64.apk
-      - run: mv .cache/android/app-release.aab
-                artifacts/${{ env.ARTIFACT_PREFIX }}-android.aab
+      - uses: actions/download-artifact@v3
+        with:
+          name: dartdoc-${{ github.run_number }}
+          path: .cache/dartdoc/
       - uses: thedoctor0/zip-release@0.6.2
         with:
-          filename: artifacts/${{ env.ARTIFACT_PREFIX }}-linux-x86_64.zip
-          path: .cache/linux
-      - uses: thedoctor0/zip-release@0.6.2
-        with:
-          filename: artifacts/${{ env.ARTIFACT_PREFIX }}-web.zip
-          path: .cache/web
-      - uses: thedoctor0/zip-release@0.6.2
-        with:
-          filename: artifacts/${{ env.ARTIFACT_PREFIX }}-windows-x86_64.zip
-          path: .cache/windows
-      # - uses: thedoctor0/zip-release@0.6.2
-      #   with:
-      #     filename: artifacts/${{ env.ARTIFACT_PREFIX }}-dartdoc.zip
-      #     path: .cache/dartdoc
-
-      - name: Generate SHA256 checksums
-        run: ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"
+          filename: artifacts/${{ env.ARTIFACT_PREFIX }}-dartdoc.zip
+          path: .cache/dartdoc
+      - name: Generate dartdoc SHA256 checksum
+        run: sh -c "sha256sum ${{ env.ARTIFACT_PREFIX }}-dartdoc.zip
+                    > ${{ env.ARTIFACT_PREFIX }}-dartdoc.zip.sha256sum"
         working-directory: artifacts/
       - name: Show generated SHA256 checksums
         run: cat *.sha256sum
