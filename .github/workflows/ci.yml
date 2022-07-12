@@ -97,13 +97,13 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          #- apk
-          #- appbundle
+          - apk
+          - appbundle
           #- ios
           - linux
           #- macos
           - web
-          #- windows
+          - windows
     runs-on: ${{ ((matrix.platform == 'ios' || matrix.platform == 'macos')
                                               && 'macos-latest')
               || (matrix.platform == 'windows' && 'windows-latest')
@@ -180,24 +180,24 @@ jobs:
           path: artifacts
           if-no-files-found: error
   
-  # dartdoc:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: subosito/flutter-action@v2
-  #       with:
-  #         flutter-version: ${{ env.FLUTTER_VER }}
-  #         channel: stable
-  #         cache: true
-  #     - run: make flutter.pub
-  #     - run: make docs.dart clean=yes
-  #     - uses: actions/upload-artifact@v3
-  #       with:
-  #         name: dartdoc-${{ github.run_number }}
-  #         path: doc/api
-  #         if-no-files-found: error
-  #       if: ${{ github.ref == 'refs/heads/main'
-  #            || startsWith(github.ref, 'refs/tags/v') }}
+  dartdoc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VER }}
+          channel: stable
+          cache: true
+      - run: make flutter.pub
+      - run: make docs.dart clean=yes
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dartdoc-${{ github.run_number }}
+          path: doc/api
+          if-no-files-found: error
+        if: ${{ github.ref == 'refs/heads/main'
+             || startsWith(github.ref, 'refs/tags/v') }}
 
   docker:
     needs: ["build"]
@@ -281,7 +281,7 @@ jobs:
       - build
       - copyright
       #- dartanalyze
-      #- dartdoc
+      - dartdoc
       #- dartfmt
       #- test-unit
     runs-on: ubuntu-latest
