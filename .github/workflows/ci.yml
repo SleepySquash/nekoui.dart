@@ -247,7 +247,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: build-web-${{ github.run_number }}
-      - run: mkdir build/web
+      - run: mkdir -p build/web
       - run: unzip *.zip -d build/web
       - run: make docker.build debug=no no-cache=yes
                   tag=build-${{ github.run_number }}
