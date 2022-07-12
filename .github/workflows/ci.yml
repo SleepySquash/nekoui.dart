@@ -141,8 +141,8 @@ jobs:
       - run: mkdir artifacts/
       - uses: thedoctor0/zip-release@0.6.2
         with:
-          filename: artifacts/${{ env.ARTIFACT_PREFIX }}-${{ matrix.platform }}.zip
-          path: ${{ (matrix.platform == 'macos'
+          filename: ${{ github.workspace }}/artifacts/${{ env.ARTIFACT_PREFIX }}-${{ matrix.platform }}.zip
+          directory: ${{ (matrix.platform == 'macos'
                     && 'build/macos/Build/Products/Release/nekoui.app')
                 || (matrix.platform == 'linux'
                     && 'build/linux/x64/release/bundle')
