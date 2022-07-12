@@ -141,7 +141,7 @@ jobs:
       - run: mkdir artifacts/
       - uses: thedoctor0/zip-release@0.6.2
         with:
-          filename: artifacts/${{ matrix.platform }}.zip
+          filename: artifacts/${{ env.ARTIFACT_PREFIX }}-${{ matrix.platform }}.zip
           path: ${{ (matrix.platform == 'macos'
                     && 'build/macos/Build/Products/Release/nekoui.app')
                 || (matrix.platform == 'linux'
@@ -247,7 +247,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: build-web-${{ github.run_number }}
-          path: build/web/
+      - run: unzip *.zip -d build/web
       - run: make docker.build debug=no no-cache=yes
                   tag=build-${{ github.run_number }}
 
@@ -374,7 +374,7 @@ jobs:
   release-docker:
     name: Release Docker image
     needs: ["docker"]
-    if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
+    if: true # ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     env:
       IMAGE: nekoui
