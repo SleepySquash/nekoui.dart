@@ -177,12 +177,12 @@ jobs:
         if: ${{ matrix.platform != 'windows' }}
 
       - name: Generate SHA256 checksums
-        run: certutil -hashfile ${{ matrix.platform }}.zip 
-                              > ${{ matrix.platform }}.zip.sha256sum
+        run: certutil -hashfile ${{ env.ARTIFACT_PREFIX }}-${{ matrix.platform }}.zip 
+                              > ${{ env.ARTIFACT_PREFIX }}-${{ matrix.platform }}.zip.sha256sum
         working-directory: artifacts/
         if: ${{ matrix.platform == 'windows' }}
       - name: Show generated SHA256 checksums
-        run: type ${{ matrix.platform }}.zip.sha256sum
+        run: type ${{ env.ARTIFACT_PREFIX }}-${{ matrix.platform }}.zip.sha256sum
         working-directory: artifacts/
         if: ${{ matrix.platform == 'windows' }}
 
@@ -346,11 +346,10 @@ jobs:
           path: .cache/dartdoc/
       - uses: thedoctor0/zip-release@0.6.2
         with:
-          filename: artifacts/${{ env.ARTIFACT_PREFIX }}-dartdoc.zip
+          filename: artifacts/docs.zip
           path: .cache/dartdoc
       - name: Generate dartdoc SHA256 checksum
-        run: sh -c "sha256sum ${{ env.ARTIFACT_PREFIX }}-dartdoc.zip
-                    > ${{ env.ARTIFACT_PREFIX }}-dartdoc.zip.sha256sum"
+        run: sh -c "sha256sum docs.zip > docs.zip.sha256sum"
         working-directory: artifacts/
       - name: Show generated SHA256 checksums
         run: cat *.sha256sum
