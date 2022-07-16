@@ -425,6 +425,14 @@ jobs:
       - run: unzip .cache/*.zip
       - run: rm -rf .cache
 
+      - name: Parse application name from Git repository name
+        id: app
+        uses: actions-ecosystem/action-regex-match@v2
+        with:
+          text: ${{ github.repository }}
+          regex: '^${{ github.repository_owner }}/(.+)$'
+      - run: perl -pi -e 's/href=\"/\"/href=\"${{ steps.app.outputs.group1 }}\"/g' index.html
+
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
