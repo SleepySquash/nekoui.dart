@@ -39,7 +39,7 @@ class NecessitiesWorker extends DisposableInterface {
     _notificationService.cancel(NotificationId.social);
     _notificationService.cancel(NotificationId.toilet);
     _notificationService.cancel(NotificationId.energy);
-    _notificationService.cancel(NotificationId.cleaness);
+    _notificationService.cancel(NotificationId.cleanness);
 
     _hunger(_nekoService.neko.value.necessities.hunger.value);
     _thirst(_nekoService.neko.value.necessities.thirst.value);
@@ -95,7 +95,7 @@ class NecessitiesWorker extends DisposableInterface {
   void _clean(double value) {
     _schedule(
       value: value,
-      id: NotificationId.cleaness,
+      id: NotificationId.cleanness,
       inSecond: AbstractNekoRepository.dirtyInSecond,
       body: 'П-помой меня, пожалуйста т.т',
     );

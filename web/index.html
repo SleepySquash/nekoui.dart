@@ -72,5 +72,18 @@
       });
     });
   </script>
+  
+  <!-- Request notifications permission on the first user interaction. -->
+  <script>
+    var click = document.onclick;
+    document.onclick = function() {
+        Notification.requestPermission();
+        if (click) {
+            click();
+        }
+
+        document.onclick = click;
+    }
+  </script>
 </body>
 </html>
