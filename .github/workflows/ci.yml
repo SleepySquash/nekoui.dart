@@ -331,6 +331,7 @@ jobs:
       - copyright
       - dartanalyze
       - dartfmt
+      - docker
       - test-unit
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
