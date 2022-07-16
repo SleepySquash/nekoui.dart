@@ -42,7 +42,7 @@ class ParkView extends StatelessWidget {
                   children: [
                     Positioned.fill(
                       child: Image.asset(
-                        'assets/images/room/park.png',
+                        'assets/background/park.png',
                         isAntiAlias: false,
                         filterQuality: FilterQuality.none,
                       ),

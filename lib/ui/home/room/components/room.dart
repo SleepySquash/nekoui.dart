@@ -58,7 +58,7 @@ class RoomWidget extends StatelessWidget {
     Entity(
       1200,
       0,
-      'furniture/fridge.png',
+      'furniture/fridge1.png',
       size: const Size(190, 230),
     )
   ];
@@ -128,9 +128,10 @@ class Tile extends Drawable with Transform2D {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      'assets/room/$asset',
+      'assets/location/$asset',
       fit: BoxFit.cover,
       isAntiAlias: true,
+      filterQuality: FilterQuality.high,
     );
   }
 }
@@ -154,9 +155,10 @@ class Entity extends Drawable with Transform2D {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      'assets/room/$asset',
+      'assets/location/$asset',
       fit: BoxFit.fitHeight,
-      isAntiAlias: true,
+      isAntiAlias: false,
+      filterQuality: FilterQuality.none,
     );
   }
 }

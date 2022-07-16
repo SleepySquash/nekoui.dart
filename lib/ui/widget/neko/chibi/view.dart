@@ -36,7 +36,7 @@ class NekoChibi extends StatelessWidget {
             KeyedSubtree(
               key: c.key,
               child: RiveAnimation.asset(
-                'assets/rive/chibi1.riv',
+                'assets/neko/chibi.riv',
                 controllers: [c.animation],
                 onInit: (a) {
                   c.faceControl = a.component<Node>('FaceControl');
