@@ -1,0 +1,11 @@
+[sentry]
+# Sentry DSN (Data Source Name) to send events to.
+#
+# Default:
+#   dsn = ""
+
+[openweather]
+# OpenWeatherMap API key.
+#
+# Default:
+#   key = ""
