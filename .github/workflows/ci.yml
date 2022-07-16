@@ -218,40 +218,41 @@ jobs:
       - uses: actions/checkout@v3
       - uses: docker/setup-buildx-action@v2
 
-      - run: mkdir artifacts/
+      - run: mkdir -p build/web
+
       - uses: actions/download-artifact@v3
         with:
           name: build-web-${{ github.run_number }}
-          path: artifacts
+      - run: unzip *.zip -d build/web
+
+      - run: mkdir -p build/web/artifacts
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-web-${{ github.run_number }}
+          path: build/web/artifacts
       - uses: actions/download-artifact@v3
         with:
           name: build-apk-${{ github.run_number }}
-          path: artifacts
+          path: build/web/artifacts
       - uses: actions/download-artifact@v3
         with:
           name: build-appbundle-${{ github.run_number }}
-          path: artifacts
+          path: build/web/artifacts
       - uses: actions/download-artifact@v3
         with:
           name: build-linux-${{ github.run_number }}
-          path: artifacts
+          path: build/web/artifacts
       - uses: actions/download-artifact@v3
         with:
           name: build-windows-${{ github.run_number }}
-          path: artifacts
+          path: build/web/artifacts
       # - uses: actions/download-artifact@v3
       #   with:
       #     name: build-macos-${{ github.run_number }}
-      #     path: artifacts
+      #     path: build/web/artifacts
 
-      - uses: actions/download-artifact@v3
-        with:
-          name: build-web-${{ github.run_number }}
-      - run: mkdir -p build/web
-      - run: unzip *.zip -d build/web
       - run: make docker.build debug=no no-cache=yes
                   tag=build-${{ github.run_number }}
-
       - run: make docker.tar to-file=image.tar
                   tags=build-${{ github.run_number }}
       - uses: actions/upload-artifact@v3
