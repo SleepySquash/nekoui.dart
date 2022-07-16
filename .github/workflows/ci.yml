@@ -29,8 +29,7 @@ jobs:
       - copyright
       - dartanalyze
       - dartfmt
-      #- pubspec
-      #- test-unit
+      - test-unit
     runs-on: ubuntu-latest
     steps:
       - run: true
@@ -71,19 +70,6 @@ jobs:
           cache: true
       - run: make flutter.fmt check=yes
 
-  # pubspec:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: subosito/flutter-action@v2
-  #       with:
-  #         flutter-version: $FLUTTER_VER
-  #         channel: stable
-  #         cache: true
-  #     - run: make flutter.pub
-  #     - name: Check `pubspec.lock` is in sync with `pubspec.yaml`
-  #       run: git diff --exit-code
-
 
 
 
@@ -96,14 +82,14 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          ##- apk
-          ##- appbundle
+          - apk
+          - appbundle
           #- ios
-          ##- linux
+          - linux
           #- macos
           - web
-          ##- windows
-    # if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          - windows
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ${{ ((matrix.platform == 'ios' || matrix.platform == 'macos')
                                               && 'macos-latest')
               || (matrix.platform == 'windows' && 'windows-latest')
@@ -249,18 +235,18 @@ jobs:
   # Testing #
   ###########
 
-  # test-unit:
-  #   name: Unit tests
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: subosito/flutter-action@v2
-  #       with:
-  #         flutter-version: $FLUTTER_VER
-  #         channel: stable
-  #         cache: true
-  #     - run: make flutter.pub
-  #     - run: make test.unit
+  test-unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: $FLUTTER_VER
+          channel: stable
+          cache: true
+      - run: make flutter.pub
+      - run: make test.unit
 
 
 
@@ -275,9 +261,10 @@ jobs:
     needs:
       - build
       - copyright
-      #- dartanalyze
-      #- dartfmt
-      #- test-unit
+      - dartanalyze
+      - dartfmt
+      - docker
+      - test-unit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -339,9 +326,13 @@ jobs:
 
   release-docker:
     name: Release Docker image
-    needs: ["docker"]
+    needs:
+      - build
+      - copyright
+      - dartanalyze
+      - dartfmt
+      - test-unit
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-    # if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     env:
       IMAGE: nekoui
@@ -414,9 +405,15 @@ jobs:
   
   gh-pages:
     name: Publish to GitHub Pages
-    if: true # ${{ startsWith(github.ref, 'refs/tags/v') }}
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
-    needs: ["build"]
+    needs:
+      - build
+      - copyright
+      - dartanalyze
+      - dartfmt
+      - docker
+      - test-unit
     steps:
       - uses: actions/download-artifact@v3
         with:
