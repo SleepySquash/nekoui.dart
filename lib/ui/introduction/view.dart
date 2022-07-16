@@ -162,7 +162,7 @@ class IntroductionView extends StatelessWidget {
                                   child: Center(
                                     child: Text(
                                       c.race.value.name,
-                                      style: TextStyle(fontSize: 24),
+                                      style: const TextStyle(fontSize: 24),
                                     ),
                                   ),
                                 ),

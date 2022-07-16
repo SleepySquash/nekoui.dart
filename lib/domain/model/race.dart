@@ -17,6 +17,8 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:nekoui/domain/model_type_id.dart';
 
+part 'race.g.dart';
+
 @HiveType(typeId: ModelTypeId.race)
 enum Race {
   @HiveField(0)
