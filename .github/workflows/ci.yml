@@ -418,11 +418,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["build"]
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: gh-pages
-
-      - run: rm -r *
       - uses: actions/download-artifact@v3
         with:
           name: build-web-${{ github.run_number }}
@@ -436,6 +431,5 @@ jobs:
           publish_dir: .
           commit_message: ${{ github.event.head_commit.message }}
           force_orphan: true
-          keep_files: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
