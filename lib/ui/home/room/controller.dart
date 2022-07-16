@@ -33,6 +33,7 @@ class RoomController extends GetxController {
   final GlobalKey<CircularMenuState> fabKey = GlobalKey();
 
   final RxDouble roomTemperature = RxDouble(20);
+  final TransformationController transformation = TransformationController();
 
   late final RxDouble x;
   late final RxDouble y;
@@ -45,8 +46,8 @@ class RoomController extends GetxController {
 
   @override
   void onInit() {
-    x = RxDouble((router.context?.mediaQuerySize.width ?? 0) / 2);
-    y = RxDouble((router.context?.mediaQuerySize.height ?? 0) / 2);
+    x = RxDouble(128);
+    y = RxDouble(128);
 
     super.onInit();
   }

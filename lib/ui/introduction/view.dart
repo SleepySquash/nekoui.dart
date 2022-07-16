@@ -127,7 +127,7 @@ class IntroductionView extends StatelessWidget {
                   children: [
                     Expanded(
                       child: RiveAnimation.asset(
-                        'assets/rive/chibi1.riv',
+                        'assets/neko/chibi.riv',
                         controllers: [c.animation],
                       ),
                     ),
@@ -261,7 +261,7 @@ class IntroductionView extends StatelessWidget {
                       children: [
                         Positioned.fill(
                           child: Image.asset(
-                            'assets/images/background/kitty.jpeg',
+                            'assets/background/kitty.jpeg',
                             repeat: ImageRepeat.repeat,
                           ),
                         ),

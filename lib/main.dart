@@ -47,8 +47,8 @@ void main() async {
   Future<void> _appRunner() async {
     WebUtils.setPathUrlStrategy();
 
-    Novel.backgrounds = 'assets/images/background';
-    Novel.characters = 'assets/images/neko';
+    Novel.backgrounds = 'assets/background';
+    Novel.characters = 'assets/character';
 
     await _initHive();
 

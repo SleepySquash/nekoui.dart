@@ -24,7 +24,7 @@ abstract class Item extends HiveObject {
   String get id;
 
   /// Path to the [Image] asset of this [Item].
-  String get asset => 'assets/images/item/$id.png';
+  String get asset => 'assets/item/$id.png';
 
   /// Amount of this [Item].
   final RxInt count;
