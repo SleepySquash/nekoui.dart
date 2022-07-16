@@ -431,7 +431,7 @@ jobs:
         with:
           text: ${{ github.repository }}
           regex: '^${{ github.repository_owner }}/(.+)$'
-      - run: perl -pi -e 's,href="/",href="${{ steps.app.outputs.group1 }}/",g' index.html
+      - run: perl -pi -e 's,href="/",href="/${{ steps.app.outputs.group1 }}/",g' index.html
 
       - uses: peaceiris/actions-gh-pages@v3
         with:
