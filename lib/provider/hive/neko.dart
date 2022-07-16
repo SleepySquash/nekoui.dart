@@ -21,6 +21,7 @@ import '/domain/model/mbti.dart';
 import '/domain/model/mood.dart';
 import '/domain/model/necessities.dart';
 import '/domain/model/neko.dart';
+import '/domain/model/race.dart';
 import '/domain/model/trait.dart';
 import 'adapters.dart';
 import 'base.dart';
@@ -42,6 +43,7 @@ class NekoHiveProvider extends HiveBaseProvider<HiveNeko> {
     Hive.maybeRegisterAdapter(MoodAdapter());
     Hive.maybeRegisterAdapter(NecessitiesAdapter());
     Hive.maybeRegisterAdapter(NekoAdapter());
+    Hive.maybeRegisterAdapter(RaceAdapter());
     Hive.maybeRegisterAdapter(RxAdapter());
     Hive.maybeRegisterAdapter(RxDoubleAdapter());
     Hive.maybeRegisterAdapter(RxIntAdapter());

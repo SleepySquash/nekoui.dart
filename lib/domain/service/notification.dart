@@ -99,7 +99,7 @@ class NotificationService extends DisposableService {
         icon: icon,
       ).onError((_, __) => false);
     } else {
-      await _plugin!.show(
+      await _plugin?.show(
         Random().nextInt(1 << 31),
         title,
         body,
@@ -120,7 +120,7 @@ class NotificationService extends DisposableService {
     String? payload,
     String? icon,
   }) async {
-    await _plugin!.zonedSchedule(
+    await _plugin?.zonedSchedule(
       id,
       title,
       body,
@@ -135,7 +135,9 @@ class NotificationService extends DisposableService {
     );
   }
 
-  Future<void> cancel(int id) => _plugin!.cancel(id);
+  Future<void> cancel(int id) async {
+    await _plugin?.cancel(id);
+  }
 
   void notify(LocalNotification notification) {
     notifications.add(notification);

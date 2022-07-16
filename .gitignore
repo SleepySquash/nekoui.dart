@@ -59,6 +59,7 @@ app.*.map.json
 
 # Docker related
 .cache/
+artifacts/
 
 # Private
 my.*Makefile
