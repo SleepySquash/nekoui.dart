@@ -44,8 +44,6 @@ class IntroductionController extends GetxController {
 
   final AuthService _authService;
 
-  Rx<RxStatus> get authStatus => _authService.status;
-
   @override
   void onInit() {
     animation = SimpleAnimation('Idle1');

@@ -17,8 +17,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '/l10n/l10n.dart';
 import '/router.dart';
+import '/ui/widget/selector.dart';
 import '/util/message_popup.dart';
+import '/util/platform_utils.dart';
 import 'controller.dart';
 
 class SettingsView extends StatelessWidget {
@@ -27,7 +30,7 @@ class SettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-      init: SettingsController(Get.find()),
+      init: SettingsController(Get.find(), Get.find()),
       builder: (SettingsController c) {
         return Scaffold(
           appBar: AppBar(title: const Text('Settings')),
@@ -37,6 +40,44 @@ class SettingsView extends StatelessWidget {
                 leading: const Icon(Icons.pin_drop),
                 title: const Text('Геопозиция'),
                 onTap: () {},
+              ),
+              ListTile(
+                key: const Key('LanguageDropdown'),
+                title: Text(
+                  '${L10n.chosen.value!.locale.countryCode}, ${L10n.chosen.value!.name}',
+                ),
+                onTap: () async {
+                  final TextStyle? thin =
+                      context.textTheme.caption?.copyWith(color: Colors.black);
+                  await Selector.show<Language>(
+                    context: context,
+                    buttonKey: c.languageKey,
+                    alignment: Alignment.bottomCenter,
+                    items: L10n.languages,
+                    initial: L10n.chosen.value!,
+                    onSelected: (l) => L10n.set(l),
+                    debounce: context.isMobile
+                        ? const Duration(milliseconds: 500)
+                        : null,
+                    itemBuilder: (Language e) {
+                      return Row(
+                        key: Key(
+                            'Language_${e.locale.languageCode}${e.locale.countryCode}'),
+                        children: [
+                          Text(
+                            e.name,
+                            style: thin?.copyWith(fontSize: 15),
+                          ),
+                          const Spacer(),
+                          Text(
+                            e.locale.languageCode.toUpperCase(),
+                            style: thin?.copyWith(fontSize: 15),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.restore),
