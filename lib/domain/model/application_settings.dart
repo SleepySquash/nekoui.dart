@@ -1,4 +1,4 @@
-// Copyright © 2022 NIKITA ISAENKO, <https://github.com/SleepySquash>
+// Copyright © 2022 IT ENGINEERING MANAGEMENT INC, <https://github.com/team113>
 //
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the GNU Affero General Public License v3.0 as published by the
@@ -14,10 +14,18 @@
 // along with this program. If not, see
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
-/// `ru_RU` translated phrases.
-final Map<String, String> ruRU = {
-  'btn_add': 'Добавить',
-  'btn_ok': 'Ок',
-  'label_are_you_sure_yes': 'Да',
-  'label_are_you_sure_no': 'Нет',
-};
+import 'package:hive/hive.dart';
+
+import '/domain/model_type_id.dart';
+
+part 'application_settings.g.dart';
+
+/// Overall application settings used by the whole app.
+@HiveType(typeId: ModelTypeId.applicationSettings)
+class ApplicationSettings extends HiveObject {
+  ApplicationSettings({this.locale});
+
+  /// Preferred language to use in the application.
+  @HiveField(0)
+  String? locale;
+}

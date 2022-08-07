@@ -26,7 +26,7 @@ class AuthController extends GetxController {
 
   final AuthService _authService;
 
-  Rx<RxStatus> get authStatus => _authService.status;
+  Rx<RxStatus> get status => _authService.status;
 
   Future<void> signIn() async {
     await _authService.signIn();

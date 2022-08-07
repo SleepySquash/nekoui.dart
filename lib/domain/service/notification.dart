@@ -19,16 +19,16 @@ import 'dart:math';
 
 import 'package:flutter/widgets.dart' show IconData;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-import '../disposable_service.dart';
 import '/util/obs/obs.dart';
 import '/util/platform_utils.dart';
-import '/util/web/web_utils.dart';
+import '../../util/web/web.dart';
 
 /// Service responsible for notifications management.
-class NotificationService extends DisposableService {
+class NotificationService extends DisposableInterface {
   final RxObsList<LocalNotification> notifications = RxObsList();
 
   static const Duration notificationDuration = Duration(seconds: 10);

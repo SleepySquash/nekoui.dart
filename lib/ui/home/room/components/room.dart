@@ -16,14 +16,24 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:get/get.dart';
+import 'package:nekoui/ui/home/neko/view.dart';
+import 'package:nekoui/ui/home/room/components/neko/view.dart';
 
 import '../controller.dart';
 
-class RoomWidget extends StatelessWidget {
-  RoomWidget(this.c, {Key? key}) : super(key: key);
+class RoomWidget extends StatefulWidget {
+  const RoomWidget(this.c, {Key? key}) : super(key: key);
 
   final RoomController c;
 
+  @override
+  State<RoomWidget> createState() => _RoomWidgetState();
+}
+
+class _RoomWidgetState extends State<RoomWidget> {
+  // 16 x 8
   final List<Tile> floor = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -46,7 +56,7 @@ class RoomWidget extends StatelessWidget {
               return null;
             }
 
-            return Tile(100.0 * i, 100.0 * j, asset);
+            return Tile(1024 + 100.0 * i, 1024 + 100.0 * j, asset);
           },
         ),
       )
@@ -65,68 +75,72 @@ class RoomWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = 0;
-    double height = 0;
+    // double width = 0;
+    // double height = 0;
 
-    final List<Transform2D> tiles = [...floor, ...furniture];
+    final List<Widget> tiles = [
+      ...floor,
+      ...furniture,
+      Npc(asset: 'Chocola'),
+      Npc(asset: 'Azuki'),
+      Npc(asset: 'Maple'),
+    ];
 
-    for (var e in tiles) {
-      if (e.position.dx + e.size.width > width) {
-        width = e.position.dx + e.size.width;
-      }
+    // for (var e in tiles) {
+    //   if (e.position.value.dx + e.size.value.width > width) {
+    //     width = e.position.value.dx + e.size.value.width;
+    //   }
 
-      if (e.position.dy + e.size.height > height) {
-        height = e.position.dy + e.size.height;
-      }
-    }
+    //   if (e.position.value.dy + e.size.value.height > height) {
+    //     height = e.position.value.dy + e.size.value.height;
+    //   }
+    // }
 
-    return SizedBox(
-      width: width,
-      height: height,
-      child: Stack(
-        children: tiles.map(
-          (e) {
-            return Positioned(
-              left: e.position.dx,
-              top: e.position.dy,
-              width: e.size.width,
-              height: e.size.height,
-              child: e.build(context),
-            );
-          },
-        ).toList(),
-      ),
-    );
+    return Stack(children: tiles);
   }
 }
 
-abstract class Drawable {
-  Widget build(BuildContext context);
+mixin Transform2D on Widget {
+  Rx<Offset> get position => Rx(const Offset(0, 0));
+  Rx<Size> get size => Rx(const Size(10, 10));
 }
 
-mixin Transform2D on Drawable {
-  Offset get position => const Offset(0, 0);
-  Size get size => const Size(0, 0);
-}
-
-class Tile extends Drawable with Transform2D {
+class Tile extends StatelessWidget with Transform2D {
   Tile(
     double x,
     double y,
     this.asset, {
-    this.size = const Size(100, 100),
-  }) : position = Offset(x, y);
+    Key? key,
+    Size size = const Size(100, 100),
+  })  : position = Rx(Offset(x, y)),
+        size = Rx(size),
+        super(key: key);
 
   final String asset;
 
   @override
-  final Offset position;
+  final Rx<Offset> position;
 
   @override
-  final Size size;
+  final Rx<Size> size;
 
   @override
   Widget build(BuildContext context) {
+    return Obx(() {
+      return Positioned(
+        left: position.value.dx,
+        top: position.value.dy,
+        width: size.value.width,
+        height: size.value.height,
+        child: Image.asset(
+          'assets/location/$asset',
+          fit: BoxFit.cover,
+          isAntiAlias: true,
+          filterQuality: FilterQuality.high,
+        ),
+      );
+    });
+
     return Image.asset(
       'assets/location/$asset',
       fit: BoxFit.cover,
@@ -136,27 +150,45 @@ class Tile extends Drawable with Transform2D {
   }
 }
 
-class Entity extends Drawable with Transform2D {
+class Entity extends StatelessWidget with Transform2D {
   Entity(
     double x,
     double y,
     this.asset, {
-    this.size = const Size(100, 100),
-  }) : position = Offset(x, y);
+    Key? key,
+    Size size = const Size(100, 100),
+  })  : position = Rx(Offset(x, y)),
+        size = Rx(size),
+        super(key: key);
 
   final String asset;
 
   @override
-  final Offset position;
+  final Rx<Offset> position;
 
   @override
-  final Size size;
+  final Rx<Size> size;
 
   @override
   Widget build(BuildContext context) {
+    return Obx(() {
+      return Positioned(
+        left: position.value.dx,
+        top: position.value.dy,
+        width: size.value.width,
+        height: size.value.height,
+        child: Image.asset(
+          'assets/location/$asset',
+          fit: BoxFit.cover,
+          isAntiAlias: false,
+          filterQuality: FilterQuality.none,
+        ),
+      );
+    });
+
     return Image.asset(
       'assets/location/$asset',
-      fit: BoxFit.fitHeight,
+      fit: BoxFit.contain,
       isAntiAlias: false,
       filterQuality: FilterQuality.none,
     );

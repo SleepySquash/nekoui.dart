@@ -14,4 +14,4 @@
 // along with this program. If not, see
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
-export 'src/non_web.dart' if (dart.library.html) 'src/web.dart';
+export 'src/io.dart' if (dart.library.html) 'src/web.dart';

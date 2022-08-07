@@ -233,27 +233,32 @@ class RoomView extends StatelessWidget {
                 minScale: 0.01,
                 maxScale: 100,
                 constrained: false,
-                child: Container(
-                  padding: const EdgeInsets.all(256),
-                  child: Stack(
-                    children: [
-                      RoomWidget(c),
-                      Positioned(
-                        left: c.x.value,
-                        top: c.y.value,
-                        width: 256,
-                        height: 256,
-                        child: GestureDetector(
-                          onTap: () {
-                            NekoView.show(context, neko: c.nekoKey);
-                            // TODO: Close FAB aswell.
-                          },
-                          child: NekoChibi(key: c.nekoKey),
-                        ),
-                      ),
-                    ],
-                  ),
+                child: SizedBox(
+                  width: 1024 + 16 * 100 + 1024,
+                  height: 1024 + 8 * 100 + 1024,
+                  child: RoomWidget(c),
                 ),
+                // child: Container(
+                //   padding: const EdgeInsets.all(256),
+                //   child: Stack(
+                //     children: [
+                //       RoomWidget(c),
+                //       Positioned(
+                //         left: c.x.value,
+                //         top: c.y.value,
+                //         width: 256,
+                //         height: 256,
+                //         child: GestureDetector(
+                //           onTap: () {
+                //             NekoView.show(context, neko: c.nekoKey);
+                //             // TODO: Close FAB aswell.
+                //           },
+                //           child: NekoChibi(key: c.nekoKey),
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
               ),
               Align(
                 alignment: Alignment.topLeft,

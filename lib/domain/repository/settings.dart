@@ -1,4 +1,4 @@
-// Copyright © 2022 NIKITA ISAENKO, <https://github.com/SleepySquash>
+// Copyright © 2022 IT ENGINEERING MANAGEMENT INC, <https://github.com/team113>
 //
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the GNU Affero General Public License v3.0 as published by the
@@ -14,10 +14,18 @@
 // along with this program. If not, see
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
-/// `en_US` translated phrases.
-final Map<String, String> enUS = {
-  'btn_add': 'Add',
-  'btn_ok': 'Ok',
-  'label_are_you_sure_yes': 'Yes',
-  'label_are_you_sure_no': 'No',
-};
+import 'package:get/get.dart';
+
+import '/domain/model/application_settings.dart';
+
+/// Application settings repository interface.
+abstract class AbstractSettingsRepository {
+  /// Returns the stored [ApplicationSettings].
+  Rx<ApplicationSettings?> get applicationSettings;
+
+  /// Clears the stored settings.
+  Future<void> clearCache();
+
+  /// Sets the [ApplicationSettings.locale] value.
+  Future<void> setLocale(String locale);
+}

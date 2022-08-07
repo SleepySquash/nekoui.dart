@@ -17,6 +17,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '/l10n/l10n.dart';
 import '/router.dart';
 
 /// Helper to display a popup message in UI.
@@ -26,12 +27,12 @@ class MessagePopup {
     await showDialog(
       context: router.context!,
       builder: (context) => AlertDialog(
-        title: Text('label_error'.tr),
+        title: Text('label_error'.l10n),
         content: Text(e.toString()),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(router.context!).pop(),
-            child: Text('btn_ok'.tr),
+            child: Text('btn_ok'.l10n),
           )
         ],
       ),
@@ -48,7 +49,7 @@ class MessagePopup {
         actions: [
           TextButton(
             key: const Key('AlertNoButton'),
-            child: Text('btn_ok'.tr),
+            child: Text('btn_ok'.l10n),
             onPressed: () => Navigator.pop(context),
           ),
         ],
@@ -68,12 +69,12 @@ class MessagePopup {
           actions: [
             TextButton(
               key: const Key('AlertNoButton'),
-              child: Text('label_are_you_sure_no'.tr),
+              child: Text('label_are_you_sure_no'.l10n),
               onPressed: () => Navigator.pop(context, false),
             ),
             TextButton(
               key: const Key('AlertYesButton'),
-              child: Text('label_are_you_sure_yes'.tr),
+              child: Text('label_are_you_sure_yes'.l10n),
               onPressed: () => Navigator.pop(context, true),
             ),
           ],
