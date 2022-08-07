@@ -22,7 +22,6 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 import '/config.dart';
-import '/domain/disposable_service.dart';
 import '/domain/repository/flag.dart';
 import '/util/message_popup.dart';
 import '/util/platform_utils.dart';
@@ -38,7 +37,7 @@ enum Weather {
   unknown,
 }
 
-class EnvironmentService extends DisposableService {
+class EnvironmentService extends DisposableInterface {
   EnvironmentService(this._flagRepository);
 
   static const Duration refreshInterval = Duration(minutes: 4);

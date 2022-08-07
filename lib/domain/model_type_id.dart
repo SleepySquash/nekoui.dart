@@ -41,4 +41,5 @@ class ModelTypeId {
   static const hiveNeko = 19;
   static const hiveFlag = 20;
   static const race = 21;
+  static const applicationSettings = 22;
 }

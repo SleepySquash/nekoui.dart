@@ -39,7 +39,7 @@ class _NekoPersonState extends State<NekoPerson> {
       fit: StackFit.passthrough,
       children: [
         Image.asset(
-          'assets/images/neko/person.png',
+          'assets/character/person.png',
           filterQuality: FilterQuality.high,
           isAntiAlias: true,
           fit: BoxFit.fitHeight,

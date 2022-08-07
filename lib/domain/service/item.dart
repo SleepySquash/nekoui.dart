@@ -14,13 +14,14 @@
 // along with this program. If not, see
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
-import '../disposable_service.dart';
+import 'package:get/get.dart';
+
 import '/domain/model/item.dart';
 import '/domain/repository/item.dart';
 import '/util/obs/obs.dart';
 
 /// Service responsible for [Item]s state management.
-class ItemService extends DisposableService {
+class ItemService extends DisposableInterface {
   ItemService(this._itemRepository);
 
   final AbstractItemRepository _itemRepository;

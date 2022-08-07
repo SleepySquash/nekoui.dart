@@ -30,14 +30,14 @@ import 'package:universal_io/io.dart';
 import 'config.dart';
 import 'domain/service/auth.dart';
 import 'domain/service/notification.dart';
-import 'l10n/_l10n.dart';
+import 'l10n/l10n.dart';
 import 'provider/hive/session.dart';
 import 'pubspec.g.dart';
 import 'router.dart';
 import 'theme.dart';
 import 'util/log.dart';
 import 'util/platform_utils.dart';
-import 'util/web/web_utils.dart';
+import 'util/web/web.dart';
 
 /// Entry point of this application.
 void main() async {
@@ -47,8 +47,8 @@ void main() async {
   Future<void> _appRunner() async {
     WebUtils.setPathUrlStrategy();
 
-    Novel.backgrounds = 'assets/images/background';
-    Novel.characters = 'assets/images/neko';
+    Novel.backgrounds = 'assets/background';
+    Novel.characters = 'assets/character';
 
     await _initHive();
 
@@ -58,9 +58,7 @@ void main() async {
     var authService = Get.put(AuthService(Get.find()));
     await authService.init();
 
-    /// TODO: Should only be called if not persisted.
-    var locale = Platform.localeName.replaceAll('-', '_');
-    L10n.chosen = L10n.locales.containsKey(locale) ? locale : 'en_US';
+    await L10n.init();
 
     router = RouterState(authService);
 
@@ -132,8 +130,6 @@ class App extends StatelessWidget {
       onGenerateTitle: (context) => 'NekoUI',
       theme: Themes.light(),
       themeMode: ThemeMode.light,
-      locale: L10n.locales[L10n.chosen],
-      translationsKeys: L10n.phrases,
       debugShowCheckedModeBanner: false,
     );
   }

@@ -14,15 +14,31 @@
 // along with this program. If not, see
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
+import 'package:flutter/widgets.dart' show GlobalKey;
 import 'package:get/get.dart';
 
 import '/domain/service/auth.dart';
+import '/domain/model/application_settings.dart';
+import '/domain/repository/settings.dart';
+import '/l10n/l10n.dart';
 
 class SettingsController extends GetxController {
-  SettingsController(this._authService);
+  SettingsController(this._authService, this._settingsRepo);
+
+  /// [GlobalKey] of a button opening the [Language] selection.
+  final GlobalKey languageKey = GlobalKey();
+
   final AuthService _authService;
 
-  void reset() {
-    _authService.logout();
-  }
+  /// Settings repository, used to update the [ApplicationSettings].
+  final AbstractSettingsRepository _settingsRepo;
+
+  /// Returns the current [ApplicationSettings] value.
+  Rx<ApplicationSettings?> get settings => _settingsRepo.applicationSettings;
+
+  void reset() => _authService.logout();
+
+  /// Sets the [ApplicationSettings.locale] value.
+  Future<void> setLocale(Language? locale) =>
+      _settingsRepo.setLocale(locale!.toString());
 }

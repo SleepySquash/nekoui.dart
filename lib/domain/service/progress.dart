@@ -16,11 +16,10 @@
 
 import 'package:get/get.dart';
 
-import '../disposable_service.dart';
 import '/domain/model/neko.dart';
 import '/domain/service/neko.dart';
 
-class ProgressService extends DisposableService {
+class ProgressService extends DisposableInterface {
   ProgressService(this._nekoService);
 
   late final List<ProgressCondition> conditions;

@@ -30,45 +30,46 @@ class AuthView extends StatelessWidget {
     return GetBuilder(
       init: AuthController(Get.find()),
       builder: (AuthController c) {
-        return Obx(() => c.authStatus.value.isLoading
-            ? const Scaffold(body: CircularProgressIndicator())
-            : Scaffold(
-                body: Center(
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 10),
-                      const Spacer(),
-                      const Text('NekoUI'),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: router.introduction,
-                        style:
-                            ElevatedButton.styleFrom(primary: Colors.lightBlue),
-                        child: const Text(
-                          'Play',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      const Spacer(),
-                      ElevatedButton(
-                        onPressed: () async {
-                          if (await MessagePopup.alert('Are you sure?') ==
-                              true) {
-                            c.clean();
-                          }
-                        },
-                        style:
-                            ElevatedButton.styleFrom(primary: Colors.lightBlue),
-                        child: const Text(
-                          'Clear cache',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                    ],
+        return Obx(() {
+          if (c.status.value.isLoading) {
+            return const Scaffold(body: CircularProgressIndicator());
+          }
+
+          return Scaffold(
+            body: Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  const Spacer(),
+                  const Text('NekoUI'),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: router.introduction,
+                    style: ElevatedButton.styleFrom(primary: Colors.lightBlue),
+                    child: const Text(
+                      'Play',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                ),
-              ));
+                  const Spacer(),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (await MessagePopup.alert('Are you sure?') == true) {
+                        c.clean();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(primary: Colors.lightBlue),
+                    child: const Text(
+                      'Clear cache',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
+            ),
+          );
+        });
       },
     );
   }

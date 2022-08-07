@@ -15,28 +15,17 @@
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
-import '/domain/service/auth.dart';
-import '/main.dart';
-import '/router.dart';
+import '/domain/model/application_settings.dart';
 
-class AuthController extends GetxController {
-  AuthController(this._authService);
+/// Application settings repository interface.
+abstract class AbstractSettingsRepository {
+  /// Returns the stored [ApplicationSettings].
+  Rx<ApplicationSettings?> get applicationSettings;
 
-  final AuthService _authService;
+  /// Clears the stored settings.
+  Future<void> clearCache();
 
-  Rx<RxStatus> get status => _authService.status;
-
-  Future<void> signIn() async {
-    await _authService.signIn();
-    router.home();
-  }
-
-  Future<void> register() async {
-    await _authService.register();
-    router.home();
-  }
-
-  Future<void> clean() => Hive.clean('hive');
+  /// Sets the [ApplicationSettings.locale] value.
+  Future<void> setLocale(String locale);
 }

@@ -229,34 +229,36 @@ class RoomView extends StatelessWidget {
           body: Stack(
             children: [
               InteractiveViewer(
-                clipBehavior: Clip.none,
-                minScale: 1,
+                clipBehavior: Clip.hardEdge,
+                minScale: 0.01,
                 maxScale: 100,
-                child: Stack(
-                  children: [
-                    RoomWidget(c),
-                    Positioned.fill(
-                      child: Image.asset(
-                        'assets/images/room/room.png',
-                        isAntiAlias: false,
-                        filterQuality: FilterQuality.none,
-                      ),
-                    ),
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          NekoView.show(context, neko: c.nekoKey);
-                          // TODO: Close FAB aswell.
-                        },
-                        child: SizedBox(
-                          width: 70,
-                          height: 70,
-                          child: NekoChibi(key: c.nekoKey),
-                        ),
-                      ),
-                    ),
-                  ],
+                constrained: false,
+                child: SizedBox(
+                  width: 1024 + 16 * 100 + 1024,
+                  height: 1024 + 8 * 100 + 1024,
+                  child: RoomWidget(c),
                 ),
+                // child: Container(
+                //   padding: const EdgeInsets.all(256),
+                //   child: Stack(
+                //     children: [
+                //       RoomWidget(c),
+                //       Positioned(
+                //         left: c.x.value,
+                //         top: c.y.value,
+                //         width: 256,
+                //         height: 256,
+                //         child: GestureDetector(
+                //           onTap: () {
+                //             NekoView.show(context, neko: c.nekoKey);
+                //             // TODO: Close FAB aswell.
+                //           },
+                //           child: NekoChibi(key: c.nekoKey),
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
               ),
               Align(
                 alignment: Alignment.topLeft,

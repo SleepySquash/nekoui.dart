@@ -18,7 +18,6 @@ import 'dart:async';
 
 import 'package:get/get.dart';
 
-import '../disposable_service.dart';
 import '/domain/model/item.dart';
 import '/domain/model/neko.dart';
 import '/domain/model/skill.dart';
@@ -30,7 +29,7 @@ import '/domain/repository/trait.dart';
 import '/util/obs/obs.dart';
 
 /// Service responsible for [Neko]'s state management.
-class NekoService extends DisposableService {
+class NekoService extends DisposableInterface {
   NekoService(
     this._nekoRepository,
     this._skillRepository,

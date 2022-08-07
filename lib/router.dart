@@ -23,12 +23,14 @@ import 'domain/model/neko.dart';
 import 'domain/repository/flag.dart';
 import 'domain/repository/item.dart';
 import 'domain/repository/neko.dart';
+import 'domain/repository/settings.dart';
 import 'domain/repository/skill.dart';
 import 'domain/repository/trait.dart';
 import 'domain/service/auth.dart';
 import 'domain/service/environment.dart';
 import 'domain/service/item.dart';
 import 'domain/service/neko.dart';
+import 'provider/hive/application_settings.dart';
 import 'provider/hive/flag.dart';
 import 'provider/hive/item.dart';
 import 'provider/hive/neko.dart';
@@ -37,6 +39,7 @@ import 'provider/hive/trait.dart';
 import 'store/flag.dart';
 import 'store/item.dart';
 import 'store/neko.dart';
+import 'store/settings.dart';
 import 'store/skill.dart';
 import 'store/trait.dart';
 import 'ui/auth/view.dart';
@@ -47,9 +50,10 @@ import 'ui/widget/context_menu/overlay.dart';
 import 'ui/widget/lifecycle_observer.dart';
 import 'ui/widget/notification/view.dart';
 import 'ui/worker/necessities.dart';
+import 'ui/worker/settings.dart';
 import 'ui/worker/skill.dart';
 import 'util/scoped_dependencies.dart';
-import 'util/web/web_utils.dart';
+import 'util/web/web.dart';
 
 /// Application's global router state.
 late RouterState router;
@@ -231,7 +235,6 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<RouteConfiguration> {
   AppRouterDelegate(this._state) {
     _state.addListener(notifyListeners);
-    _prefixWorker = ever(_state.prefix, (_) => _updateTabTitle());
   }
 
   @override
@@ -239,9 +242,6 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
 
   /// Router's state used to determine current [Navigator]'s pages.
   final RouterState _state;
-
-  /// Worker to react on the [RouterState.prefix] changes.
-  late final Worker _prefixWorker;
 
   @override
   Future<void> setInitialRoutePath(RouteConfiguration configuration) {
@@ -260,12 +260,6 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
   RouteConfiguration get currentConfiguration =>
       RouteConfiguration(_state.route, _state._auth.status.value.isSuccess);
 
-  @override
-  void dispose() {
-    _prefixWorker.dispose();
-    super.dispose();
-  }
-
   /// [Navigator]'s pages generation based on the [_state].
   List<Page<dynamic>> get _pages {
     /// [Routes.home] or [Routes.auth] page is always included.
@@ -279,11 +273,23 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
           () async {
             ScopedDependencies deps = ScopedDependencies();
 
-            await deps.put(NekoHiveProvider()).init();
-            await deps.put(ItemHiveProvider()).init();
-            await deps.put(SkillHiveProvider()).init();
-            await deps.put(TraitHiveProvider()).init();
-            await deps.put(FlagHiveProvider()).init();
+            await Future.wait([
+              deps.put(NekoHiveProvider()).init(),
+              deps.put(ItemHiveProvider()).init(),
+              deps.put(SkillHiveProvider()).init(),
+              deps.put(TraitHiveProvider()).init(),
+              deps.put(FlagHiveProvider()).init(),
+              deps.put(ApplicationSettingsHiveProvider()).init(),
+            ]);
+
+            AbstractSettingsRepository settingsRepository =
+                deps.put<AbstractSettingsRepository>(
+              SettingsRepository(Get.find()),
+            );
+
+            // Should be initialized before any [L10n]-dependant entities as
+            // it sets the stored [Language] from the [SettingsRepository].
+            await deps.put(SettingsWorker(settingsRepository)).init();
 
             AbstractItemRepository itemRepository =
                 deps.put(ItemRepository(Get.find()));
@@ -330,43 +336,34 @@ class AppRouterDelegate extends RouterDelegate<RouteConfiguration>
   }
 
   @override
-  Widget build(BuildContext context) => LifecycleObserver(
-        didChangeAppLifecycleState: (v) => _state.lifecycle.value = v,
-        child: ContextMenuOverlay(
-          child: MouseRegion(
-            opaque: false,
-            onEnter: (d) => _state.mousePosition.value =
-                Offset(d.localPosition.dx, d.localPosition.dy),
-            onHover: (d) => _state.mousePosition.value =
-                Offset(d.localPosition.dx, d.localPosition.dy),
-            onExit: (d) => _state.mousePosition.value =
-                Offset(d.localPosition.dx, d.localPosition.dy),
-            child: NotificationOverlayView(
-              child: Navigator(
-                key: navigatorKey,
-                pages: _pages,
-                onPopPage: (Route<dynamic> route, dynamic result) {
-                  final bool success = route.didPop(result);
-                  if (success) {
-                    _state.pop();
-                  }
-                  return success;
-                },
-              ),
+  Widget build(BuildContext context) {
+    return LifecycleObserver(
+      didChangeAppLifecycleState: (v) => _state.lifecycle.value = v,
+      child: ContextMenuOverlay(
+        child: MouseRegion(
+          opaque: false,
+          onEnter: (d) => _state.mousePosition.value =
+              Offset(d.localPosition.dx, d.localPosition.dy),
+          onHover: (d) => _state.mousePosition.value =
+              Offset(d.localPosition.dx, d.localPosition.dy),
+          onExit: (d) => _state.mousePosition.value =
+              Offset(d.localPosition.dx, d.localPosition.dy),
+          child: NotificationOverlayView(
+            child: Navigator(
+              key: navigatorKey,
+              pages: _pages,
+              onPopPage: (Route<dynamic> route, dynamic result) {
+                final bool success = route.didPop(result);
+                if (success) {
+                  _state.pop();
+                }
+                return success;
+              },
             ),
           ),
         ),
-      );
-
-  /// Sets the browser's tab title.
-  void _updateTabTitle() {
-    String? prefix = _state.prefix.value;
-    if (prefix != null) {
-      prefix = '$prefix ';
-    }
-    prefix ??= '';
-
-    WebUtils.title('Gapopa');
+      ),
+    );
   }
 }
 

@@ -14,29 +14,18 @@
 // along with this program. If not, see
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
-import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive/hive.dart';
 
-import '/domain/service/auth.dart';
-import '/main.dart';
-import '/router.dart';
+import '/domain/model_type_id.dart';
 
-class AuthController extends GetxController {
-  AuthController(this._authService);
+part 'application_settings.g.dart';
 
-  final AuthService _authService;
+/// Overall application settings used by the whole app.
+@HiveType(typeId: ModelTypeId.applicationSettings)
+class ApplicationSettings extends HiveObject {
+  ApplicationSettings({this.locale});
 
-  Rx<RxStatus> get status => _authService.status;
-
-  Future<void> signIn() async {
-    await _authService.signIn();
-    router.home();
-  }
-
-  Future<void> register() async {
-    await _authService.register();
-    router.home();
-  }
-
-  Future<void> clean() => Hive.clean('hive');
+  /// Preferred language to use in the application.
+  @HiveField(0)
+  String? locale;
 }

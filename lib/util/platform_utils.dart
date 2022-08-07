@@ -17,7 +17,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
-import '/util/web/web_utils.dart';
+import 'web/web.dart';
 
 // TODO: Remove when jonataslaw/getx#1936 is fixed:
 //       https://github.com/jonataslaw/getx/issues/1936
