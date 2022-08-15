@@ -181,8 +181,8 @@ jobs:
         run: ${{ (runner.os == 'Windows'
                   && 'forfiles /M *.zip /C "cmd /c sha256sum @file > @file.sha256sum"')
               || (runner.os == 'macOS'
-                  && 'ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"')
-              ||     'ls -1 | xargs -I {} sh -c "shasum -a 256 {} > {}.sha256sum"' }}
+                  && 'ls -1 | xargs -I {} sh -c "shasum -a 256 {} > {}.sha256sum"')
+              ||     'ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"' }}
         working-directory: artifacts/
       - name: Show generated SHA256 checksums
         run: ${{ (runner.os == 'Windows'
