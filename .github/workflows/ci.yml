@@ -82,6 +82,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: azure/setup-helm@v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - run: make helm.lint chart=${{ matrix.chart }}
 
