@@ -143,7 +143,7 @@ jobs:
 
       - name: Parse application name from Git repository name
         id: app
-        run: echo ::set-output name=group1::nekoui
+        run: echo '::set-output name=group1::green'
         # uses: actions-ecosystem/action-regex-match@v2
         # with:
         #   text: ${{ github.repository }}
@@ -168,7 +168,7 @@ jobs:
           directory: ${{ (matrix.platform == 'linux'
                           && 'build/linux/x64/release/bundle')
                       || (matrix.platform == 'macos'
-                          && 'build/macos/Build/Products/Release/${{ steps.app.outputs.group1 }}.app')
+                          && 'build/macos/Build/Products/Release/nekoui.app')
                       || (matrix.platform == 'windows'
                           && 'build/windows/runner/Release')
                       ||     'build/web'}}
