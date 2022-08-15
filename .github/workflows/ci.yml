@@ -437,6 +437,8 @@ jobs:
         if: ${{ steps.skip.outputs.no == 'true' }}
       - uses: azure/setup-helm@v3
         if: ${{ steps.skip.outputs.no == 'true' }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Parse semver versions from Git tag
         id: semver
