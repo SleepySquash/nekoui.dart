@@ -143,10 +143,11 @@ jobs:
 
       - name: Parse application name from Git repository name
         id: app
-        uses: actions-ecosystem/action-regex-match@v2
-        with:
-          text: ${{ github.repository }}
-          regex: '^${{ github.repository_owner }}/(.+)$'
+        run: echo ::set-output name=group1::nekoui
+        # uses: actions-ecosystem/action-regex-match@v2
+        # with:
+        #   text: ${{ github.repository }}
+        #   regex: '^${{ github.repository_owner }}/(.+)$'
 
       - run: mkdir artifacts/
       - run: mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
@@ -167,7 +168,7 @@ jobs:
           directory: ${{ (matrix.platform == 'linux'
                           && 'build/linux/x64/release/bundle')
                       || (matrix.platform == 'macos'
-                          && 'build/macos/Build/Products/Release/nekoui.app')
+                          && 'build/macos/Build/Products/Release/${{ steps.app.outputs.group1 }}.app')
                       || (matrix.platform == 'windows'
                           && 'build/windows/runner/Release')
                       ||     'build/web'}}
@@ -179,7 +180,9 @@ jobs:
       - name: Generate SHA256 checksums
         run: ${{ (runner.os == 'Windows'
                   && 'forfiles /M *.zip /C "cmd /c sha256sum @file > @file.sha256sum"')
-              ||     'ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"' }}
+              || (runner.os == 'macOS'
+                  && 'ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"')
+              ||     'ls -1 | xargs -I {} sh -c "shasum -a 256 {} > {}.sha256sum"' }}
         working-directory: artifacts/
       - name: Show generated SHA256 checksums
         run: ${{ (runner.os == 'Windows'
