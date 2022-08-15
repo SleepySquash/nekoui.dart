@@ -430,7 +430,7 @@ jobs:
                             format('refs/tags/helm/{0}/', matrix.chart))
              }}
       
-      - run: echo ${{ startsWith(github.ref, 'refs/tags/helm/'') }}
+      - run: echo ${{ startsWith(github.ref, 'refs/tags/helm/') }}
       - run: echo ${{ github.ref }}
 
       - uses: actions/checkout@v3
