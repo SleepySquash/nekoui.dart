@@ -1,0 +1,64 @@
+image:
+  repository: ghcr.io/sleepysquash/nekoui
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Additional labels to apply to all Kubernetes resources created by this chart.
+labels: {}
+  # app.kubernetes.io/part-of: nekoui
+
+deployment:
+  replicas: 1
+  revisionHistoryLimit: 0
+
+  # Optional revision number to use for fine-grained Deployment rollouts.
+  revision: ""
+
+  annotations: {}
+    # kubernetes.io/change-cause=kubectl set ...
+
+  affinity: {}
+    # nodeAffinity:
+    #   requiredDuringSchedulingIgnoredDuringExecution:
+    #     nodeSelectorTerms:
+    #       - matchExpressions:
+    #         - key: node-label-key
+    #           operator: In
+    #           values: ["node-label-value"]
+
+  tolerations: []
+    # - key: "node.alpha.kubernetes.io/unreachable"
+    #   operator: "Exists"
+    #   effect: "NoExecute"
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: yes
+
+  # Hosts must be specified without "www." part.
+  hosts:
+    - nekoui.test
+
+  tls:
+    enabled: no
+    auto: no
+    # Not required when "auto" is enabled.
+    secretName:
+      messenger.test: nekoui.test.tls
+
+  httpAuth:
+    enabled: no
+
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: "30m"

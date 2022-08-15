@@ -1,0 +1,16 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ printf "%s.conf" (include "nekoui.fullname" .) | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    helm.sh/chart: {{ include "nekoui.chart" . | quote }}
+    app.kubernetes.io/name: {{ include "nekoui.name" . | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+  {{- with .Values.labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  nginx.conf: |
+    {{- tpl (.Files.Get "conf/nginx.conf") . | nindent 4 }}

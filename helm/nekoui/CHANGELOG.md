@@ -1,0 +1,25 @@
+`nekoui` Helm chart changelog
+================================
+
+All user visible changes to this project will be documented in this file. This project uses [Semantic Versioning 2.0.0].
+
+
+
+
+## [0.1.0] · 2022-??-??
+[0.1.0]: https://github.com/sleepysquash/nekoui.dart/tree/helm/nekoui/0.1.0
+
+### Added
+
+- `Service` with `nekoui` container. ([#5])
+- `Ingress` with: ([#5])
+    - `/` prefix pointing to `nekoui` container.
+    - `tls.auto` capabilities.
+    - Handling optional `www.` domain part.
+
+[#5]: https://github.com/sleepysquash/nekoui/pull/5
+
+
+
+
+[Semantic Versioning 2.0.0]: https://semver.org

@@ -466,6 +466,57 @@ docker.untar:
 
 
 
+#################
+# Helm commands #
+#################
+
+helm-chart := $(or $(chart),nekoui)
+helm-chart-dir := helm/$(helm-chart)
+
+
+# Lint project Helm chart.
+#
+# Usage:
+#	make helm.lint [chart=nekoui]
+
+helm.lint:
+	helm lint $(helm-chart-dir)/
+
+
+# Build Helm package from project Helm chart.
+#
+# Usage:
+#	make helm.package [chart=nekoui]
+#	                  [out-dir=(.cache/helm|<dir-path>)] [clean=(no|yes]]
+
+helm-package-dir = $(or $(out-dir),.cache/helm)
+
+helm.package:
+ifeq ($(clean),yes)
+	@rm -rf $(helm-package-dir)
+endif
+	@mkdir -p $(helm-package-dir)/
+	helm package --destination=$(helm-package-dir)/ $(helm-chart-dir)/
+
+
+# Create and push Git tag to release project Helm chart.
+#
+# Usage:
+#	make helm.release [chart=nekoui]
+
+helm-git-tag = helm/$(helm-chart)/$(strip \
+	$(shell grep -m1 'version: ' $(helm-chart-dir)/Chart.yaml | cut -d' ' -f2))
+
+helm.release:
+ifeq ($(shell git rev-parse $(helm-git-tag) >/dev/null 2>&1 && echo "ok"),ok)
+	$(error "Git tag $(helm-git-tag) already exists")
+endif
+	git tag $(helm-git-tag)
+	git push origin refs/tags/$(helm-git-tag)
+
+
+
+
 ################
 # Git commands #
 ################
