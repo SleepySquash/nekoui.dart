@@ -24,13 +24,13 @@ jobs:
   pr:
     if: ${{ github.event_name == 'pull_request' }}
     needs:
-      #- build
+      - build
       #- docker
       #- copyright
       #- dartanalyze
       #- dartfmt
       #- test-unit
-      - helm-lint
+      #- helm-lint
     runs-on: ubuntu-latest
     steps:
       - run: true
@@ -71,21 +71,21 @@ jobs:
   #         cache: true
   #     - run: make flutter.fmt check=yes
 
-  helm-lint:
-    name: Lint Helm chart
-    if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
-    strategy:
-      fail-fast: false
-      matrix:
-        chart: ["nekoui"]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: azure/setup-helm@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+  # helm-lint:
+  #   name: Lint Helm chart
+  #   if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       chart: ["nekoui"]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: azure/setup-helm@v3
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: make helm.lint chart=${{ matrix.chart }}
+  #     - run: make helm.lint chart=${{ matrix.chart }}
 
 
 
@@ -94,106 +94,105 @@ jobs:
   # Building #
   ############
 
-  # build:
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       platform:
-  #         - apk
-  #         - appbundle
-  #         #- ios
-  #         - linux
-  #         #- macos
-  #         - web
-  #         - windows
-  #   if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-  #   runs-on: ${{ ((matrix.platform == 'ios' || matrix.platform == 'macos')
-  #                                             && 'macos-latest')
-  #             || (matrix.platform == 'windows' && 'windows-latest')
-  #             || (matrix.platform == 'linux'   && 'ubuntu-22.04')
-  #             ||                                  'ubuntu-latest' }}
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: subosito/flutter-action@v2
-  #       with:
-  #         flutter-version: $FLUTTER_VER
-  #         channel: stable
-  #         cache: true
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          #- apk
+          #- appbundle
+          #- ios
+          #- linux
+          - macos
+          #- web
+          #- windows
+    # TODO: Change `linux` platform to `ubuntu-latest` when 22.04 is out of beta.
+    runs-on: ${{ ((matrix.platform == 'ios' || matrix.platform == 'macos')
+                                               && 'macos-latest')
+              || (matrix.platform == 'windows' && 'windows-latest')
+              || (matrix.platform == 'linux'   && 'ubuntu-22.04')
+              ||                                  'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: $FLUTTER_VER
+          channel: stable
+          cache: true
 
-  #     - run: sudo apt-get update -y
-  #       if: ${{ matrix.platform == 'linux' }}
-  #     - run: sudo apt-get install -y
-  #                         ninja-build
-  #                         libunwind-dev
-  #                         libgtk-3-dev
-  #                         libgstreamer1.0-dev
-  #                         libgstreamer-plugins-base1.0-dev
-  #                         libpulse-dev
-  #       if: ${{ matrix.platform == 'linux' }}
+      - run: sudo apt-get update -y
+        if: ${{ matrix.platform == 'linux' }}
+      - run: sudo apt-get install -y
+                          ninja-build
+                          libunwind-dev
+                          libgtk-3-dev
+                          libgstreamer1.0-dev
+                          libgstreamer-plugins-base1.0-dev
+                          libpulse-dev
+        if: ${{ matrix.platform == 'linux' }}
 
-  #     - run: flutter config --enable-${{ matrix.platform }}-desktop
-  #       if: ${{ matrix.platform == 'linux'
-  #           || matrix.platform == 'macos'
-  #           || matrix.platform == 'windows' }}
+      - run: flutter config --enable-${{ matrix.platform }}-desktop
+        if: ${{ matrix.platform == 'linux'
+             || matrix.platform == 'macos'
+             || matrix.platform == 'windows' }}
 
-  #     - run: make flutter.pub
+      - run: make flutter.pub
 
-  #     - run: make flutter.build platform=${{ matrix.platform }}
-  #                               split-per-abi=yes
+      - run: make flutter.build platform=${{ matrix.platform }}
+                                split-per-abi=yes
 
-  #     - run: mkdir artifacts/
-  #     - uses: thedoctor0/zip-release@0.6.2
-  #       with:
-  #         filename: ${{ github.workspace }}/artifacts/${{ env.ARTIFACT_PREFIX }}-${{ matrix.platform }}.zip
-  #         directory: ${{ (matrix.platform == 'macos'
-  #                   && 'build/macos/Build/Products/Release/nekoui.app')
-  #               || (matrix.platform == 'linux'
-  #                   && 'build/linux/x64/release/bundle')
-  #               || (matrix.platform == 'windows'
-  #                   && 'build/windows/runner/Release')
-  #               ||     'build/web'}}
-  #       if: ${{ matrix.platform == 'web'
-  #           || matrix.platform == 'windows'
-  #           || matrix.platform == 'linux'
-  #           || matrix.platform == 'macos' }}
+      - name: Parse application name from Git repository name
+        id: app
+        uses: actions-ecosystem/action-regex-match@v2
+        with:
+          text: ${{ github.repository }}
+          regex: '^${{ github.repository_owner }}/(.+)$'
 
-  #     - run: mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-  #               artifacts/${{ env.ARTIFACT_PREFIX }}-android-arm64-v8a.apk
-  #       if: ${{ matrix.platform == 'apk' }}
-  #     - run: mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
-  #               artifacts/${{ env.ARTIFACT_PREFIX }}-android-armeabi-v7a.apk
-  #       if: ${{ matrix.platform == 'apk' }}
-  #     - run: mv build/app/outputs/flutter-apk/app-x86_64-release.apk
-  #               artifacts/${{ env.ARTIFACT_PREFIX }}-android-x86_64.apk
-  #       if: ${{ matrix.platform == 'apk' }}
-  #     - run: mv build/app/outputs/bundle/release/app-release.aab
-  #               artifacts/${{ env.ARTIFACT_PREFIX }}-android.aab
-  #       if: ${{ matrix.platform == 'appbundle' }}
+      - run: mkdir artifacts/
+      - run: mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+                artifacts/${{ steps.app.outputs.group1 }}-android-arm64-v8a.apk
+        if: ${{ matrix.platform == 'apk' }}
+      - run: mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+                artifacts/${{ steps.app.outputs.group1 }}-android-armeabi-v7a.apk
+        if: ${{ matrix.platform == 'apk' }}
+      - run: mv build/app/outputs/flutter-apk/app-x86_64-release.apk
+                artifacts/${{ steps.app.outputs.group1 }}-android-x86_64.apk
+        if: ${{ matrix.platform == 'apk' }}
+      - run: mv build/app/outputs/bundle/release/app-release.aab
+                artifacts/${{ steps.app.outputs.group1 }}-android.aab
+        if: ${{ matrix.platform == 'appbundle' }}
+      - uses: thedoctor0/zip-release@0.6.2
+        with:
+          filename: ${{ github.workspace }}/artifacts/${{ steps.app.outputs.group1 }}-${{ matrix.platform }}.zip
+          directory: ${{ (matrix.platform == 'linux'
+                          && 'build/linux/x64/release/bundle')
+                      || (matrix.platform == 'macos'
+                          && 'build/macos/Build/Products/Release/nekoui.app')
+                      || (matrix.platform == 'windows'
+                          && 'build/windows/runner/Release')
+                      ||     'build/web'}}
+        if: ${{ matrix.platform == 'linux'
+             || matrix.platform == 'macos'
+             || matrix.platform == 'web'
+             || matrix.platform == 'windows' }}
 
-  #     - name: Generate SHA256 checksums
-  #       run: ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"
-  #       working-directory: artifacts/
-  #       if: ${{ matrix.platform != 'windows' }}
-  #     - name: Show generated SHA256 checksums
-  #       run: cat *.sha256sum
-  #       working-directory: artifacts/
-  #       if: ${{ matrix.platform != 'windows' }}
+      - name: Generate SHA256 checksums
+        run: ${{ (runner.os == 'Windows'
+                  && 'forfiles /M *.zip /C "cmd /c sha256sum @file > @file.sha256sum"')
+              ||     'ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"' }}
+        working-directory: artifacts/
+      - name: Show generated SHA256 checksums
+        run: ${{ (runner.os == 'Windows'
+                  && 'type *.sha256sum')
+              ||     'cat *.sha256sum' }}
+        working-directory: artifacts/
 
-  #     - name: Generate SHA256 checksums
-  #       run: certutil -hashfile ${{ env.ARTIFACT_PREFIX }}-${{ matrix.platform }}.zip 
-  #                             > ${{ env.ARTIFACT_PREFIX }}-${{ matrix.platform }}.zip.sha256sum
-  #       working-directory: artifacts/
-  #       if: ${{ matrix.platform == 'windows' }}
-  #     - name: Show generated SHA256 checksums
-  #       run: type ${{ env.ARTIFACT_PREFIX }}-${{ matrix.platform }}.zip.sha256sum
-  #       working-directory: artifacts/
-  #       if: ${{ matrix.platform == 'windows' }}
-
-  #     - uses: actions/upload-artifact@v3
-  #       with:
-  #         name: build-${{ matrix.platform }}-${{ github.run_number }}
-  #         path: artifacts
-  #         if-no-files-found: error
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-${{ matrix.platform }}-${{ github.run_number }}
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 1
 
   # docker:
   #   needs: ["build"]
@@ -414,111 +413,111 @@ jobs:
   #     - run: make docker.push tags=${{ steps.tags.outputs.result }}
   #                 image=${{ env.IMAGE }} repos=${{ env.REPOS }}
 
-  release-helm:
-    name: Release Helm chart
-    if: ${{ startsWith(github.ref, 'refs/tags/helm/') }}
-    needs: ["helm-lint"]
-    strategy:
-      max-parallel: 1
-      matrix:
-        chart: ["nekoui"]
-    runs-on: ubuntu-latest
-    steps:
-      - id: skip
-        run: echo ::set-output name=no::${{
-                 startsWith(github.ref,
-                            format('refs/tags/helm/{0}/', matrix.chart))
-             }}
+  # release-helm:
+  #   name: Release Helm chart
+  #   if: ${{ startsWith(github.ref, 'refs/tags/helm/') }}
+  #   needs: ["helm-lint"]
+  #   strategy:
+  #     max-parallel: 1
+  #     matrix:
+  #       chart: ["nekoui"]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - id: skip
+  #       run: echo ::set-output name=no::${{
+  #                startsWith(github.ref,
+  #                           format('refs/tags/helm/{0}/', matrix.chart))
+  #            }}
       
-      - run: echo ${{ startsWith(github.ref, 'refs/tags/helm/') }}
-      - run: echo ${{ github.ref }}
+  #     - run: echo ${{ startsWith(github.ref, 'refs/tags/helm/') }}
+  #     - run: echo ${{ github.ref }}
 
-      - uses: actions/checkout@v3
-        if: ${{ steps.skip.outputs.no == 'true' }}
-      - uses: azure/setup-helm@v3
-        if: ${{ steps.skip.outputs.no == 'true' }}
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+  #     - uses: actions/checkout@v3
+  #       if: ${{ steps.skip.outputs.no == 'true' }}
+  #     - uses: azure/setup-helm@v3
+  #       if: ${{ steps.skip.outputs.no == 'true' }}
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Parse semver versions from Git tag
-        id: semver
-        uses: actions-ecosystem/action-regex-match@v2
-        with:
-          text: ${{ github.ref }}
-          regex: '^refs/tags/helm/${{ matrix.chart }}/((([0-9]+)\.[0-9]+)\.[0-9]+(-.+)?)$'
-        if: ${{ steps.skip.outputs.no == 'true' }}
-      - name: Verify Git tag version matches `Chart.yaml` version
-        run: |
-          test "${{ steps.semver.outputs.group1 }}" \
-            == "$(grep -m1 'version: ' helm/${{ matrix.chart }}/Chart.yaml \
-                  | cut -d' ' -f2)"
-        if: ${{ steps.skip.outputs.no == 'true' }}
+  #     - name: Parse semver versions from Git tag
+  #       id: semver
+  #       uses: actions-ecosystem/action-regex-match@v2
+  #       with:
+  #         text: ${{ github.ref }}
+  #         regex: '^refs/tags/helm/${{ matrix.chart }}/((([0-9]+)\.[0-9]+)\.[0-9]+(-.+)?)$'
+  #       if: ${{ steps.skip.outputs.no == 'true' }}
+  #     - name: Verify Git tag version matches `Chart.yaml` version
+  #       run: |
+  #         test "${{ steps.semver.outputs.group1 }}" \
+  #           == "$(grep -m1 'version: ' helm/${{ matrix.chart }}/Chart.yaml \
+  #                 | cut -d' ' -f2)"
+  #       if: ${{ steps.skip.outputs.no == 'true' }}
 
-      - run: make helm.package chart=${{ matrix.chart }}
-                  out-dir=.cache/helm/ clean=yes
-        if: ${{ steps.skip.outputs.no == 'true' }}
+  #     - run: make helm.package chart=${{ matrix.chart }}
+  #                 out-dir=.cache/helm/ clean=yes
+  #       if: ${{ steps.skip.outputs.no == 'true' }}
 
-      # Helm's digest is just SHA256 checksum:
-      # https://github.com/helm/helm/blob/v3.9.2/pkg/provenance/sign.go#L417-L418
-      - name: Generate SHA256 checksum
-        run: ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"
-        working-directory: .cache/helm/
-        if: ${{ steps.skip.outputs.no == 'true' }}
-      - name: Show generated SHA256 checksum
-        run: cat *.sha256sum
-        working-directory: .cache/helm/
-        if: ${{ steps.skip.outputs.no == 'true' }}
+  #     # Helm's digest is just SHA256 checksum:
+  #     # https://github.com/helm/helm/blob/v3.9.2/pkg/provenance/sign.go#L417-L418
+  #     - name: Generate SHA256 checksum
+  #       run: ls -1 | xargs -I {} sh -c "sha256sum {} > {}.sha256sum"
+  #       working-directory: .cache/helm/
+  #       if: ${{ steps.skip.outputs.no == 'true' }}
+  #     - name: Show generated SHA256 checksum
+  #       run: cat *.sha256sum
+  #       working-directory: .cache/helm/
+  #       if: ${{ steps.skip.outputs.no == 'true' }}
 
-      - name: Parse CHANGELOG link
-        id: changelog
-        run: echo ::set-output
-                  name=link::${{ github.server_url }}/${{ github.repository }}/blob/helm%2F${{ matrix.chart }}%2F${{ steps.semver.outputs.group1 }}/helm/${{ matrix.chart }}/CHANGELOG.md#$(sed -n '/^## \[${{ steps.semver.outputs.group1 }}\]/{s/^## \[\(.*\)\][^0-9]*\([0-9].*\)/\1--\2/;s/[^0-9a-z-]*//g;p;}' helm/${{ matrix.chart }}/CHANGELOG.md)
+  #     - name: Parse CHANGELOG link
+  #       id: changelog
+  #       run: echo ::set-output
+  #                 name=link::${{ github.server_url }}/${{ github.repository }}/blob/helm%2F${{ matrix.chart }}%2F${{ steps.semver.outputs.group1 }}/helm/${{ matrix.chart }}/CHANGELOG.md#$(sed -n '/^## \[${{ steps.semver.outputs.group1 }}\]/{s/^## \[\(.*\)\][^0-9]*\([0-9].*\)/\1--\2/;s/[^0-9a-z-]*//g;p;}' helm/${{ matrix.chart }}/CHANGELOG.md)
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v1
-        with:
-          name: helm/${{ matrix.chart }} ${{ steps.semver.outputs.group1 }}
-          body: >
-            [Changelog](${{ steps.changelog.outputs.link }}) |
-            [Overview](${{ github.server_url }}/${{ github.repository }}/tree/helm%2F${{ matrix.chart }}%2F${{ steps.semver.outputs.group1 }}/helm/${{ matrix.chart }}) |
-            [Values](${{ github.server_url }}/${{ github.repository }}/blob/helm%2F${{ matrix.chart }}%2F${{ steps.semver.outputs.group1 }}/helm/${{ matrix.chart }}/values.yaml)
-          files: |
-            .cache/helm/*.tgz
-            .cache/helm/*.sha256sum
-          fail_on_unmatched_files: true
-          prerelease: ${{ contains(steps.semver.outputs.group1, '-') }}
-        if: ${{ steps.skip.outputs.no == 'true' }}
+  #     - name: Create GitHub release
+  #       uses: softprops/action-gh-release@v1
+  #       with:
+  #         name: helm/${{ matrix.chart }} ${{ steps.semver.outputs.group1 }}
+  #         body: >
+  #           [Changelog](${{ steps.changelog.outputs.link }}) |
+  #           [Overview](${{ github.server_url }}/${{ github.repository }}/tree/helm%2F${{ matrix.chart }}%2F${{ steps.semver.outputs.group1 }}/helm/${{ matrix.chart }}) |
+  #           [Values](${{ github.server_url }}/${{ github.repository }}/blob/helm%2F${{ matrix.chart }}%2F${{ steps.semver.outputs.group1 }}/helm/${{ matrix.chart }}/values.yaml)
+  #         files: |
+  #           .cache/helm/*.tgz
+  #           .cache/helm/*.sha256sum
+  #         fail_on_unmatched_files: true
+  #         prerelease: ${{ contains(steps.semver.outputs.group1, '-') }}
+  #       if: ${{ steps.skip.outputs.no == 'true' }}
 
-      - name: Parse Git repository name
-        id: repo
-        uses: actions-ecosystem/action-regex-match@v2
-        with:
-          text: ${{ github.repository }}
-          regex: '^${{ github.repository_owner }}/(.+)$'
+  #     - name: Parse Git repository name
+  #       id: repo
+  #       uses: actions-ecosystem/action-regex-match@v2
+  #       with:
+  #         text: ${{ github.repository }}
+  #         regex: '^${{ github.repository_owner }}/(.+)$'
 
-      # TODO: Find or write a tool to build index idempotently from GitHub
-      #       releases, and keep on GitHub Pages only the built index.
-      #       https://github.com/helm/chart-releaser/issues/133
-      - name: Update Helm repository index
-        run: |
-          set -ex
+  #     # TODO: Find or write a tool to build index idempotently from GitHub
+  #     #       releases, and keep on GitHub Pages only the built index.
+  #     #       https://github.com/helm/chart-releaser/issues/133
+  #     - name: Update Helm repository index
+  #       run: |
+  #         set -ex
 
-          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
-          git config --local user.name 'github-actions[bot]'
+  #         git config --local user.email 'github-actions[bot]@users.noreply.github.com'
+  #         git config --local user.name 'github-actions[bot]'
 
-          git fetch origin gh-pages:gh-pages
-          git checkout gh-pages
-          git reset --hard
+  #         git fetch origin gh-pages:gh-pages
+  #         git checkout gh-pages
+  #         git reset --hard
 
-          mkdir -p helm/
-          cp -rf .cache/helm/*.tgz helm/
-          helm repo index helm/ --url=https://${{ github.repository_owner }}.github.io/${{ steps.repo.outputs.group1 }}/helm
+  #         mkdir -p helm/
+  #         cp -rf .cache/helm/*.tgz helm/
+  #         helm repo index helm/ --url=https://${{ github.repository_owner }}.github.io/${{ steps.repo.outputs.group1 }}/helm
 
-          git add -v helm/
-          git commit -m 'Release ${{ steps.semver.outputs.group1 }} version of `${{ matrix.chart }}` Helm chart'
-          git checkout -
-          git push origin gh-pages
-        if: ${{ steps.skip.outputs.no == 'true' }}
+  #         git add -v helm/
+  #         git commit -m 'Release ${{ steps.semver.outputs.group1 }} version of `${{ matrix.chart }}` Helm chart'
+  #         git checkout -
+  #         git push origin gh-pages
+  #       if: ${{ steps.skip.outputs.no == 'true' }}
 
 
 
