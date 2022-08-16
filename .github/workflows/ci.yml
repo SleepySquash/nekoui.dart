@@ -162,13 +162,22 @@ jobs:
       - run: mv build/app/outputs/bundle/release/app-release.aab
                 artifacts/${{ steps.app.outputs.group1 }}-android.aab
         if: ${{ matrix.platform == 'appbundle' }}
+      
+      # `.app` executable is a folder needed to be put into the archive.
+      - run: |
+          mkdir artifacts/
+          mv ${{ steps.app.outputs.group1 }}.app
+             artifacts/${{ steps.app.outputs.group1 }}.app
+        working-directory: build/macos/Build/Products/Release
+        if: ${{ matrix.platform == 'macos' }}
+
       - uses: thedoctor0/zip-release@0.6.2
         with:
           filename: ${{ github.workspace }}/artifacts/${{ steps.app.outputs.group1 }}-${{ matrix.platform }}.zip
           directory: ${{ (matrix.platform == 'linux'
                           && 'build/linux/x64/release/bundle')
                       || (matrix.platform == 'macos'
-                          && 'build/macos/Build/Products/Release')
+                          && 'build/macos/Build/Products/Release/artifacts')
                       || (matrix.platform == 'windows'
                           && 'build/windows/runner/Release')
                       ||     'build/web'}}
