@@ -163,10 +163,11 @@ jobs:
                 artifacts/${{ steps.app.outputs.group1 }}-android.aab
         if: ${{ matrix.platform == 'appbundle' }}
       
-      # `.app` executable is a folder needed to be put into the archive.
+      # `.app` executable is a folder needed to be put into the archive
+      # correctly, so move it into the .
       - run: |
-          mkdir artifacts/
-          mv ${{ steps.app.outputs.group1 }}.app artifacts/${{ steps.app.outputs.group1 }}.app
+          mkdir .temp/
+          mv ${{ steps.app.outputs.group1 }}.app .temp/${{ steps.app.outputs.group1 }}.app
         working-directory: build/macos/Build/Products/Release
         if: ${{ matrix.platform == 'macos' }}
 
@@ -176,7 +177,7 @@ jobs:
           directory: ${{ (matrix.platform == 'linux'
                           && 'build/linux/x64/release/bundle')
                       || (matrix.platform == 'macos'
-                          && 'build/macos/Build/Products/Release/artifacts')
+                          && 'build/macos/Build/Products/Release/.temp')
                       || (matrix.platform == 'windows'
                           && 'build/windows/runner/Release')
                       ||     'build/web'}}
