@@ -166,8 +166,7 @@ jobs:
       # `.app` executable is a folder needed to be put into the archive.
       - run: |
           mkdir artifacts/
-          mv ${{ steps.app.outputs.group1 }}.app
-             artifacts/${{ steps.app.outputs.group1 }}.app
+          mv ${{ steps.app.outputs.group1 }}.app artifacts/${{ steps.app.outputs.group1 }}.app
         working-directory: build/macos/Build/Products/Release
         if: ${{ matrix.platform == 'macos' }}
 
