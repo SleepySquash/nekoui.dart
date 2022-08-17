@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+ Copyright © 2022 NIKITA ISAENKO, <https://github.com/SleepySquash>
+
+ This program is free software: you can redistribute it and/or modify it under
+ the terms of the GNU Affero General Public License v3.0 as published by the
+ Free Software Foundation, either version 3 of the License, or (at your
+ option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License v3.0 for
+ more details.
+
+ You should have received a copy of the GNU Affero General Public License v3.0
+ along with this program. If not, see
+ <https://www.gnu.org/licenses/agpl-3.0.html>.
+-->
+
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="/nekoui.dart/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Sims-inspired Tamagotchi with Neko.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="NekoUI">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>NekoUI</title>
+  <link rel="manifest" href="manifest.json">
+
+  <script>
+    // The value below is injected by flutter build, do not touch.
+    var serviceWorkerVersion = '3874781500';
+  </script>
+  <!-- This script adds the flutter initialization JS code -->
+  <script src="flutter.js" defer></script>
+</head>
+<body>
+  <script>
+    window.addEventListener('load', function(ev) {
+      // Download main.dart.js
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        }
+      }).then(function(engineInitializer) {
+        return engineInitializer.initializeEngine();
+      }).then(function(appRunner) {
+        return appRunner.runApp();
+      });
+    });
+  </script>
+  
+  <!-- Request notifications permission on the first user interaction. -->
+  <script>
+    var click = document.onclick;
+    document.onclick = function() {
+        Notification.requestPermission();
+        if (click) {
+            click();
+        }
+
+        document.onclick = click;
+    }
+  </script>
+</body>
+</html>

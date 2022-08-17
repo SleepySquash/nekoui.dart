@@ -1,0 +1,52 @@
+apiVersion: v1
+entries:
+  nekoui:
+  - apiVersion: v2
+    appVersion: 0.1.0-alpha.1
+    created: "2022-08-17T11:16:41.68464323Z"
+    description: Sims-inspired tamagotchi with your own Neko.
+    digest: 969acac88ff7de6cfb3918ad8c60b67a0dd0778b73237207b246196b5dda7262
+    name: nekoui
+    sources:
+    - https://github.com/sleepysquash/nekoui.dart
+    type: application
+    urls:
+    - https://SleepySquash.github.io/nekoui.dart/helm/nekoui-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
+    appVersion: 0.1.0-alpha.1
+    created: "2022-08-17T11:16:41.684179225Z"
+    description: Sims-inspired tamagotchi with your own Neko.
+    digest: 2df31b4351b426e27579e2970ab4e97ea953236213f6c925da50d9625fd4c863
+    name: nekoui
+    sources:
+    - https://github.com/sleepysquash/nekoui.dart
+    type: application
+    urls:
+    - https://SleepySquash.github.io/nekoui.dart/helm/nekoui-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 0.1.0-alpha.1
+    created: "2022-08-17T11:16:41.683034613Z"
+    description: Sims-inspired tamagotchi with your own Neko.
+    digest: d14adc0a257d99a86f4e839e47e8757fa7a34009f0574836de2576265f337753
+    name: nekoui
+    sources:
+    - https://github.com/sleepysquash/nekoui.dart
+    type: application
+    urls:
+    - https://SleepySquash.github.io/nekoui.dart/helm/nekoui-0.1.0.tgz
+    version: 0.1.0
+  - apiVersion: v2
+    appVersion: 0.1.0-alpha.1
+    created: "2022-08-17T11:16:41.682436306Z"
+    description: Sims-inspired tamagotchi with your own Neko.
+    digest: 705ecbeacd693481e1b31550b1162f189c516288ad20e45b1b1a284d49070788
+    name: nekoui
+    sources:
+    - https://github.com/sleepysquash/nekoui.dart
+    type: application
+    urls:
+    - https://SleepySquash.github.io/nekoui.dart/helm/nekoui-0.0.0-edge.tgz
+    version: 0.0.0-edge
+generated: "2022-08-17T11:16:41.681295193Z"
