@@ -14,7 +14,6 @@
 // along with this program. If not, see
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -183,7 +182,7 @@ class InventoryView extends StatelessWidget {
                   margin: const EdgeInsets.all(8),
                   padding: const EdgeInsets.all(8),
                   child: Badge(
-                    badgeContent: Text(
+                    label: Text(
                       '${e.value.count}',
                       style: const TextStyle(color: Colors.white),
                     ),

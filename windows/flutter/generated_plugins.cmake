@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
   geolocator_windows
+  rive_common
   sentry_flutter
 )
 

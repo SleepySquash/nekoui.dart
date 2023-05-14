@@ -14,7 +14,6 @@
 // along with this program. If not, see
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -36,11 +35,11 @@ class GroceryView extends StatelessWidget {
               actions: [
                 if (c.cart.isNotEmpty)
                   Badge(
-                    badgeContent: Text(
+                    label: Text(
                       '${c.cart.length}',
                       style: const TextStyle(color: Colors.white),
                     ),
-                    position: BadgePosition.topEnd(top: 0, end: 0),
+                    alignment: AlignmentDirectional.topEnd,
                     child: IconButton(
                       onPressed: router.groceryCheckout,
                       icon: const Icon(Icons.shopping_bag),
@@ -54,9 +53,9 @@ class GroceryView extends StatelessWidget {
                     (e) => InkWell(
                       onTap: () => c.add(e),
                       child: Badge(
-                        showBadge: c.cart.where((m) => m == e).isNotEmpty,
-                        position: BadgePosition.topEnd(top: 0, end: 0),
-                        badgeContent: Text(
+                        isLabelVisible: c.cart.where((m) => m == e).isNotEmpty,
+                        alignment: AlignmentDirectional.topEnd,
+                        label: Text(
                           '${c.cart.firstWhereOrNull((m) => m == e)?.count}',
                           style: const TextStyle(color: Colors.white),
                         ),

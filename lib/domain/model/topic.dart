@@ -52,7 +52,7 @@ class TalkTopic {
   Future<void> novel() async {
     await Novel.show(context: router.context!, scenario: [
       AddObjectLine(BackdropRect(), wait: false),
-      CharacterLine('person.png', duration: Duration.zero),
+      CharacterLine.asset('person.png', duration: Duration.zero),
       ...lines,
     ]);
 

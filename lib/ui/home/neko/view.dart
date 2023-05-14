@@ -30,9 +30,9 @@ import 'component/talk.dart';
 import 'controller.dart';
 
 class NekoView extends StatefulWidget {
-  const NekoView({Key? key, this.neko, this.withWardrobe = true})
-      : super(key: key);
+  const NekoView({super.key, this.neko, this.rect, this.withWardrobe = true});
 
+  final Rect? rect;
   final GlobalKey? neko;
   final bool withWardrobe;
 
@@ -40,6 +40,7 @@ class NekoView extends StatefulWidget {
   static Future<T?> show<T extends Object?>(
     BuildContext context, {
     GlobalKey? neko,
+    Rect? rect,
     bool withWardrobe = true,
   }) {
     return showGeneralDialog(
@@ -56,6 +57,7 @@ class NekoView extends StatefulWidget {
         return themes.wrap(
           NekoView(
             neko: neko,
+            rect: rect,
             withWardrobe: withWardrobe,
           ),
         );
@@ -274,7 +276,7 @@ class _NekoViewState extends State<NekoView>
 
   /// Returns a [Rect] of an [Object] identified by the provided initial
   /// [GlobalKey].
-  Rect? _calculatePosition() => widget.neko?.globalPaintBounds;
+  Rect? _calculatePosition() => widget.rect ?? widget.neko?.globalPaintBounds;
 }
 
 extension GlobalKeyExtension on GlobalKey {

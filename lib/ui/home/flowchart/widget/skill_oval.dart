@@ -14,7 +14,6 @@
 // along with this program. If not, see
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -36,12 +35,12 @@ class SkillOval extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Badge(
-            badgeContent: Text(
+            label: Text(
               '${entry.value.level}',
               style: const TextStyle(color: Colors.white, fontSize: 12),
             ),
-            badgeColor: desc.color ?? Colors.blueGrey,
-            position: BadgePosition.bottomEnd(bottom: -2, end: -2),
+            backgroundColor: desc.color ?? Colors.blueGrey,
+            alignment: AlignmentDirectional.bottomEnd,
             child: FloatingActionButton(
               heroTag: entry.key,
               backgroundColor: desc.color,

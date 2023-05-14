@@ -170,7 +170,7 @@ class NekoService extends DisposableService {
       }));
   }
 
-  /// Adds the provided [amount] to the specifed [skills].
+  /// Adds the provided [amount] to the specified [skills].
   void addSkill(List<String> skills, [int amount = 0]) =>
       _skillRepository.add(skills, amount);
 

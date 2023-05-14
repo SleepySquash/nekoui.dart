@@ -25,8 +25,8 @@ extension ActivityExtension on NekoController {
       TalkTopic(
         'Сходить в парк',
         [
-          BackgroundLine('park.jpg', wait: false),
-          CharacterLine('person.png'),
+          BackgroundLine.asset('park.jpg', wait: false),
+          CharacterLine.asset('person.png'),
           DialogueLine('Вау, тут так красиво!', by: name),
           DialogueLine('Спасибо, что сходил со мной!! :3', by: name),
         ],

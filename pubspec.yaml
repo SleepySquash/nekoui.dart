@@ -4,50 +4,64 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 0.1.0-alpha.1
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=2.19.0 <4.0.0"
 
 dependencies:
-  audioplayers: ^1.0.0-rc.4
-  badges: ^2.0.3
+  audioplayers: ^3.0.1
   bordered_text: ^2.0.0
   circular_menu: ^2.0.0
-  collection: ^1.16.0
+  collection: ^1.17.0
+  flame: ^1.6.0
+  flame_rive: ^1.6.0
   flutter:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  flutter_local_notifications: ^10.0.0-dev.16
+  flutter_local_notifications: ^13.0.0
   geolocator: ^9.0.0
   get: ^4.6.5
-  google_fonts: ^3.0.1
+  google_fonts: ^4.0.3
   hive_flutter: ^1.1.0
   hive: ^2.1.0
   http: ^0.13.4
-  js: ^0.6.4
+  js: ^0.6.5
   mutex: ^3.0.0
   novel:
-    # path: ../novel
-    git:
-      url: https://github.com/SleepySquash/novel.dart.git
-      ref: improve-implementation
+    path: ../novel
+    # git:
+    #   url: https://github.com/SleepySquash/novel.dart.git
+    #   ref: improve-implementation
   page_transition: ^2.0.5
-  path_provider: ^2.0.10
-  rive: ^0.8.4
-  toml: ^0.12.0
-  timezone: ^0.8.0
-  sentry_flutter: ^6.5.1
+  path_provider: ^2.0.13
+  rive: ^0.10.2
+  toml: ^0.14.0
+  timezone: ^0.9.0
+  sentry_flutter: ^7.0.0
   universal_io: ^2.0.4
   uuid: ^3.0.6
   yaml: ^3.1.0
+  flame_fire_atlas: ^1.3.5
 
 dev_dependencies:
   build: ^2.3.0
-  build_runner: ^2.1.10
-  dartdoc: ^5.0.1
+  build_runner: ^2.3.3
+  dartdoc: ^6.2.0
+  flame_lint: ^0.2.0+1
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
-  hive_generator: ^1.1.2
+  hive_generator: ^2.0.0
+
+dependency_overrides:
+  flame:
+    git:
+      url: https://github.com/flame-engine/flame
+      path: packages/flame
+  flame_rive:
+    git:
+      url: https://github.com/flame-engine/flame
+      path: packages/flame_rive
+  rive: ^0.10.2
 
 flutter:
   uses-material-design: true
@@ -56,6 +70,7 @@ flutter:
     - assets/conf.toml
     - assets/character/
     - assets/fonts/
+    - assets/images/atlas/
     - assets/images/background/
     - assets/images/furniture/
     - assets/images/item/

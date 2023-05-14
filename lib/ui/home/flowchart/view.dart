@@ -14,7 +14,6 @@
 // along with this program. If not, see
 // <https://www.gnu.org/licenses/agpl-3.0.html>.
 
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -76,7 +75,7 @@ class FlowchartView extends StatelessWidget {
                     Tab(
                       text: 'Progress',
                       icon: Badge(
-                        badgeContent: const Padding(
+                        label: const Padding(
                           padding: EdgeInsets.all(2),
                           child: Text(
                             '1',
@@ -86,7 +85,7 @@ class FlowchartView extends StatelessWidget {
                             ),
                           ),
                         ),
-                        position: BadgePosition.bottomEnd(),
+                        alignment: AlignmentDirectional.bottomEnd,
                         child: const Icon(Icons.move_down),
                       ),
                     ),

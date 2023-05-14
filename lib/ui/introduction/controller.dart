@@ -79,8 +79,8 @@ class IntroductionController extends GetxController {
     await Novel.show(
       context: router.context!,
       scenario: [
-        BackgroundLine('park.jpg'),
-        CharacterLine('person.png'),
+        BackgroundLine.asset('park.jpg'),
+        CharacterLine.asset('person.png'),
         DialogueLine('Hello, I am Vanilla!', by: 'Vanilla'),
         DialogueLine('And you?', by: 'Vanilla'),
       ],

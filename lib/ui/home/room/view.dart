@@ -17,6 +17,7 @@
 import 'dart:math';
 
 import 'package:circular_menu/circular_menu.dart';
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -24,9 +25,8 @@ import '/domain/model/neko.dart';
 import '/domain/service/environment.dart';
 import '/router.dart';
 import '/ui/home/neko/view.dart';
-import '/ui/home/room/components/room.dart';
-import '/ui/widget/neko/chibi/view.dart';
 import 'controller.dart';
+import 'game.dart';
 
 class RoomView extends StatelessWidget {
   const RoomView({Key? key}) : super(key: key);
@@ -228,36 +228,43 @@ class RoomView extends StatelessWidget {
           backgroundColor: Colors.black,
           body: Stack(
             children: [
-              InteractiveViewer(
-                clipBehavior: Clip.none,
-                minScale: 1,
-                maxScale: 100,
-                child: Stack(
-                  children: [
-                    RoomWidget(c),
-                    Positioned.fill(
-                      child: Image.asset(
-                        'assets/images/room/room.png',
-                        isAntiAlias: false,
-                        filterQuality: FilterQuality.none,
-                      ),
-                    ),
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          NekoView.show(context, neko: c.nekoKey);
-                          // TODO: Close FAB aswell.
-                        },
-                        child: SizedBox(
-                          width: 70,
-                          height: 70,
-                          child: NekoChibi(key: c.nekoKey),
-                        ),
-                      ),
-                    ),
-                  ],
+              GameWidget(
+                game: RoomGame(
+                  displayNeko: (rect) {
+                    NekoView.show(context, rect: rect);
+                  },
                 ),
               ),
+              // InteractiveViewer(
+              //   clipBehavior: Clip.none,
+              //   minScale: 1,
+              //   maxScale: 100,
+              //   child: Stack(
+              //     children: [
+              //       RoomWidget(c),
+              //       Positioned.fill(
+              //         child: Image.asset(
+              //           'assets/images/room/room.png',
+              //           isAntiAlias: false,
+              //           filterQuality: FilterQuality.none,
+              //         ),
+              //       ),
+              //       Center(
+              //         child: GestureDetector(
+              //           onTap: () {
+              //             NekoView.show(context, neko: c.nekoKey);
+              //             // TODO: Close FAB aswell.
+              //           },
+              //           child: SizedBox(
+              //             width: 70,
+              //             height: 70,
+              //             child: NekoChibi(key: c.nekoKey),
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               Align(
                 alignment: Alignment.topLeft,
                 child: Padding(

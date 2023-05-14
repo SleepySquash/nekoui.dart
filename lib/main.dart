@@ -44,7 +44,7 @@ void main() async {
   await Config.init();
 
   // Initializes and runs the [App].
-  Future<void> _appRunner() async {
+  Future<void> appRunner() async {
     WebUtils.setPathUrlStrategy();
 
     Novel.backgrounds = 'assets/images/background';
@@ -75,7 +75,7 @@ void main() async {
   // No need to initialize the Sentry if no DSN is provided, otherwise useless
   // messages are printed to the console every time the application starts.
   if (Config.sentryDsn.isEmpty) {
-    return _appRunner();
+    return appRunner();
   }
 
   return SentryFlutter.init(
@@ -107,7 +107,7 @@ void main() async {
         }
       },
     },
-    appRunner: _appRunner,
+    appRunner: appRunner,
   );
 }
 
